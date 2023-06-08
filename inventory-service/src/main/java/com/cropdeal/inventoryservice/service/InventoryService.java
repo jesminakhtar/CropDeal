@@ -43,7 +43,7 @@ public class InventoryService {
 		repository.delete(crop);
 	}
 
-	public void updateCropQuantity(String id, int quantity)
+	public void updateCropQuantity(String id, double quantity)
 			throws InvalidCropException, InsufficientQuantityException, OutOfStockException {
 		Crop crop = getCropById(id);
 		double prevQuantity = crop.getQuantity();
@@ -52,7 +52,7 @@ public class InventoryService {
 			throw new OutOfStockException("crop " + id + " is currently out of stock");
 		}
 		if (quantity > prevQuantity) {
-			throw new InsufficientQuantityException("Requested quantity exceeds the available quantity for crop " + id);
+			throw new InsufficientQuantityException("Requested quantity, " + quantity + " exceeds the available quantity, " + prevQuantity + " for crop " + id);
 		}
 
 		crop.setQuantity(crop.getQuantity() - quantity);
