@@ -29,9 +29,9 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
-    @PostMapping("/place")
-    public ResponseEntity<String> placeOrder(@RequestBody Order order) throws InvalidOrderException, InvalidCropException, CartNotFoundException {
-        Order placedOrder = orderService.placeOrderFromCart(order.getDealerId());
+    @PostMapping("/place-order/{dealerId}")
+    public ResponseEntity<String> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, InvalidCropException, CartNotFoundException {
+        Order placedOrder = orderService.placeOrderFromCart(dealerId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Order placed successfully. Order ID: " + placedOrder.getOrderId());
     }
 

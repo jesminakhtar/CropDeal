@@ -49,11 +49,13 @@ public class OrderService {
 		order.setDealerId(dealerId);
 		order.setOrderItems(cart.getCartItems());
 
+		Order placedOrder = createOrder(order);
+		
 		// Clear the dealer's cart
 		cartService.clearCart(dealerId);
-
+		
 		// Save the order to the database
-		return createOrder(order);
+		return placedOrder;
 	}
 
 	public Order placeOrderDirectly(String dealerId, List<OrderItem> orderItems) throws InvalidCropException {
