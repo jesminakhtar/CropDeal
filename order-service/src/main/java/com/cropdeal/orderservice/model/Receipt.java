@@ -1,6 +1,5 @@
 package com.cropdeal.orderservice.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class Receipt {
