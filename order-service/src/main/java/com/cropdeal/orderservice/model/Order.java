@@ -10,12 +10,12 @@ public class Order {
 	@Id
     private String orderId;
     private String dealerId;
-    private List<OrderItem> orderItems;
+    private List<Crop> orderItems;
 
     public Order() {
     }
 
-    public Order(String dealerId, List<OrderItem> orderItems) {
+    public Order(String dealerId, List<Crop> orderItems) {
         this.dealerId = dealerId;
         this.orderItems = orderItems;
     }
@@ -36,11 +36,11 @@ public class Order {
         this.dealerId = dealerId;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public List<Crop> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(List<Crop> orderItems) {
         this.orderItems = orderItems;
     }
     

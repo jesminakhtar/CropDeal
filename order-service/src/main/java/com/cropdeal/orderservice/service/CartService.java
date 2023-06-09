@@ -3,13 +3,14 @@ package com.cropdeal.orderservice.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-//import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.model.Cart;
-import com.cropdeal.orderservice.model.OrderItem;
+import com.cropdeal.orderservice.model.Crop;
 import com.cropdeal.orderservice.repository.CartRepository;
 
 @Service
@@ -18,11 +19,11 @@ public class CartService {
 	@Autowired
 	private CartRepository cartRepository;
 
-//    @Autowired
-//    private RestTemplate restTemplate;
-//    
-////    private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
-//    private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+	@Autowired
+	private RestTemplate restTemplate;
+
+//	private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
+	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
 
 	public Cart getCartByDealerId(String dealerId) throws CartNotFoundException {
 		return cartRepository.findByDealerId(dealerId)
@@ -37,8 +38,11 @@ public class CartService {
 			cart.setDealerId(dealerId);
 		}
 
-		OrderItem cartItem = new OrderItem(cropId, quantity);
-		cart.getCartItems().add(cartItem);
+		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
+				Crop.class);
+		Crop crop = response.getBody();
+		crop.setQuantity(quantity);
+		cart.getCartItems().add(crop);
 
 		return cartRepository.save(cart);
 	}
@@ -47,26 +51,19 @@ public class CartService {
 			throws CartNotFoundException, InvalidCropException {
 
 		Cart cart = getCartByDealerId(dealerId);
-		OrderItem cartItem = cart.getCartItemByCropId(cropId);
-		if (cartItem == null) {
-			cartItem = new OrderItem(cropId, quantity);
-			cart.getCartItems().add(cartItem);
-		} else {
-			cartItem.setQuantity(cartItem.getQuantity() + quantity);
-		}
+
+		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
+				Crop.class);
+		Crop cartItem = response.getBody();
+		cartItem.setQuantity(cartItem.getQuantity() + quantity);
 		return cartRepository.save(cart);
 	}
 
 	public Cart removeCartItem(String dealerId, String cropId) throws CartNotFoundException, InvalidCropException {
 		Cart cart = getCartByDealerId(dealerId);
-		if (cart == null) {
-
-		}
-
-		OrderItem cartItem = cart.getCartItemByCropId(cropId);
-		if (cartItem == null) {
-			throw new InvalidCropException("Crop not found in cart: " + cropId);
-		}
+		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
+				Crop.class);
+		Crop cartItem = response.getBody();
 
 		cart.getCartItems().remove(cartItem);
 
@@ -83,5 +80,4 @@ public class CartService {
 	public List<Cart> getAllCarts() {
 		return cartRepository.findAll();
 	}
-
 }

@@ -13,8 +13,8 @@ import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
 import com.cropdeal.orderservice.model.Cart;
+import com.cropdeal.orderservice.model.Crop;
 import com.cropdeal.orderservice.model.Order;
-import com.cropdeal.orderservice.model.OrderItem;
 import com.cropdeal.orderservice.repository.OrderRepository;
 
 @Service
@@ -31,6 +31,7 @@ public class OrderService {
 
 //	private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
 	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+	
 
 	public List<Order> getAllOrders() {
 		return repository.findAll();
@@ -50,15 +51,15 @@ public class OrderService {
 		order.setOrderItems(cart.getCartItems());
 
 		Order placedOrder = createOrder(order);
-		
+
 		// Clear the dealer's cart
 		cartService.clearCart(dealerId);
-		
+
 		// Save the order to the database
 		return placedOrder;
 	}
 
-	public Order placeOrderDirectly(String dealerId, List<OrderItem> orderItems) throws InvalidCropException {
+	public Order placeOrderDirectly(String dealerId, List<Crop> orderItems) throws InvalidCropException {
 		// Create a new order
 		Order order = new Order();
 		order.setDealerId(dealerId);
@@ -67,22 +68,22 @@ public class OrderService {
 		// Save the order to the database
 		return createOrder(order);
 	}
-	
+
 	public Order createOrder(Order order) {
-		for (OrderItem orderItem : order.getOrderItems()) {
-			updateInventory(orderItem.getCropId(), orderItem.getQuantity());
+		for (Crop orderItem : order.getOrderItems()) {
+			updateInventory(orderItem.getId(), orderItem.getQuantity());
 		}
 
-        // Save the order to the database
-        return repository.save(order);
-    }
+		// Save the order to the database
+		return repository.save(order);
+	}
 
 	public void cancelOrder(String orderId) throws InvalidOrderException {
 
 		Order order = getOrderById(orderId);
 		// Update inventory for each order item
-		for (OrderItem orderItem : order.getOrderItems()) {
-			updateInventory(orderItem.getCropId(), -1 * orderItem.getQuantity());
+		for (Crop orderItem : order.getOrderItems()) {
+			updateInventory(orderItem.getId(), -1 * orderItem.getQuantity());
 		}
 
 		repository.delete(order);

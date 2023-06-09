@@ -12,11 +12,11 @@ public class Cart {
     @Id
     private String id;
     private String dealerId;
-    private List<OrderItem> cartItems = new ArrayList<>();
+    private List<Crop> cartItems = new ArrayList<>();
     
 	public Cart() {}
 	
-	public Cart(String dealerId, List<OrderItem> cartItems) {
+	public Cart(String dealerId, List<Crop> cartItems) {
 		this.dealerId = dealerId;
 		this.cartItems = cartItems;
 	}
@@ -33,16 +33,16 @@ public class Cart {
 	public void setDealerId(String dealerId) {
 		this.dealerId = dealerId;
 	}
-	public List<OrderItem> getCartItems() {
+	public List<Crop> getCartItems() {
 		return cartItems;
 	}
-	public void setCartItems(List<OrderItem> cartItems) {
+	public void setCartItems(List<Crop> cartItems) {
 		this.cartItems = cartItems;
 	}
 	
-	public OrderItem getCartItemByCropId(String cropId) {
-	    for (OrderItem orderItem : this.getCartItems()) {
-	        if (orderItem.getCropId().equals(cropId)) {
+	public Crop getCartItemByCropId(String cropId) {
+	    for (Crop orderItem : this.getCartItems()) {
+	        if (orderItem.getId().equals(cropId)) {
 	            return orderItem;
 	        }
 	    }
