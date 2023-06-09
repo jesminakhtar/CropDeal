@@ -1,5 +1,19 @@
 package com.cropdeal.orderservice.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
@@ -8,12 +22,6 @@ import com.cropdeal.orderservice.exception.PaymentNotDoneException;
 import com.cropdeal.orderservice.model.Order;
 import com.cropdeal.orderservice.model.Receipt;
 import com.cropdeal.orderservice.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -33,26 +41,26 @@ public class OrderController {
     }
 
     @PostMapping("/place-order/{dealerId}")
-    public ResponseEntity<String> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, InvalidCropException, CartNotFoundException, PaymentNotDoneException {
+    public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, InvalidCropException, CartNotFoundException, PaymentNotDoneException {
         Receipt receipt = orderService.placeOrderFromCart(dealerId);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Order placed successfully. " + receipt);
+        return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody Order order) throws PaymentNotDoneException {
-        orderService.createOrder(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Order created successfully.");
+    public ResponseEntity<Receipt> createOrder(@RequestBody Order order) throws PaymentNotDoneException, InvalidCropException {
+    	Receipt receipt = orderService.placeOrderDirectly(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateOrder(@PathVariable String id, @RequestBody Order order) throws InvalidOrderException, InvalidReceiptException {
-        orderService.updateOrder(id, order);
+    @PutMapping("/{dealerId}")
+    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, InvalidReceiptException {
+        orderService.updateOrder(dealerId, order);
         return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable String id) throws InvalidOrderException, InvalidReceiptException {
-        orderService.cancelOrder(id);
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, InvalidReceiptException {
+        orderService.cancelOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body("Order cancelled successfully.");
     }
 }

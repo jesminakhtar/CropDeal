@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 public class Crop {
-
-    @Id
     private String id;
     private String farmerId;
     private String name;

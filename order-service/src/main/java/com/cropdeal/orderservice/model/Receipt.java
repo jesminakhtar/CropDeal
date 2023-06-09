@@ -2,7 +2,13 @@ package com.cropdeal.orderservice.model;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "receipts")
 public class Receipt {
+	@Id
+	private String id;
     private String orderId;
     private String dealerId;
     private List<Crop> orderItems;
