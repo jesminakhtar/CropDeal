@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
-import com.cropdeal.inventoryservice.exception.InvalidCropException;
+import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
-import com.cropdeal.inventoryservice.model.Crop;
+import com.cropdeal.inventoryservice.entity.Product;
+import com.cropdeal.inventoryservice.model.Rating;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
 
 @Service
@@ -17,45 +18,89 @@ public class InventoryService {
 	@Autowired
 	private InventoryRepository repository;
 
-	public List<Crop> getAllCrops() {
+	public List<Product> getAllProducts() {
 		return repository.findAll();
 	}
 
-	public Crop getCropById(String id) throws InvalidCropException {
-		return repository.findById(id).orElseThrow(() -> new InvalidCropException("Invalid crop ID: " + id));
+	public Product getProductById(String id) throws InvalidProductException {
+		return repository.findById(id).orElseThrow(() -> new InvalidProductException("Invalid product ID: " + id));
 	}
 
-	public void addCrop(Crop crop) {
-		repository.save(crop);
+	public void addProduct(Product product, String authenticatedUserId) {
+		// Check if the authenticated user is a farmer or admin
+		if (!isFarmerOrAdmin(authenticatedUserId)) {
+			throw new IllegalArgumentException("Only farmers or admins can add products");
+		}
+
+		repository.save(product);
 	}
 
-	public void updateCrop(String id, Crop updatedCrop) throws InvalidCropException {
+	public void updateProduct(String id, Product updatedProduct, String authenticatedUserId) throws InvalidProductException {
+		Product product = getProductById(id);
 
-		Crop crop = getCropById(id);
-		crop.setName(updatedCrop.getName());
-		crop.setQuantity(updatedCrop.getQuantity());
-		crop.setPrice(updatedCrop.getPrice());
-		repository.save(crop);
+		// Check if the authenticated user is a farmer or admin
+		if (!isFarmerOrAdmin(authenticatedUserId)) {
+			throw new IllegalArgumentException("Only farmers or admins can update products");
+		}
+
+		product.setName(updatedProduct.getName());
+		product.setQuantity(updatedProduct.getQuantity());
+		product.setPrice(updatedProduct.getPrice());
+		repository.save(product);
 	}
 
-	public void deleteCrop(String id) throws InvalidCropException {
-		Crop crop = getCropById(id);
-		repository.delete(crop);
+	public void deleteProduct(String id, String authenticatedUserId) throws InvalidProductException {
+		Product product = getProductById(id);
+
+		// Check if the authenticated user is a farmer or admin
+		if (!isFarmerOrAdmin(authenticatedUserId)) {
+			throw new IllegalArgumentException("Only farmers or admins can delete products");
+		}
+
+		repository.delete(product);
 	}
 
-	public void updateCropQuantity(String id, double quantity)
-			throws InvalidCropException, InsufficientQuantityException, OutOfStockException {
-		Crop crop = getCropById(id);
-		double prevQuantity = crop.getQuantity();
+	public void updateProductQuantity(String id, int quantity)
+			throws InvalidProductException, InsufficientQuantityException, OutOfStockException {
+		Product product = getProductById(id);
+		double prevQuantity = product.getQuantity();
 
 		if (quantity == 0) {
-			throw new OutOfStockException("crop " + id + " is currently out of stock");
+			throw new OutOfStockException("Product " + id + " is currently out of stock");
 		}
 		if (quantity > prevQuantity) {
-			throw new InsufficientQuantityException("Requested quantity, " + quantity + " exceeds the available quantity, " + prevQuantity + " for crop " + id);
+			throw new InsufficientQuantityException("Requested quantity, " + quantity + " exceeds the available quantity, " + prevQuantity + " for product " + id);
 		}
 
-		crop.setQuantity(crop.getQuantity() - quantity);
-		repository.save(crop);
+		product.setQuantity(product.getQuantity() - quantity);
+		repository.save(product);
+	}
+
+	public void addRating(String productId, Rating rating, String authenticatedUserId) throws InvalidProductException {
+		Product product = getProductById(productId);
+
+		// Check if the authenticated user is an admin
+		if (!isDealerOrAdmin(authenticatedUserId)) {
+			throw new IllegalArgumentException("Only admins can add ratings");
+		}
+
+		product.getRatings().add(rating);
+		repository.save(product);
+	}
+
+	private boolean isFarmerOrAdmin(String userId) {
+		// Implement your farmer and admin authentication logic here
+		// Return true if the user is a farmer or admin, otherwise false
+		// You can use your authentication mechanism or roles to determine if the user is a farmer or admin
+		// Example: return userService.isFarmerOrAdmin(userId);
+		return true; // Change this based on your authentication logic
+	}
+
+	private boolean isDealerOrAdmin(String userId) {
+		// Implement your admin authentication logic here
+		// Return true if the user is an admin, otherwise false
+		// You can use your authentication mechanism or roles to determine if the user is an admin
+		// Example: return userService.isAdmin(userId);
+		return true; // Change this based on your authentication logic
 	}
 }

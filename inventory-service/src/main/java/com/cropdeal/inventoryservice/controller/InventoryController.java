@@ -1,67 +1,91 @@
 package com.cropdeal.inventoryservice.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
-import com.cropdeal.inventoryservice.exception.InvalidCropException;
+import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
-import com.cropdeal.inventoryservice.model.Crop;
+import com.cropdeal.inventoryservice.entity.Product;
+import com.cropdeal.inventoryservice.model.Rating;
 import com.cropdeal.inventoryservice.service.InventoryService;
 
 @RestController
-@RequestMapping("/crops")
+@RequestMapping("/products")
 public class InventoryController {
 
     @Autowired
     private InventoryService inventoryService;
 
-    @GetMapping("/all")
-    public List<Crop> getAllCrops() {
-        return inventoryService.getAllCrops();
+    @GetMapping
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = inventoryService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{cropId}")
-    public Crop getCropById(@PathVariable String cropId) throws InvalidCropException {
-        return inventoryService.getCropById(cropId);
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable String productId) {
+        try {
+            Product product = inventoryService.getProductById(productId);
+            return ResponseEntity.ok(product);
+        } catch (InvalidProductException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<String> addCrop(@RequestBody Crop crop) {
-        inventoryService.addCrop(crop);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Crop added successfully.");
+    public ResponseEntity<String> addProduct(@RequestBody Product product, @RequestParam String authenticatedUserId) {
+        inventoryService.addProduct(product, authenticatedUserId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully.");
     }
 
-    @PutMapping("/{cropId}")
-    public ResponseEntity<String> updateCrop(@PathVariable String cropId, @RequestBody Crop crop)
-            throws InvalidCropException {
-        inventoryService.updateCrop(cropId, crop);
-        return ResponseEntity.status(HttpStatus.OK).body("Crop updated successfully.");
+    @PutMapping("/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product updatedProduct, @RequestParam String authenticatedUserId) {
+        try {
+            inventoryService.updateProduct(productId, updatedProduct, authenticatedUserId);
+            return ResponseEntity.ok("Product updated successfully.");
+        } catch (InvalidProductException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/{cropId}")
-    public ResponseEntity<String> deleteCrop(@PathVariable String cropId) throws InvalidCropException {
-        inventoryService.deleteCrop(cropId);
-        return ResponseEntity.status(HttpStatus.OK).body("Crop deleted successfully.");
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable String productId, @RequestParam String authenticatedUserId) {
+        try {
+            inventoryService.deleteProduct(productId, authenticatedUserId);
+            return ResponseEntity.ok("Product deleted successfully.");
+        } catch (InvalidProductException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    
-    
-    @PutMapping("/{cropId}/updateQuantity")
-    public void updateCropQuantity(@PathVariable String cropId, @RequestBody int quantity) throws InvalidCropException, InsufficientQuantityException, OutOfStockException {
-    	
-    	inventoryService.updateCropQuantity(cropId, quantity);
+
+    @PostMapping("/{productId}/ratings")
+    public ResponseEntity<String> addRating(@PathVariable String productId, @RequestBody Rating rating, @RequestParam String authenticatedUserId) {
+        try {
+            inventoryService.addRating(productId, rating, authenticatedUserId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Rating added successfully.");
+        } catch (InvalidProductException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only admins can add ratings.");
+        }
     }
-    
+
+    @PutMapping("/{productId}/updateQuantity")
+    public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestBody int quantity) {
+        try {
+            inventoryService.updateProductQuantity(productId, quantity);
+            return ResponseEntity.ok("Product quantity updated successfully.");
+        } catch (InvalidProductException e) {
+            return ResponseEntity.notFound().build();
+        } catch (InsufficientQuantityException e) {
+            return ResponseEntity.badRequest().body("Insufficient quantity.");
+        } catch (OutOfStockException e) {
+            return ResponseEntity.badRequest().body("Product is out of stock.");
+        }
+    }
 }
