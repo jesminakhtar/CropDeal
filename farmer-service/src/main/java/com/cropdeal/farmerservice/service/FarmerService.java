@@ -12,9 +12,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cropdeal.farmerservice.enity.Farmer;
 import com.cropdeal.farmerservice.exception.InvalidFarmerException;
 import com.cropdeal.farmerservice.model.Crop;
-import com.cropdeal.farmerservice.model.Farmer;
 //import com.cropdeal.farmerservice.repository.CropRepository;
 import com.cropdeal.farmerservice.repository.FarmerRepository;
 

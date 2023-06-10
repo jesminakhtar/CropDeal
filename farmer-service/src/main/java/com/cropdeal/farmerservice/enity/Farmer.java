@@ -1,10 +1,12 @@
-package com.cropdeal.farmerservice.model;
+package com.cropdeal.farmerservice.enity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.cropdeal.farmerservice.model.Crop;
 
 @Document(collection = "farmers")
 public class Farmer {
