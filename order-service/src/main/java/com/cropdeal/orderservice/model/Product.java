@@ -9,20 +9,25 @@ public class Product {
 	private int quantity;
 	private double price;
 	private String description;
+	private String farmerId;
 	private List<Rating> ratings;
 
 	public Product() {
 	}
 
-	public Product(String id, String name, String category, int quantity, double price, String description,
-			List<Rating> ratings) {
+	
+	public Product(String name, String category, int quantity, double price, String description,
+			String farmerId, List<Rating> ratings) {
+		super();
 		this.name = name;
 		this.category = category;
 		this.quantity = quantity;
 		this.price = price;
 		this.description = description;
+		this.farmerId = farmerId;
 		this.ratings = ratings;
 	}
+
 
 	public String getId() {
 		return id;
@@ -80,4 +85,15 @@ public class Product {
 		this.ratings = ratings;
 	}
 
+
+	public String getFarmerId() {
+		return farmerId;
+	}
+
+
+	public void setFarmerId(String farmerId) {
+		this.farmerId = farmerId;
+	}
+
+	
 }
