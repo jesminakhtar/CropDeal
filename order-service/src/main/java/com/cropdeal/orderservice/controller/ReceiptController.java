@@ -40,7 +40,7 @@ public class ReceiptController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Receipt>> getAllReceipts() {
         List<Receipt> receipts = receiptService.getAllReceipts();
         return new ResponseEntity<>(receipts, HttpStatus.OK);

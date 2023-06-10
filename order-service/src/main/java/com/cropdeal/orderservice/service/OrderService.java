@@ -1,5 +1,6 @@
 package com.cropdeal.orderservice.service;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class OrderService {
 	}
 
 	public Receipt placeOrderFromCart(String dealerId)
-			throws InvalidCropException, CartNotFoundException, PaymentNotDoneException {
+			throws CartNotFoundException, PaymentNotDoneException {
 		// Retrieve the dealer's cart
 		Cart cart = cartService.getCartByDealerId(dealerId);
 
@@ -57,54 +58,30 @@ public class OrderService {
 		order.setDealerId(dealerId);
 		order.setOrderItems(cart.getCartItems());
 
-		// Calculate the prices
-		double totalPrice = calculateTotalPrice(order.getOrderItems());
-
-		// Create the receipt
-		Receipt receipt = new Receipt();
-		receipt.setDealerId(dealerId);
-		receipt.setOrderItems(order.getOrderItems());
-		receipt.setTotalPrice(totalPrice);
-		receipt.setStatus("Placed");
-
 		// Clear the dealer's cart
 		cartService.clearCart(dealerId);
 
-		// Process payment
-		processPayment(receipt);
-
-		// Save the order to the database
-		Order placedOrder = createOrder(order);
-		receipt.setOrderId(placedOrder.getOrderId());
-
-		return receipt;
+		return createOrder(order);
 	}
 
-	public Receipt placeOrderDirectly(Order order) throws InvalidCropException, PaymentNotDoneException {
+	public Receipt placeOrderDirectly(String dealerId, String cropId, int quantity) throws InvalidCropException, PaymentNotDoneException {
 		// Create a new order
-		String dealerId = order.getDealerId();
-		List<Crop> orderItems = order.getOrderItems();
-
-//        Order placedOrder = createOrder(order);
-
-		// Create the receipt
-		Receipt receipt = new Receipt();
-		receipt.setDealerId(dealerId);
-		receipt.setOrderItems(orderItems);
-		receipt.setTotalPrice(calculateTotalPrice(order.getOrderItems()));
-		receipt.setStatus("Placed");
-
-		// Process payment
-		processPayment(receipt);
+		
+		Crop crop = getCropById(cropId);
+		crop.setQuantity(quantity);
+		List<Crop> item = Arrays.asList(crop);
+		
+		Order order = new Order(dealerId, item);
 
 		// Save the order to the database
-		Order placedOrder = createOrder(order);
-		receipt.setOrderId(placedOrder.getOrderId());
-		
-		return receipt;
+		return createOrder(order);
 	}
 
-	public Order createOrder(Order order) throws PaymentNotDoneException {
+	public Receipt createOrder(Order order) throws PaymentNotDoneException {
+		
+		//process payment
+		processPayment(order);
+		
 		boolean isPaymentDone = checkPaymentStatus(order);
 
 		if (isPaymentDone) {
@@ -113,7 +90,19 @@ public class OrderService {
 			}
 
 			// Save the order to the database
-			return repository.save(order);
+			Order placedOrder = repository.save(order);
+			
+			// Create the receipt
+			Receipt receipt = new Receipt();
+			receipt.setOrderId(placedOrder.getOrderId());
+			receipt.setDealerId(order.getDealerId());
+			receipt.setOrderItems(order.getOrderItems());
+			receipt.setTotalPrice(calculateTotalPrice(order.getOrderItems()));
+			receipt.setStatus("Placed");
+			
+			
+			return receiptService.createReceipt(receipt);
+			
 		} else {
 			// Handle the case when payment is not done
 			// You can throw an exception, return null, or take any appropriate action based
@@ -167,7 +156,7 @@ public class OrderService {
 		return repository.save(order);
 	}
 
-	private void processPayment(Receipt receipt) {
+	private void processPayment(Order order) {
 //	        // Assuming you have a payment gateway client library or SDK
 //
 //	        // Prepare payment request object with necessary details
@@ -189,8 +178,7 @@ public class OrderService {
 //	            throw new PaymentProcessingException("Payment processing failed. Reason: " + paymentGatewayResponse.getError());
 //	        }
 //
-//	        // Update the receipt in the repository
-	        receiptService.createReceipt(receipt);
+//	        
 	}
 
 	private void processPaymentAdjustment(Order oldOrder, Order updatedOrder) {

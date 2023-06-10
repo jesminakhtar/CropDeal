@@ -40,15 +40,15 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
-    @PostMapping("/place-order/{dealerId}")
-    public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, InvalidCropException, CartNotFoundException, PaymentNotDoneException {
+    @PostMapping("/place-order-cart/{dealerId}")
+    public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
         Receipt receipt = orderService.placeOrderFromCart(dealerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
-    @PostMapping
-    public ResponseEntity<Receipt> createOrder(@RequestBody Order order) throws PaymentNotDoneException, InvalidCropException {
-    	Receipt receipt = orderService.placeOrderDirectly(order);
+    @PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
+    public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidCropException {
+    	Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
