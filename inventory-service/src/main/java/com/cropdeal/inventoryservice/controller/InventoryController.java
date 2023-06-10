@@ -33,7 +33,7 @@ public class InventoryController {
         return inventoryService.getAllCrops();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{cropId}")
     public Crop getCropById(@PathVariable String cropId) throws InvalidCropException {
         return inventoryService.getCropById(cropId);
     }
