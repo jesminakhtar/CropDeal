@@ -1,21 +1,16 @@
 package com.cropdeal.farmerservice.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "crops")
 public class Crop {
-    @Id
     private String id;
     private String farmerId;
     private String name;
-    private double quantity;
+    private int quantity;
     private double price;
  
     public Crop() {
     }
 
-    public Crop(String farmerId, String name, double quantity, double price) {
+    public Crop(String farmerId, String name, int quantity, double price) {
         this.farmerId = farmerId;
         this.name = name;
         this.quantity = quantity;
@@ -48,11 +43,11 @@ public class Crop {
         this.name = name;
     }
 
-    public double getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
