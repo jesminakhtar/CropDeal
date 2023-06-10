@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cropdeal.orderservice.entity.Order;
+import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
 import com.cropdeal.orderservice.exception.InvalidReceiptException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
-import com.cropdeal.orderservice.model.Order;
-import com.cropdeal.orderservice.model.Receipt;
 import com.cropdeal.orderservice.service.OrderService;
 
 @RestController

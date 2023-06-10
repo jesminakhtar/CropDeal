@@ -10,15 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.cropdeal.orderservice.entity.Cart;
+import com.cropdeal.orderservice.entity.Order;
+import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
 import com.cropdeal.orderservice.exception.InvalidReceiptException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
-import com.cropdeal.orderservice.model.Cart;
 import com.cropdeal.orderservice.model.Crop;
-import com.cropdeal.orderservice.model.Order;
-import com.cropdeal.orderservice.model.Receipt;
 import com.cropdeal.orderservice.repository.OrderRepository;
 
 @Service
@@ -38,7 +38,7 @@ public class OrderService {
 
 //	private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
 	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
-	private static final String PAYMENT_GATEWAY_URL = "https://api.paymentgateway.com";
+//	private static final String PAYMENT_GATEWAY_URL = "https://api.paymentgateway.com";
 
 	public List<Order> getAllOrders() {
 		return repository.findAll();

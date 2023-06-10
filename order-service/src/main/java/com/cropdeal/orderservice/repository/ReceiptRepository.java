@@ -4,7 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.cropdeal.orderservice.model.Receipt;
+import com.cropdeal.orderservice.entity.Receipt;
+
 
 public interface ReceiptRepository extends MongoRepository<Receipt, String>{
 

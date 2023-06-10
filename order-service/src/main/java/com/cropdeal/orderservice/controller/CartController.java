@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cropdeal.orderservice.entity.Cart;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
-import com.cropdeal.orderservice.model.Cart;
 import com.cropdeal.orderservice.service.CartService;
 
 @RestController

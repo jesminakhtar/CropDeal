@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.cropdeal.orderservice.entity.Cart;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidCropException;
-import com.cropdeal.orderservice.model.Cart;
 import com.cropdeal.orderservice.model.Crop;
 import com.cropdeal.orderservice.repository.CartRepository;
 

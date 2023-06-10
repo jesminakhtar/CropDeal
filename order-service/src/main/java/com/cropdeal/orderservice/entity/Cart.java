@@ -1,10 +1,12 @@
-package com.cropdeal.orderservice.model;
+package com.cropdeal.orderservice.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.cropdeal.orderservice.model.Crop;
 
 @Document(collection = "carts")
 public class Cart {

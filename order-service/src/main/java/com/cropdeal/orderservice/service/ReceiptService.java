@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.InvalidReceiptException;
-import com.cropdeal.orderservice.model.Receipt;
 import com.cropdeal.orderservice.repository.ReceiptRepository;
 
 @Service
