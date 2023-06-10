@@ -36,6 +36,11 @@ public class CartController {
 	   return cartService.getCartByDealerId(dealerId);
 	}
 	
+	@PostMapping("/{dealerId}/create")
+    public ResponseEntity<String> createCart(@PathVariable String dealerId) {
+        cartService.createCart(dealerId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Cart created successfully.");
+    }
 
 	@PostMapping("/{dealerId}/items")
 	public ResponseEntity<String> addToCart(@PathVariable String dealerId, @RequestParam String cropId,

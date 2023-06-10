@@ -83,10 +83,12 @@ public class OrderService {
 	    double amount = calculateTotalPrice(order.getOrderItems());
 
 	    // Process payment and get the payment ID
-	    String paymentId = paymentService.processPayment(amount, order.getOrderId());
-
-	    // Check if the payment was successful
-	    boolean isPaymentDone = paymentService.checkPaymentStatus(paymentId);
+//	    String paymentId = paymentService.processPayment(amount, order.getOrderId());
+//
+//	    // Check if the payment was successful
+//	    boolean isPaymentDone = paymentService.checkPaymentStatus(paymentId);
+	    
+	    boolean isPaymentDone = true;
 
 	    if (isPaymentDone) {
 	        for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
@@ -105,7 +107,7 @@ public class OrderService {
 	        receipt.setOrderItems(order.getOrderItems());
 	        receipt.setTotalPrice(amount);
 	        receipt.setStatus("Placed");
-	        receipt.setRazorpayOrderId(paymentId);
+//	        receipt.setRazorpayOrderId(paymentId);
 
 	        return receiptService.createReceipt(receipt);
 	    } else {
