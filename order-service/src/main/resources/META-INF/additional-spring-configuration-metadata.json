@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "razorpay.api.key",
+    "type": "java.lang.String",
+    "description": "API key for Razorpay"
+  },
+  {
+    "name": "razorpay.api.secret",
+    "type": "java.lang.String",
+    "description": "Api secret for Razorpay"
+  },
+  {
+    "name": "razorpay.currency",
+    "type": "java.lang.String",
+    "description": "A description for 'razorpay.currency'"
+  },
+  {
+    "name": "razorpay.company.name",
+    "type": "java.lang.String",
+    "description": "Company name for Razorpay"
+  }
+]}

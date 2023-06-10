@@ -53,7 +53,7 @@ public class OrderController {
     }
 
     @PutMapping("/{dealerId}")
-    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, InvalidReceiptException {
+    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, InvalidReceiptException, PaymentNotDoneException {
         orderService.updateOrder(dealerId, order);
         return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
     }
