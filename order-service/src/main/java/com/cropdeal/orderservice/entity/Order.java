@@ -1,23 +1,23 @@
 package com.cropdeal.orderservice.entity;
 
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.cropdeal.orderservice.model.Crop;
+import java.util.HashMap;
+import java.util.Map;
 
 @Document(collection = "orders")
 public class Order {
-	@Id
+    @Id
     private String orderId;
     private String dealerId;
-    private List<Crop> orderItems;
+    private Map<String, Integer> orderItems;
 
     public Order() {
+        this.orderItems = new HashMap<>();
     }
 
-    public Order(String dealerId, List<Crop> orderItems) {
+    public Order(String dealerId, Map<String, Integer> orderItems) {
         this.dealerId = dealerId;
         this.orderItems = orderItems;
     }
@@ -38,12 +38,19 @@ public class Order {
         this.dealerId = dealerId;
     }
 
-    public List<Crop> getOrderItems() {
+    public Map<String, Integer> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<Crop> orderItems) {
+    public void setOrderItems(Map<String, Integer> orderItems) {
         this.orderItems = orderItems;
     }
-    
+
+    public void addOrderItem(String productId, int quantity) {
+        orderItems.put(productId, quantity);
+    }
+
+    public void removeOrderItem(String productId) {
+        orderItems.remove(productId);
+    }
 }

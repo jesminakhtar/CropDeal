@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cropdeal.orderservice.entity.Cart;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
-import com.cropdeal.orderservice.exception.InvalidCropException;
+import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.service.CartService;
 
 @RestController
@@ -39,22 +39,22 @@ public class CartController {
 
 	@PostMapping("/{dealerId}/items")
 	public ResponseEntity<String> addToCart(@PathVariable String dealerId, @RequestParam String cropId,
-			@RequestParam int quantity) {
+			@RequestParam int quantity) throws InvalidProductException, CartNotFoundException {
 		cartService.addToCart(dealerId, cropId, quantity);
 		return ResponseEntity.status(HttpStatus.OK).body("Crop added to cart successfully.");
 	}
 
 	@PutMapping("/{dealerId}/items/{cropId}")
 	public ResponseEntity<String> updateCartItemQuantity(@PathVariable String dealerId, @PathVariable String cropId,
-			@RequestParam int quantity) throws CartNotFoundException, InvalidCropException {
-		cartService.updateCart(dealerId, cropId, quantity);
+			@RequestParam int quantity) throws CartNotFoundException, InvalidProductException {
+		cartService.updateCartItemQuantity(dealerId, cropId, quantity);
 		return ResponseEntity.status(HttpStatus.OK).body("Cart item quantity updated successfully.");
 
 	}
 
 	@DeleteMapping("/{dealerId}/items/{cropId}")
 	public ResponseEntity<String> removeCartItem(@PathVariable String dealerId, @PathVariable String cropId)
-			throws CartNotFoundException, InvalidCropException {
+			throws CartNotFoundException, InvalidProductException {
 
 		cartService.removeCartItem(dealerId, cropId);
 		return ResponseEntity.status(HttpStatus.OK).body("Cart item removed successfully.");

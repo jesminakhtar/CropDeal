@@ -14,13 +14,13 @@ public class PaymentService {
 
     @Autowired
     private RazorpayClient razorpayClient;
-    
-    public String processPayment(double amount, String orderId) throws PaymentNotDoneException {
+
+    public String processPayment(double amount, String receiptId) throws PaymentNotDoneException {
         try {
             JSONObject orderRequest = new JSONObject();
             orderRequest.put("amount", amount); // amount in the smallest currency unit
             orderRequest.put("currency", "INR");
-            orderRequest.put("receipt", orderId);
+            orderRequest.put("receipt", receiptId);
 
             Order razorpayOrder = razorpayClient.orders.create(orderRequest);
 
@@ -31,28 +31,18 @@ public class PaymentService {
                 return razorpayOrder.get("id").toString();
             } else {
                 // Payment failed
-                throw new PaymentNotDoneException("Payment processing failed for order: " + orderId);
+                throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
             }
         } catch (RazorpayException e) {
-            throw new PaymentNotDoneException("Payment processing failed for order: " + orderId);
+            throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
         }
     }
 
 
-//    public void processPaymentAdjustment(Order oldOrder, Order updatedOrder) throws PaymentNotDoneException {
-//        // Payment adjustment logic
-//        // Implement the logic to handle payment adjustments in case of order updates
-//    }
-//
-//    public void processPaymentRefund(Order order) {
-//        // Payment refund logic
-//        // Implement the logic to handle payment refunds if required
-//    }
-//
-    public boolean checkPaymentStatus(String razorpayId) {
+    public boolean checkPaymentStatus(String razorpayOrderId) {
         try {
             // Fetch the payment order details from Razorpay
-        	Order razorpayOrder = razorpayClient.orders.fetch(razorpayId);
+            Order razorpayOrder = razorpayClient.orders.fetch(razorpayOrderId);
 
             // Check the payment status
             return razorpayOrder != null && razorpayOrder.get("status").equals("paid");
@@ -62,6 +52,41 @@ public class PaymentService {
         }
     }
 
+    public void processPaymentAdjustment(String razorpayOrderId, double newAmount) throws PaymentNotDoneException {
+//        try {
+//            JSONObject orderRequest = new JSONObject();
+//            orderRequest.put("amount", newAmount); // amount in the smallest currency unit
+//
+//            Order razorpayOrder = razorpayClient.orders.fetch(razorpayOrderId);
+//
+//            // Update the payment amount
+//            razorpayOrder = razorpayOrder.edit(orderRequest);
+//
+//            if (razorpayOrder != null && razorpayOrder.get("status").equals("paid")) {
+//                // Payment adjustment successful
+//                return;
+//            } else {
+//                // Payment adjustment failed
+//                throw new PaymentNotDoneException("Payment adjustment failed");
+//            }
+//        } catch (RazorpayException e) {
+//            throw new PaymentNotDoneException("Payment adjustment failed");
+//        }
+    }
+
+    public void processPaymentRefund(String razorpayOrderId) throws PaymentNotDoneException {
+//        try {
+//            Order razorpayOrder = razorpayClient.orders.fetch(razorpayOrderId);
+//
+//            // Initiate refund for the payment order
+//            JSONObject refundRequest = new JSONObject();
+//            refundRequest.put("amount", razorpayOrder.get("amount"));
+//
+//            razorpayClient.payments.refund(razorpayOrderId, refundRequest);
+//        } catch (RazorpayException e) {
+//            throw new PaymentNotDoneException("Payment refund failed");
+//        }
+    }
 
     // Additional methods or code for the PaymentService class can be added here
 

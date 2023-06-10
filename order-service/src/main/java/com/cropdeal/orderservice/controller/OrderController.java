@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cropdeal.orderservice.entity.Order;
 import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
-import com.cropdeal.orderservice.exception.InvalidCropException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
-import com.cropdeal.orderservice.exception.InvalidReceiptException;
+import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
+import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
 import com.cropdeal.orderservice.service.OrderService;
 
 @RestController
@@ -47,19 +47,19 @@ public class OrderController {
     }
 
     @PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
-    public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidCropException {
+    public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
     	Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
     @PutMapping("/{dealerId}")
-    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, InvalidReceiptException, PaymentNotDoneException {
+    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {
         orderService.updateOrder(dealerId, order);
         return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, InvalidReceiptException {
+    public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
         orderService.cancelOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body("Order cancelled successfully.");
     }

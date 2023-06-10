@@ -1,83 +1,92 @@
 package com.cropdeal.orderservice.service;
 
-import java.util.List;
+import com.cropdeal.orderservice.entity.Cart;
+import com.cropdeal.orderservice.exception.CartNotFoundException;
+import com.cropdeal.orderservice.exception.InvalidProductException;
+import com.cropdeal.orderservice.model.Product;
+import com.cropdeal.orderservice.repository.CartRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.cropdeal.orderservice.entity.Cart;
-import com.cropdeal.orderservice.exception.CartNotFoundException;
-import com.cropdeal.orderservice.exception.InvalidCropException;
-import com.cropdeal.orderservice.model.Crop;
-import com.cropdeal.orderservice.repository.CartRepository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CartService {
 
-	@Autowired
-	private CartRepository cartRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
-	@Autowired
-	private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-//	private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
-	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+    private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
 
-	public Cart getCartByDealerId(String dealerId) throws CartNotFoundException {
-		return cartRepository.findByDealerId(dealerId)
-				.orElseThrow(() -> new CartNotFoundException("Cart not found for dealer: " + dealerId));
-	}
+    public Cart getCartByDealerId(String dealerId) throws CartNotFoundException {
+        return cartRepository.findByDealerId(dealerId)
+                .orElseThrow(() -> new CartNotFoundException("Cart not found for dealer: " + dealerId));
+    }
 
-	public Cart addToCart(String dealerId, String cropId, int quantity) {
+    public Cart createCart(String dealerId) {
+        Cart cart = new Cart(dealerId, new HashMap<>());
+        return cartRepository.save(cart);
+    }
 
-		Cart cart = cartRepository.findByDealerId(dealerId).orElse(null);
-		if (cart == null) {
-			cart = new Cart();
-			cart.setDealerId(dealerId);
-		}
+    public Cart addToCart(String dealerId, String productId, int quantity) throws InvalidProductException, CartNotFoundException {
+        Cart cart = getCartByDealerId(dealerId);
 
-		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
-				Crop.class);
-		Crop crop = response.getBody();
-		crop.setQuantity(quantity);
-		cart.getCartItems().add(crop);
+        ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/" + productId,
+                Product.class);
+        Product product = response.getBody();
+        if (product == null) {
+            throw new InvalidProductException("Invalid product ID: " + productId);
+        }
 
-		return cartRepository.save(cart);
-	}
+        Map<String, Integer> cartItems = cart.getCartItems();
+        cartItems.put(productId, quantity);
 
-	public Cart updateCart(String dealerId, String cropId, int quantity)
-			throws CartNotFoundException, InvalidCropException {
+        return cartRepository.save(cart);
+    }
 
-		Cart cart = getCartByDealerId(dealerId);
+    public Cart updateCartItemQuantity(String dealerId, String productId, int quantity)
+            throws CartNotFoundException, InvalidProductException {
+        Cart cart = getCartByDealerId(dealerId);
+        Map<String, Integer> cartItems = cart.getCartItems();
 
-		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
-				Crop.class);
-		Crop cartItem = response.getBody();
-		cartItem.setQuantity(cartItem.getQuantity() + quantity);
-		return cartRepository.save(cart);
-	}
+        if (!cartItems.containsKey(productId)) {
+            throw new InvalidProductException("Product not found in cart: " + productId);
+        }
 
-	public Cart removeCartItem(String dealerId, String cropId) throws CartNotFoundException, InvalidCropException {
-		Cart cart = getCartByDealerId(dealerId);
-		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
-				Crop.class);
-		Crop cartItem = response.getBody();
+        cartItems.put(productId, quantity);
 
-		cart.getCartItems().remove(cartItem);
+        return cartRepository.save(cart);
+    }
 
-		return cartRepository.save(cart);
-	}
+    public Cart removeCartItem(String dealerId, String productId) throws CartNotFoundException, InvalidProductException {
+        Cart cart = getCartByDealerId(dealerId);
+        Map<String, Integer> cartItems = cart.getCartItems();
 
-	public void clearCart(String dealerId) throws CartNotFoundException {
-		Cart cart = getCartByDealerId(dealerId);
-		if (cart != null) {
-			cartRepository.delete(cart);
-		}
-	}
+        if (!cartItems.containsKey(productId)) {
+            throw new InvalidProductException("Product not found in cart: " + productId);
+        }
 
-	public List<Cart> getAllCarts() {
-		return cartRepository.findAll();
-	}
+        cartItems.remove(productId);
+
+        return cartRepository.save(cart);
+    }
+
+    public void clearCart(String dealerId) throws CartNotFoundException {
+        Cart cart = getCartByDealerId(dealerId);
+        if (cart != null) {
+            cartRepository.delete(cart);
+        }
+    }
+
+    public List<Cart> getAllCarts() {
+        return cartRepository.findAll();
+    }
 }

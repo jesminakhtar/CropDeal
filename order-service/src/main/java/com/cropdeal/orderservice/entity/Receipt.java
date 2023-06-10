@@ -1,11 +1,9 @@
 package com.cropdeal.orderservice.entity;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.cropdeal.orderservice.model.Crop;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,18 +21,16 @@ public class Receipt {
 	@Id
 	private String id;
 	private String orderId;
-    private String razorpayOrderId;
-    private String dealerId;
-    private List<Crop> orderItems;
-    private double totalPrice;
-    private String status;
-    
-    public Receipt() {
-	}
-    
-	public Receipt(String orderId, String razorpayOrderId, String dealerId, List<Crop> orderItems, double totalPrice,
-			String status) {
-		super();
+	private String razorpayOrderId;
+	private String dealerId;
+	private Map<String, Integer> orderItems; // Updated to use a map of product IDs and quantities
+	private double totalPrice;
+	private String status;
+	
+	public Receipt() {}
+
+	public Receipt(String orderId, String razorpayOrderId, String dealerId, Map<String, Integer> orderItems,
+			double totalPrice, String status) {
 		this.orderId = orderId;
 		this.razorpayOrderId = razorpayOrderId;
 		this.dealerId = dealerId;
@@ -42,7 +38,7 @@ public class Receipt {
 		this.totalPrice = totalPrice;
 		this.status = status;
 	}
-    
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -67,11 +63,11 @@ public class Receipt {
 		this.dealerId = dealerId;
 	}
 
-	public List<Crop> getOrderItems() {
+	public Map<String, Integer> getOrderItems() {
 		return orderItems;
 	}
 
-	public void setOrderItems(List<Crop> orderItems) {
+	public void setOrderItems(Map<String, Integer> orderItems) {
 		this.orderItems = orderItems;
 	}
 
@@ -90,4 +86,5 @@ public class Receipt {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 }
