@@ -26,22 +26,22 @@ public class InventoryService {
 		return repository.findById(id).orElseThrow(() -> new InvalidProductException("Invalid product ID: " + id));
 	}
 
-	public void addProduct(Product product, String authenticatedUserId) {
+	public Product addProduct(Product product) {
 		// Check if the authenticated user is a farmer or admin
-		if (!isFarmerOrAdmin(authenticatedUserId)) {
-			throw new IllegalArgumentException("Only farmers or admins can add products");
-		}
+//		if (!isFarmerOrAdmin(authenticatedUserId)) {
+//			throw new IllegalArgumentException("Only farmers or admins can add products");
+//		}
 
-		repository.save(product);
+		return repository.save(product);
 	}
 
-	public void updateProduct(String id, Product updatedProduct, String authenticatedUserId) throws InvalidProductException {
+	public void updateProduct(String id, Product updatedProduct) throws InvalidProductException {
 		Product product = getProductById(id);
 
 		// Check if the authenticated user is a farmer or admin
-		if (!isFarmerOrAdmin(authenticatedUserId)) {
-			throw new IllegalArgumentException("Only farmers or admins can update products");
-		}
+//		if (!isFarmerOrAdmin(authenticatedUserId)) {
+//			throw new IllegalArgumentException("Only farmers or admins can update products");
+//		}
 
 		product.setName(updatedProduct.getName());
 		product.setQuantity(updatedProduct.getQuantity());
@@ -49,13 +49,13 @@ public class InventoryService {
 		repository.save(product);
 	}
 
-	public void deleteProduct(String id, String authenticatedUserId) throws InvalidProductException {
+	public void deleteProduct(String id) throws InvalidProductException {
 		Product product = getProductById(id);
 
 		// Check if the authenticated user is a farmer or admin
-		if (!isFarmerOrAdmin(authenticatedUserId)) {
-			throw new IllegalArgumentException("Only farmers or admins can delete products");
-		}
+//		if (!isFarmerOrAdmin(authenticatedUserId)) {
+//			throw new IllegalArgumentException("Only farmers or admins can delete products");
+//		}
 
 		repository.delete(product);
 	}
@@ -76,13 +76,13 @@ public class InventoryService {
 		repository.save(product);
 	}
 
-	public void addRating(String productId, Rating rating, String authenticatedUserId) throws InvalidProductException {
+	public void addRating(String productId, Rating rating) throws InvalidProductException {
 		Product product = getProductById(productId);
 
 		// Check if the authenticated user is an admin
-		if (!isDealerOrAdmin(authenticatedUserId)) {
-			throw new IllegalArgumentException("Only admins can add ratings");
-		}
+//		if (!isDealerOrAdmin(authenticatedUserId)) {
+//			throw new IllegalArgumentException("Only admins can add ratings");
+//		}
 
 		product.getRatings().add(rating);
 		repository.save(product);

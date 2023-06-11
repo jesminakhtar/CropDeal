@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
@@ -21,12 +22,14 @@ public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = inventoryService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable String productId) {
         try {
@@ -37,36 +40,40 @@ public class InventoryController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<String> addProduct(@RequestBody Product product, @RequestParam String authenticatedUserId) {
-        inventoryService.addProduct(product, authenticatedUserId);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully.");
+    @PreAuthorize("hasAnyAuthority('Admin', 'Farmer')")
+    @PostMapping("/add")
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        Product savedProduct = inventoryService.addProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'Farmer')")
     @PutMapping("/{productId}")
-    public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product updatedProduct, @RequestParam String authenticatedUserId) {
+    public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product updatedProduct) {
         try {
-            inventoryService.updateProduct(productId, updatedProduct, authenticatedUserId);
+            inventoryService.updateProduct(productId, updatedProduct);
             return ResponseEntity.ok("Product updated successfully.");
         } catch (InvalidProductException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'Farmer')")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<String> deleteProduct(@PathVariable String productId, @RequestParam String authenticatedUserId) {
+    public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
         try {
-            inventoryService.deleteProduct(productId, authenticatedUserId);
+            inventoryService.deleteProduct(productId);
             return ResponseEntity.ok("Product deleted successfully.");
         } catch (InvalidProductException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'Dealer')")
     @PostMapping("/{productId}/ratings")
-    public ResponseEntity<String> addRating(@PathVariable String productId, @RequestBody Rating rating, @RequestParam String authenticatedUserId) {
+    public ResponseEntity<String> addRating(@PathVariable String productId, @RequestBody Rating rating) {
         try {
-            inventoryService.addRating(productId, rating, authenticatedUserId);
+            inventoryService.addRating(productId, rating);
             return ResponseEntity.status(HttpStatus.CREATED).body("Rating added successfully.");
         } catch (InvalidProductException e) {
             return ResponseEntity.notFound().build();
@@ -75,8 +82,9 @@ public class InventoryController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @PutMapping("/{productId}/updateQuantity")
-    public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestBody int quantity) {
+    public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestParam int quantity) {
         try {
             inventoryService.updateProductQuantity(productId, quantity);
             return ResponseEntity.ok("Product quantity updated successfully.");
