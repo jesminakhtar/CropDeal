@@ -1,6 +1,7 @@
 package com.cropdeal.farmerservice.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -12,139 +13,166 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.cropdeal.farmerservice.enity.Farmer;
+import com.cropdeal.farmerservice.entity.Farmer;
 import com.cropdeal.farmerservice.exception.InvalidFarmerException;
-import com.cropdeal.farmerservice.model.Crop;
-//import com.cropdeal.farmerservice.repository.CropRepository;
+import com.cropdeal.farmerservice.model.Product;
 import com.cropdeal.farmerservice.repository.FarmerRepository;
 
 @Service
 public class FarmerService {
 
-	@Autowired
-	private FarmerRepository repository;
+    @Autowired
+    private FarmerRepository repository;
 
-//	@Autowired
-//	private CropRepository cropRepository;
+    @Autowired
+    private RestTemplate restTemplate;
 
-	@Autowired
-	private RestTemplate restTemplate;
+    private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
 
-//	private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
-	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+    public List<Farmer> getAllFarmers() {
+        List<Farmer> farmers = repository.findAll();
+        for (Farmer farmer : farmers) {
+            updateProductDetails(farmer);
+        }
+        return farmers;
+    }
 
-	public List<Farmer> getAllFarmers() {
-		List<Farmer> farmers = repository.findAll();
-		for (Farmer farmer : farmers) {
-			updateProductDetails(farmer);
-		}
-		return farmers;
-	}
+    public Farmer getFarmerById(String id) throws InvalidFarmerException {
+        Farmer farmer = repository.findById(id)
+                .orElseThrow(() -> new InvalidFarmerException("No farmer found with id " + id));
+        updateProductDetails(farmer);
+        return farmer;
+    }
 
-	public Farmer getFarmerById(String id) throws InvalidFarmerException {
-		Farmer farmer = repository.findById(id)
-				.orElseThrow(() -> new InvalidFarmerException("No farmer found with id " + id));
-		updateProductDetails(farmer);
-		return farmer;
-	}
+    public Farmer addFarmer(Farmer farmer) {
+        // Manually generate the farmer ID
+//        String farmerId = generateFarmerId(); // Replace generateFarmerId() with your own logic to generate the ID
+//        farmer.setId(farmerId);
+//
+//        // Save the farmer object after adding the products
+//        if (!farmer.getProducts().isEmpty()) {
+//            for (Product product : farmer.getProducts()) {
+//                try {
+//                    addProduct(farmerId, product);
+//                } catch (InvalidFarmerException e) {
+//                    // Handle the exception if necessary
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+        
+        return repository.save(farmer);
+    }
 
-	public Farmer addFarmer(Farmer farmer) {
-		return repository.save(farmer);
-	}
 
-	public void deleteFarmer(String id) {
-		repository.deleteById(id);
-	}
 
-	public Farmer updateFarmer(String id, Farmer farmer) throws InvalidFarmerException {
-		Farmer f = getFarmerById(id);
-		farmer.setId(f.getId());
-		return repository.save(farmer);
-	}
+    public void deleteFarmer(String id) {
+        repository.deleteById(id);
+    }
 
-	public ResponseEntity<String> addCrop(String farmerId, Crop crop) throws InvalidFarmerException {
-		Farmer farmer = getFarmerById(farmerId);
-		crop.setFarmerId(farmerId);
-//		cropRepository.save(crop);
-		farmer.addCrop(crop);
-		repository.save(farmer);
+    public Farmer updateFarmer(String id, Farmer farmer) throws InvalidFarmerException {
+        Farmer f = getFarmerById(id);
+        farmer.setId(f.getId());
+        return repository.save(farmer);
+    }
 
-		// Make a POST request to the Inventory Service to add the crop
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "application/json");
-		HttpEntity<Crop> request = new HttpEntity<>(crop, headers);
-		ResponseEntity<String> response = restTemplate.postForEntity(INVENTORY_SERVICE_URL + "/crops", request,
-				String.class);
+    public Product addProduct(String farmerId, Product product) throws InvalidFarmerException {
+        Farmer farmer = getFarmerById(farmerId);
+        product.setFarmerId(farmerId);
 
-		return response;
-	}
+        // Make a POST request to the Inventory Service to add the product
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<Product> request = new HttpEntity<>(product, headers);
+        ResponseEntity<Product> response = restTemplate.postForEntity(INVENTORY_SERVICE_URL + "/products/add", request,
+                Product.class);
 
-	public void updateCrop(String farmerId, String cropId, Crop updatedCrop) throws InvalidFarmerException {
-		Farmer farmer = getFarmerById(farmerId);
-		Crop existingCrop = getFarmerCropById(farmerId, cropId);
-		// Set the farmerId and ID of the updated crop to maintain the link with the
-		// farmer and the existing crop
-		updatedCrop.setFarmerId(farmer.getId());
-		updatedCrop.setId(existingCrop.getId());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Product addedProduct = response.getBody();
+            farmer.addProduct(addedProduct);
+            repository.save(farmer);
+            return addedProduct;
+        } else {
+            throw new InvalidFarmerException("Failed to add the product to the inventory");
+        }
+    }
 
-		// Make a PUT request to the Inventory Service to update the crop
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "application/json");
-		HttpEntity<Crop> request = new HttpEntity<>(updatedCrop, headers);
-		ResponseEntity<String> response = restTemplate.exchange(INVENTORY_SERVICE_URL + "/crops/" + cropId,
-				HttpMethod.PUT, request, String.class);
 
-		if (!response.getStatusCode().is2xxSuccessful()) {
-			throw new InvalidFarmerException("Failed to update the crop in the inventory");
-		}
-	}
+    public void updateProduct(String farmerId, String productId, Product updatedProduct) throws InvalidFarmerException {
+        Farmer farmer = getFarmerById(farmerId);
+        Product existingProduct = getFarmerProductById(farmerId, productId);
+        updatedProduct.setFarmerId(farmer.getId());
+        updatedProduct.setId(existingProduct.getId());
 
-	public void deleteCrop(String farmerId, String cropId) throws InvalidFarmerException {
-		Farmer farmer = getFarmerById(farmerId);
-		Crop crop = getFarmerCropById(farmerId, cropId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<Product> request = new HttpEntity<>(updatedProduct, headers);
+        ResponseEntity<String> response = restTemplate.exchange(INVENTORY_SERVICE_URL + "/products/" + productId,
+                HttpMethod.PUT, request, String.class);
 
-		farmer.removeCrop(crop);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new InvalidFarmerException("Failed to update the product in the inventory");
+        }
+    }
 
-		// Make a DELETE request to the Inventory Service to delete the crop
-		restTemplate.delete(INVENTORY_SERVICE_URL + "/crops/" + cropId);
-	}
+    public void deleteProduct(String farmerId, String productId) throws InvalidFarmerException {
+        Farmer farmer = getFarmerById(farmerId);
+        Product product = getFarmerProductById(farmerId, productId);
 
-	private Crop getFarmerCropById(String farmerId, String cropId) throws InvalidFarmerException {
-		// Make a GET request to the Inventory Service to retrieve the crop by ID
-		ResponseEntity<Crop> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/crops/" + cropId,
-				Crop.class);
+        farmer.removeProduct(product);
 
-		if (response.getStatusCode().is2xxSuccessful()) {
-			Crop crop = response.getBody();
-			// Check if the retrieved crop belongs to the specified farmer
-			if (crop != null && crop.getFarmerId().equals(farmerId)) {
-				return crop;
-			} else {
-				throw new InvalidFarmerException("Crop not found for the specified farmer");
-			}
-		} else {
-			throw new InvalidFarmerException("Failed to retrieve the crop from the inventory");
-		}
-	}
+        restTemplate.delete(INVENTORY_SERVICE_URL + "/products/" + productId);
+    }
 
-	private void updateProductDetails(Farmer farmer) {
-		for (Crop crop : farmer.getCrops()) {
-			try {
-				// Retrieve product details from the inventory service
-				String productUrl = INVENTORY_SERVICE_URL + "/crops/" + crop.getId();
-				Crop inventoryCrop = restTemplate.getForObject(productUrl, Crop.class);
+    private Product getFarmerProductById(String farmerId, String productId) throws InvalidFarmerException {
+        ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/" + productId,
+                Product.class);
 
-				// Update the farmer's product details
-				crop.setName(inventoryCrop.getName());
-				crop.setPrice(inventoryCrop.getPrice());
-				crop.setQuantity(inventoryCrop.getQuantity());
-			} catch (HttpClientErrorException.NotFound | HttpServerErrorException.InternalServerError ex) {
-				// Handle the case when the crop is not found in the inventory service
-				
-				crop.setName("Unavailable");
-				crop.setQuantity(0);
-				crop.setPrice(0.0);
-			}
-		}
-	}
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Product product = response.getBody();
+            if (product != null && product.getFarmerId().equals(farmerId)) {
+                return product;
+            } else {
+                throw new InvalidFarmerException("Product not found for the specified farmer");
+            }
+        } else {
+            throw new InvalidFarmerException("Failed to retrieve the product from the inventory");
+        }
+    }
+
+    private void updateProductDetails(Farmer farmer) {
+        for (Product product : farmer.getProducts()) {
+            try {
+                String productUrl = INVENTORY_SERVICE_URL + "/products/" + product.getId();
+                Product inventoryProduct = restTemplate.getForObject(productUrl, Product.class);
+
+                product.setName(inventoryProduct.getName());
+                product.setPrice(inventoryProduct.getPrice());
+                product.setQuantity(inventoryProduct.getQuantity());
+                product.setCategory(inventoryProduct.getCategory());
+                product.setDescription(inventoryProduct.getDescription());
+                product.setFarmerId(inventoryProduct.getFarmerId());
+            } catch (HttpClientErrorException.NotFound | HttpServerErrorException.InternalServerError ex) {
+                product.setName("Unavailable");
+                product.setQuantity(0);
+                product.setPrice(0.0);
+                product.setCategory("Unavailable");
+                product.setDescription("Unavailable");
+                product.setFarmerId("Unavailable");
+//            	farmer.removeProduct(product);
+            }
+        }
+    }
+
+    public String generateFarmerId() {
+        // Generate a random UUID and remove hyphens
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+
+        // Extract a substring of desired length from the UUID as the farmer ID
+        int idLength = 10; // Adjust the length as per your requirements
+        String farmerId = uuid.substring(0, idLength);
+
+        return farmerId;
+    }
+
 }

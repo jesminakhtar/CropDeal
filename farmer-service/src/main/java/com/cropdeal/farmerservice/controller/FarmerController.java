@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cropdeal.farmerservice.enity.Farmer;
+import com.cropdeal.farmerservice.entity.Farmer;
 import com.cropdeal.farmerservice.exception.InvalidFarmerException;
-import com.cropdeal.farmerservice.model.Crop;
+import com.cropdeal.farmerservice.model.Product;
 import com.cropdeal.farmerservice.service.FarmerService;
 
 import jakarta.validation.Valid;
@@ -28,6 +28,8 @@ public class FarmerController {
     @Autowired
     private FarmerService service;
 
+    //Farmer
+    
     @GetMapping("/all")
     public List<Farmer> getAllFarmers() {
         return service.getAllFarmers();
@@ -40,8 +42,8 @@ public class FarmerController {
 
     @PostMapping
     public ResponseEntity<String> addFarmer(@RequestBody Farmer farmer) {
-        service.addFarmer(farmer);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful");
+        Farmer savedFarmer = service.addFarmer(farmer);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful. Farmer id : " + savedFarmer.getId());
     }
 
     @PutMapping("/{id}")
@@ -57,22 +59,25 @@ public class FarmerController {
         return ResponseEntity.status(HttpStatus.OK).body("Deletion successful");
     }
 
-    @PostMapping("/{farmerId}/crops")
-    public ResponseEntity<String> addCrop(@PathVariable String farmerId, @RequestBody Crop crop) throws InvalidFarmerException {
-        service.addCrop(farmerId, crop);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Crop added successfully");
+    
+    // Products
+    
+    @PostMapping("/{farmerId}/product")
+    public ResponseEntity<String> addProduct(@PathVariable String farmerId, @RequestBody Product product) throws InvalidFarmerException {
+        service.addProduct(farmerId, product);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully");
     }
 
-    @PutMapping("/{farmerId}/crops/{cropId}")
-    public ResponseEntity<String> updateCrop(@PathVariable String farmerId, @PathVariable String cropId, @Valid @RequestBody Crop crop)
+    @PutMapping("/{farmerId}/product/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable String farmerId, @PathVariable String productId, @Valid @RequestBody Product product)
             throws InvalidFarmerException {
-        service.updateCrop(farmerId, cropId, crop);
-        return ResponseEntity.status(HttpStatus.OK).body("Crop updated successfully");
+        service.updateProduct(farmerId, productId, product);
+        return ResponseEntity.status(HttpStatus.OK).body("Product updated successfully");
     }
 
-    @DeleteMapping("/{farmerId}/crops/{cropId}")
-    public ResponseEntity<String> deleteCrop(@PathVariable String farmerId, @PathVariable String cropId) throws InvalidFarmerException {
-        service.deleteCrop(farmerId, cropId);
-        return ResponseEntity.status(HttpStatus.OK).body("Crop deleted successfully");
+    @DeleteMapping("/{farmerId}/product/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable String farmerId, @PathVariable String productId) throws InvalidFarmerException {
+        service.deleteProduct(farmerId, productId);
+        return ResponseEntity.status(HttpStatus.OK).body("Product deleted successfully");
     }
 }

@@ -1,62 +1,101 @@
 package com.cropdeal.farmerservice.model;
 
-public class Crop {
-    private String id;
-    private String farmerId;
-    private String name;
-    private int quantity;
-    private double price;
- 
-    public Crop() {
-    }
 
-    public Crop(String farmerId, String name, int quantity, double price) {
-        this.farmerId = farmerId;
-        this.name = name;
-        this.quantity = quantity;
-        this.price = price;
-    }
 
-    // Getters and Setters
+import java.util.List;
 
-    public String getId() {
-        return id;
-    }
+public class Product {
+	private String id;
+	private String name;
+	private String category;
+	private int quantity;
+	private double price;
+	private String description;
+	private String farmerId;
+	private List<Rating> ratings;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public Product() {
+	}
 
-    public String getFarmerId() {
-        return farmerId;
-    }
+	
+	public Product(String name, String category, int quantity, double price, String description,
+			String farmerId, List<Rating> ratings) {
+		super();
+		this.name = name;
+		this.category = category;
+		this.quantity = quantity;
+		this.price = price;
+		this.description = description;
+		this.farmerId = farmerId;
+		this.ratings = ratings;
+	}
 
-    public void setFarmerId(String farmerId) {
-        this.farmerId = farmerId;
-    }
 
-    public String getName() {
-        return name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public int getQuantity() {
-        return quantity;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public double getPrice() {
-        return price;
-    }
+	public String getCategory() {
+		return category;
+	}
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<Rating> getRatings() {
+		return ratings;
+	}
+
+	public void setRatings(List<Rating> ratings) {
+		this.ratings = ratings;
+	}
+
+
+	public String getFarmerId() {
+		return farmerId;
+	}
+
+
+	public void setFarmerId(String farmerId) {
+		this.farmerId = farmerId;
+	}
+
+	
 }
-
