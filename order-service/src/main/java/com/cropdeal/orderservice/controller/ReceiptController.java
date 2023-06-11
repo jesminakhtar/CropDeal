@@ -5,13 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
@@ -24,12 +19,14 @@ public class ReceiptController {
     @Autowired
     private ReceiptService receiptService;
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @PostMapping
     public ResponseEntity<Receipt> createReceipt(@RequestBody Receipt receipt) {
         Receipt createdReceipt = receiptService.createReceipt(receipt);
         return new ResponseEntity<>(createdReceipt, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @GetMapping("/{orderID}")
     public ResponseEntity<Receipt> getReceiptById(@PathVariable String orderID) {
         try {
@@ -40,12 +37,14 @@ public class ReceiptController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @GetMapping("/all")
     public ResponseEntity<List<Receipt>> getAllReceipts() {
         List<Receipt> receipts = receiptService.getAllReceipts();
         return new ResponseEntity<>(receipts, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
     @DeleteMapping("/{orderID}")
     public ResponseEntity<Void> deleteReceipt(@PathVariable String orderID) {
         try {
@@ -56,4 +55,3 @@ public class ReceiptController {
         }
     }
 }
-
