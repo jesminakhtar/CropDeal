@@ -28,7 +28,6 @@ public class MyConfig {
     @LoadBalanced
     public RestTemplate restTemplate() {
 
-
         RestTemplate restTemplate = new RestTemplate();
 
         List<ClientHttpRequestInterceptor> interceptors=new ArrayList<>();

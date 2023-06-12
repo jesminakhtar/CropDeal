@@ -10,19 +10,20 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-	@Bean
-	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		
-		http
-			.authorizeExchange()
-			.anyExchange()
-			.authenticated()
-			.and()
-			.oauth2Login()
-			.and()
-			.oauth2ResourceServer()
-			.jwt();
-		
-		return http.build();
-	}
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+            .csrf().disable()
+            .authorizeExchange()
+                .pathMatchers("/users/register/**").permitAll()
+                .pathMatchers("/users/register").permitAll() // Allow anonymous access to registration path
+                .anyExchange().authenticated()
+            .and()
+                .oauth2Login()
+            .and()
+                .oauth2ResourceServer()
+                .jwt();
+
+        return http.build();
+    }
 }

@@ -1,5 +1,7 @@
 package com.cropdeal.usermanagement.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,15 +23,15 @@ import com.cropdeal.usermanagement.service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     @Autowired
     private UserService userService;
+   
 
     @PostMapping("/register/farmer")
     public ResponseEntity<String> registerFarmer(@RequestBody FarmerRegistrationRequest registrationRequest) {
         try {
-            userService.registerFarmer(registrationRequest);
-            return ResponseEntity.ok("Farmer registered successfully");
+            User user = userService.registerFarmer(registrationRequest);
+            return ResponseEntity.ok("Farmer registered successfully. User id : " + user.getId());
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -38,13 +40,20 @@ public class UserController {
     @PostMapping("/register/dealer")
     public ResponseEntity<String> registerDealer(@RequestBody DealerRegistrationRequest registrationRequest) {
         try {
-            userService.registerDealer(registrationRequest);
-            return ResponseEntity.ok("Dealer registered successfully");
+        	User user = userService.registerDealer(registrationRequest);
+            return ResponseEntity.ok("Dealer registered successfully. User id : " + user.getId());
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userService.getUsers();
+            return ResponseEntity.ok(users);
+    }
 
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal')")
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
         try {
@@ -55,6 +64,7 @@ public class UserController {
         }
     }
 
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal') or #userId == authentication.principal.userId")
     @PutMapping("/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
         try {
@@ -65,6 +75,7 @@ public class UserController {
         }
     }
 
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable String userId) {
         try {

@@ -51,6 +51,7 @@ public class OrderController {
 	}
 
 	@PreAuthorize("hasAnyAuthority('Admin', 'Dealer')")
+//	@PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
 	@PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
 	public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
 		Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);

@@ -10,8 +10,8 @@ public class FarmerRegistrationRequest {
 	public FarmerRegistrationRequest() {
 	}
 
-	public FarmerRegistrationRequest(String email, String password, String phoneNumber, String farmName,
-			String location) {
+	public FarmerRegistrationRequest(String email, String password, String phoneNumber,
+			String farmName, String location) {
 		super();
 		this.email = email;
 		this.password = password;

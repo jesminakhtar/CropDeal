@@ -9,16 +9,16 @@ public class DealerRegistrationRequest {
     private String location;
     
     public DealerRegistrationRequest() {}
-    
-	public DealerRegistrationRequest(String email, String password, String phoneNumber, String dealershipName,
-			String location) {
-		super();
+
+	public DealerRegistrationRequest(String email, String password, String phoneNumber,
+			String dealershipName, String location) {
 		this.email = email;
 		this.password = password;
 		this.phoneNumber = phoneNumber;
 		this.dealershipName = dealershipName;
 		this.location = location;
 	}
+
 
 	public String getEmail() {
 		return email;

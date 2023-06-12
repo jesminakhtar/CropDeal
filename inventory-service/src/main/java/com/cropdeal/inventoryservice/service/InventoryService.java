@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cropdeal.inventoryservice.entity.Product;
+import com.cropdeal.inventoryservice.entity.Rating;
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
-import com.cropdeal.inventoryservice.entity.Product;
-import com.cropdeal.inventoryservice.model.Rating;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
 
 @Service
