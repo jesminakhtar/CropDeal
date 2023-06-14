@@ -13,11 +13,11 @@ public class UserManagementApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(UserManagementApplication.class, args);
 	}
-	
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+//	
+//	@Bean
+//	PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
 	
 	@Bean
 	public RestTemplate restTemplate() {

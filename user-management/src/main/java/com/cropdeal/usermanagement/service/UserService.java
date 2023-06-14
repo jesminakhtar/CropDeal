@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.cropdeal.usermanagement.entity.Role;
 import com.cropdeal.usermanagement.entity.User;
+import com.cropdeal.usermanagement.entity.UserConstant;
 import com.cropdeal.usermanagement.exception.UserAlreadyExistsException;
 import com.cropdeal.usermanagement.exception.UserNotFoundException;
 import com.cropdeal.usermanagement.model.DealerRegistrationRequest;
@@ -37,7 +37,7 @@ public class UserService {
 	        User user = new User();
 			user.setEmail(registrationRequest.getEmail());
 			user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-			user.setRole(Role.FARMER);
+			user.setRoles(UserConstant.FARMER_ROLE);
 
 //			logger.info("OktaClient ======= ", oktaClient);
 //	        
@@ -62,7 +62,7 @@ public class UserService {
         User user = new User();
 		user.setEmail(registrationRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-		user.setRole(Role.DEALER);
+		user.setRoles(UserConstant.FARMER_ROLE);
 
         
 //        // Create the user in Okta
@@ -98,5 +98,10 @@ public class UserService {
 
 	public List<User> getUsers() {
 		return userRepository.findAll();
+	}
+
+	public void deleteById(String id) {
+		userRepository.deleteById(id);
+		
 	}
 }

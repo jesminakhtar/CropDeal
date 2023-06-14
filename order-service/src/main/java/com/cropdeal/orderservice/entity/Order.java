@@ -1,11 +1,16 @@
 package com.cropdeal.orderservice.entity;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+//@Data
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
 @Document(collection = "orders")
 public class Order {
     @Id

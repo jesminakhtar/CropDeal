@@ -18,10 +18,10 @@
 ////		.ignoringRequestMatchers("/users/register/**")
 //		.authorizeHttpRequests()
 //			.requestMatchers("/users/register/**").permitAll()
-//			.anyRequest().authenticated()
-//				.and()
-//			.oauth2ResourceServer()
-//			.jwt();
+//			.anyRequest().authenticated();
+////				.and()
+////			.oauth2ResourceServer()
+////			.jwt();
 //
 //		return security.build();
 //

@@ -1,88 +1,98 @@
 package com.cropdeal.usermanagement.controller;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cropdeal.usermanagement.entity.User;
 import com.cropdeal.usermanagement.exception.UserAlreadyExistsException;
-import com.cropdeal.usermanagement.exception.UserNotFoundException;
+import com.cropdeal.usermanagement.jwtconfig.AuthenticationRequest;
+import com.cropdeal.usermanagement.jwtconfig.JwtUtil;
+import com.cropdeal.usermanagement.model.AuthResponse;
 import com.cropdeal.usermanagement.model.DealerRegistrationRequest;
 import com.cropdeal.usermanagement.model.FarmerRegistrationRequest;
+import com.cropdeal.usermanagement.service.GroupUserDetailsService;
 import com.cropdeal.usermanagement.service.UserService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
-   
+	@Autowired
+	private UserService service;
 
-    @PostMapping("/register/farmer")
-    public ResponseEntity<String> registerFarmer(@RequestBody FarmerRegistrationRequest registrationRequest) {
-        try {
-            User user = userService.registerFarmer(registrationRequest);
-            return ResponseEntity.ok("Farmer registered successfully. User id : " + user.getId());
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
-    @PostMapping("/register/dealer")
-    public ResponseEntity<String> registerDealer(@RequestBody DealerRegistrationRequest registrationRequest) {
-        try {
-        	User user = userService.registerDealer(registrationRequest);
-            return ResponseEntity.ok("Dealer registered successfully. User id : " + user.getId());
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getUsers();
-            return ResponseEntity.ok(users);
-    }
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal')")
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable String userId) {
-        try {
-            User user = userService.getUserById(userId);
-            return ResponseEntity.ok(user);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@Autowired
+	private GroupUserDetailsService userDetailsService;
 
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal') or #userId == authentication.principal.userId")
-    @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
-        try {
-            userService.updateUser(userId, updatedUser);
-            return ResponseEntity.ok("User updated successfully");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@Autowired
+	private JwtUtil jwtTokenUtil;
 
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'SCOPE_internal')")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable String userId) {
-        try {
-            userService.deleteUser(userId);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@PostMapping("/register/farmer")
+	public ResponseEntity<String> registerUser(@RequestBody FarmerRegistrationRequest user)
+			throws UserAlreadyExistsException {
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		User savedUser = service.registerFarmer(user);
+		return ResponseEntity.ok("Farmer registered successfully with id : " + savedUser.getId());
+	}
+
+	@PostMapping("/register/dealer")
+	public ResponseEntity<String> registerUser(@RequestBody DealerRegistrationRequest user)
+			throws UserAlreadyExistsException {
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		User savedUser = service.registerDealer(user);
+		return ResponseEntity.ok("Dealer registered successfully with id : " + savedUser.getId());
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest)
+			throws Exception {
+
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+		} catch (BadCredentialsException e) {
+			throw new Exception("Incorrect username or password", e);
+		}
+
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+
+		final String jwt = jwtTokenUtil.generateToken(userDetails);
+		final long expireAt = jwtTokenUtil.extractExpiration(jwt).getTime();
+		final Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+		final Collection<String> authorityStrings = authorities.stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
+
+		AuthResponse authResponse = new AuthResponse(jwt, expireAt, authorityStrings);
+
+		return ResponseEntity.ok(authResponse);
+	}
+
+	@DeleteMapping("/{id}")
+	@Secured("ROLE_ADMIN")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<String> deleteUserById(@PathVariable("id") String id) {
+		service.deleteById(id);
+		return ResponseEntity.ok("User with ID: " + id + " deleted successfully");
+	}
 }

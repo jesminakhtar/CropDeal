@@ -12,23 +12,29 @@ public class User {
     private String email;
     private String password;
     private String phoneNumber;
-    private Role role;
+    private boolean active;
+    private String roles;
 
     
     public User() {
 	}
 
-    public User(String firstName, String lastName, String email, String password, String phoneNumber,
-			Role role) {
+    
+    public User(String firstName, String lastName, String email, String password, String phoneNumber, boolean active,
+			String role) {
+		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.phoneNumber = phoneNumber;
-		this.role = role;
+		this.active = active;
+		this.roles = role;
 	}
-    
-    public String getId() {
+
+
+
+	public String getId() {
         return id;
     }
 
@@ -77,11 +83,19 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Role getRole() {
-        return role;
+    public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public String getRoles() {
+        return roles;
     }
 
-    public void setRole(Role dealer) {
-        this.role = dealer;
+    public void setRoles(String role) {
+        this.roles = role;
     }
 }
