@@ -1,4 +1,4 @@
-package com.cropdeal.inventoryservice.model;
+package com.cropdeal.inventoryservice.entity;
 
 public class Rating {
 	private String dealerId;

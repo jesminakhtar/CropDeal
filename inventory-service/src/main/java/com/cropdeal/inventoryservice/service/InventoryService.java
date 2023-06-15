@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cropdeal.inventoryservice.entity.Product;
+import com.cropdeal.inventoryservice.entity.Rating;
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
-import com.cropdeal.inventoryservice.entity.Product;
-import com.cropdeal.inventoryservice.model.Rating;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
 
 @Service
@@ -27,21 +27,12 @@ public class InventoryService {
 	}
 
 	public Product addProduct(Product product) {
-		// Check if the authenticated user is a farmer or admin
-//		if (!isFarmerOrAdmin(authenticatedUserId)) {
-//			throw new IllegalArgumentException("Only farmers or admins can add products");
-//		}
 
 		return repository.save(product);
 	}
 
 	public void updateProduct(String id, Product updatedProduct) throws InvalidProductException {
 		Product product = getProductById(id);
-
-		// Check if the authenticated user is a farmer or admin
-//		if (!isFarmerOrAdmin(authenticatedUserId)) {
-//			throw new IllegalArgumentException("Only farmers or admins can update products");
-//		}
 
 		product.setName(updatedProduct.getName());
 		product.setQuantity(updatedProduct.getQuantity());
@@ -51,12 +42,6 @@ public class InventoryService {
 
 	public void deleteProduct(String id) throws InvalidProductException {
 		Product product = getProductById(id);
-
-		// Check if the authenticated user is a farmer or admin
-//		if (!isFarmerOrAdmin(authenticatedUserId)) {
-//			throw new IllegalArgumentException("Only farmers or admins can delete products");
-//		}
-
 		repository.delete(product);
 	}
 
@@ -78,29 +63,7 @@ public class InventoryService {
 
 	public void addRating(String productId, Rating rating) throws InvalidProductException {
 		Product product = getProductById(productId);
-
-		// Check if the authenticated user is an admin
-//		if (!isDealerOrAdmin(authenticatedUserId)) {
-//			throw new IllegalArgumentException("Only admins can add ratings");
-//		}
-
 		product.getRatings().add(rating);
 		repository.save(product);
-	}
-
-	private boolean isFarmerOrAdmin(String userId) {
-		// Implement your farmer and admin authentication logic here
-		// Return true if the user is a farmer or admin, otherwise false
-		// You can use your authentication mechanism or roles to determine if the user is a farmer or admin
-		// Example: return userService.isFarmerOrAdmin(userId);
-		return true; // Change this based on your authentication logic
-	}
-
-	private boolean isDealerOrAdmin(String userId) {
-		// Implement your admin authentication logic here
-		// Return true if the user is an admin, otherwise false
-		// You can use your authentication mechanism or roles to determine if the user is an admin
-		// Example: return userService.isAdmin(userId);
-		return true; // Change this based on your authentication logic
 	}
 }

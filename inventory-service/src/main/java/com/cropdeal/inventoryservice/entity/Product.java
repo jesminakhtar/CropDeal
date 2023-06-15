@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.cropdeal.inventoryservice.model.Rating;
-
 @Document(collection = "products")
 public class Product {
 	@Id
@@ -25,7 +23,7 @@ public class Product {
 
 	
 	public Product(String name, String category, int quantity, double price, String description,
-			String farmerId, List<Rating> ratings) {
+			String farmerId) {
 		super();
 		this.name = name;
 		this.category = category;
@@ -33,7 +31,6 @@ public class Product {
 		this.price = price;
 		this.description = description;
 		this.farmerId = farmerId;
-		this.ratings = ratings;
 	}
 
 

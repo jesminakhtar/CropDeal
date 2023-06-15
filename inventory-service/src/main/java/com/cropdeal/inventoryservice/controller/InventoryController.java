@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cropdeal.inventoryservice.entity.Product;
+import com.cropdeal.inventoryservice.entity.Rating;
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
-import com.cropdeal.inventoryservice.model.Rating;
 import com.cropdeal.inventoryservice.service.InventoryService;
 
 @RestController
@@ -46,12 +46,14 @@ public class InventoryController {
     }
 
     @PostMapping("/add")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         Product savedProduct = inventoryService.addProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping("/{productId}")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product updatedProduct) {
         try {
             inventoryService.updateProduct(productId, updatedProduct);
@@ -62,6 +64,7 @@ public class InventoryController {
     }
 
     @DeleteMapping("/{productId}")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
         try {
             inventoryService.deleteProduct(productId);
@@ -72,6 +75,7 @@ public class InventoryController {
     }
     
     @PostMapping("/{productId}/ratings")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> addRating(@PathVariable String productId, @RequestBody Rating rating) {
         try {
             inventoryService.addRating(productId, rating);
@@ -84,6 +88,7 @@ public class InventoryController {
     }
 
     @PutMapping("/{productId}/updateQuantity")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestParam int quantity) {
         try {
             inventoryService.updateProductQuantity(productId, quantity);

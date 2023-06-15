@@ -18,8 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.cropdeal.usermanagement.filter.JwtTokenFilter;
-import com.cropdeal.usermanagement.service.UserDetailsServiceImpl;
 import com.cropdeal.usermanagement.security.JwtTokenProvider;
+import com.cropdeal.usermanagement.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity

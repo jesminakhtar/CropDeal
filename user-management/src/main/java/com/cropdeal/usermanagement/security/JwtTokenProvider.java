@@ -23,9 +23,10 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenProvider {
-
-//    private static final String SECRET_KEY = "your-secret-key";
+	
     private static final long TOKEN_VALIDITY = 86400000L; // 24 hours
+    private static final String AUTHORITIES_KEY = "roles";
+
 
     private Key key;
 
@@ -38,6 +39,10 @@ public class JwtTokenProvider {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
+        claims.put(AUTHORITIES_KEY, userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
+        // Add roles to claims
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
@@ -62,6 +67,7 @@ public class JwtTokenProvider {
                 .getBody();
 
         String username = claims.getSubject();
+        @SuppressWarnings("unchecked")
         List<String> roles = (List<String>) claims.get("roles");
 
         UserDetails userDetails = User.builder()
@@ -72,6 +78,7 @@ public class JwtTokenProvider {
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
+
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");

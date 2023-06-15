@@ -1,11 +1,12 @@
 package com.cropdeal.usermanagement.security;
 
-import com.cropdeal.usermanagement.entity.User;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
+import com.cropdeal.usermanagement.entity.User;
 
 public class UserPrincipal implements UserDetails {
 
