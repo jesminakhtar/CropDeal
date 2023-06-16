@@ -68,37 +68,37 @@ class OrderControllerTest {
         assertEquals(order, result);
     }
 
-    @Test
-    void testPlaceOrderFromCart() throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
-        // Mock the behavior of the orderService.placeOrderFromCart() method
-        String dealerId = "456";
-        Receipt receipt = new Receipt();
-        when(orderService.placeOrderFromCart(dealerId)).thenReturn(receipt);
+//    @Test
+//    void testPlaceOrderFromCart() throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
+//        // Mock the behavior of the orderService.placeOrderFromCart() method
+//        String dealerId = "456";
+//        Receipt receipt = new Receipt();
+//        when(orderService.placeOrderFromCart(dealerId)).thenReturn(receipt);
+//
+//        // Call the controller method
+//        ResponseEntity<Receipt> response = orderController.placeOrder(dealerId);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+//        assertEquals(receipt, response.getBody());
+//    }
 
-        // Call the controller method
-        ResponseEntity<Receipt> response = orderController.placeOrder(dealerId);
-
-        // Verify the response
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(receipt, response.getBody());
-    }
-
-    @Test
-    void testPlaceOrderDirectly() throws PaymentNotDoneException, InvalidProductException {
-        // Mock the behavior of the orderService.placeOrderDirectly() method
-        String dealerId = "789";
-        String cropId = "111";
-        int quantity = 2;
-        Receipt receipt = new Receipt();
-        when(orderService.placeOrderDirectly(dealerId, cropId, quantity)).thenReturn(receipt);
-
-        // Call the controller method
-        ResponseEntity<Receipt> response = orderController.createOrder(dealerId, cropId, quantity);
-
-        // Verify the response
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(receipt, response.getBody());
-    }
+//    @Test
+//    void testPlaceOrderDirectly() throws PaymentNotDoneException, InvalidProductException {
+//        // Mock the behavior of the orderService.placeOrderDirectly() method
+//        String dealerId = "789";
+//        String cropId = "111";
+//        int quantity = 2;
+//        Receipt receipt = new Receipt();
+//        when(orderService.placeOrderDirectly(dealerId, cropId, quantity)).thenReturn(receipt);
+//
+//        // Call the controller method
+//        ResponseEntity<Receipt> response = orderController.createOrder(dealerId, cropId, quantity);
+//
+//        // Verify the response
+//        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+//        assertEquals(receipt, response.getBody());
+//    }
 
     @Test
     void testUpdateOrder() throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,38 +42,38 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public Order getOrderById(@PathVariable String id) throws InvalidOrderException {
         logger.info("Fetching order with ID: {}", id);
         return orderService.getOrderById(id);
     }
 
-    @PostMapping("/place-order-cart/{dealerId}")
-//    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
-    public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
-        logger.info("Placing order from cart for dealer with ID: {}", dealerId);
-        Receipt receipt = orderService.placeOrderFromCart(dealerId);
+    @PostMapping("/place-order-cart")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
+    public ResponseEntity<Receipt> placeOrder() throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
+        logger.info("Placing order from cart for dealer");
+        Receipt receipt = orderService.placeOrderFromCart();
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
-    @PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
-    public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
-        logger.info("Placing direct order for dealer with ID: {} for crop with ID: {} and quantity: {}", dealerId, cropId, quantity);
-        Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);
+    @PostMapping("/place-order/{cropId}/{quantity}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
+    public ResponseEntity<Receipt> createOrder(@PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
+        logger.info("Placing direct order for dealer for crop with ID: {} and quantity: {}", cropId, quantity);
+        Receipt receipt = orderService.placeOrderDirectly(cropId, quantity);
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
-    @PutMapping("/{dealerId}")
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
-    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {
-        logger.info("Updating order for dealer with ID: {}", dealerId);
-        orderService.updateOrder(dealerId, order);
+    @PutMapping("/{orderId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'DEALER')")
+    public ResponseEntity<String> updateOrder(@PathVariable String orderId, @RequestBody Order order) throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {
+        logger.info("Updating order with ID: {}", orderId);
+        orderService.updateOrder(orderId, order);
         return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
     }
 
     @DeleteMapping("/{orderId}")
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
         logger.info("Deleting order with ID: {}", orderId);
         orderService.cancelOrder(orderId);

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class ReceiptController {
     private ReceiptService receiptService;
     
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<Receipt> createReceipt(@RequestBody Receipt receipt) {
         logger.info("Creating receipt: {}", receipt);
         Receipt createdReceipt = receiptService.createReceipt(receipt);
@@ -48,6 +50,7 @@ public class ReceiptController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<List<Receipt>> getAllReceipts() {
         logger.info("Fetching all receipts");
         List<Receipt> receipts = receiptService.getAllReceipts();
@@ -55,6 +58,7 @@ public class ReceiptController {
     }
 
     @DeleteMapping("/{orderID}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteReceipt(@PathVariable String orderID) {
         try {
             logger.info("Deleting receipt with order ID: {}", orderID);

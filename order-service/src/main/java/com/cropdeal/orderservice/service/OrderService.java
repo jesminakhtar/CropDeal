@@ -9,6 +9,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,13 +50,15 @@ public class OrderService {
 		return repository.findAll();
 	}
 
-	public Order getOrderById(String id) throws InvalidOrderException {
-		return repository.findById(id).orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + id));
+	public Order getOrderById(String orderId) throws InvalidOrderException {
+//		String dealerId = retrieveUserId();
+		return repository.findById(orderId).orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + orderId));
 	}
 
-	public Receipt placeOrderFromCart(String dealerId)
+	public Receipt placeOrderFromCart()
 			throws CartNotFoundException, PaymentNotDoneException {
 		// Retrieve the dealer's cart
+		String dealerId = retrieveUserId();
 		Cart cart = cartService.getCartByDealerId(dealerId);
 
 		// Create a new order
@@ -69,11 +72,11 @@ public class OrderService {
 		return createOrder(order);
 	}
 
-	public Receipt placeOrderDirectly(String dealerId, String productId, int quantity)
+	public Receipt placeOrderDirectly(String productId, int quantity)
 			throws InvalidProductException, PaymentNotDoneException {
 		// Create a new order
 		Map<String, Integer> orderItems = Map.of(productId, quantity);
-		Order order = new Order(dealerId, orderItems);
+		Order order = new Order(retrieveUserId(), orderItems);
 
 		// Generate and set the orderId
 		String orderId = generateOrderId();
@@ -108,7 +111,7 @@ public class OrderService {
 			// Create the receipt
 			Receipt receipt = new Receipt();
 			receipt.setOrderId(placedOrder.getOrderId());
-			receipt.setDealerId(order.getDealerId());
+			receipt.setDealerId(retrieveUserId());
 			receipt.setOrderItems(order.getOrderItems());
 			receipt.setTotalPrice(amount);
 			receipt.setStatus("Placed");
@@ -159,8 +162,10 @@ public class OrderService {
 	}
 
 	private void updateInventory(String productId, int quantity) {
+		log.info("Updating product with id {} quantity {}", productId, quantity);
 		String url = INVENTORY_SERVICE_URL + "/products/" + productId + "/updateQuantity?quantity=" + quantity;
 		restTemplate.put(url, null);
+		log.info("Updated invenoty sucessfully");
 	}
 
 	private double calculateTotalPrice(Map<String, Integer> orderItems) {
@@ -176,8 +181,11 @@ public class OrderService {
 	}
 
 	private Product getProductById(String productId) {
-		String url = INVENTORY_SERVICE_URL + "/products/" + productId;
-		return restTemplate.getForObject(url, Product.class);
+		log.info("Retrieveing product using RestTemplate...");
+		String url = INVENTORY_SERVICE_URL + "/products/findById/" + productId;
+		Product product = restTemplate.getForObject(url, Product.class);
+		log.info("Obtained product {} using gresttemplate", product);
+		return product;
 	}
 
 	public String generateOrderId() {
@@ -190,4 +198,11 @@ public class OrderService {
 
 		return timestamp + randomNumber;
 	}
+	
+	public String retrieveUserId() {
+    	String id = SecurityContextHolder.getContext().getAuthentication().getName();
+    	System.out.println("Userid retrieve : " + id);
+    	return id;
+    }
+	
 }

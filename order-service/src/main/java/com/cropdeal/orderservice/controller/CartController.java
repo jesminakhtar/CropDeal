@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,12 +37,14 @@ public class CartController {
         return cartService.getAllCarts();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @GetMapping("/{dealerId}")
     public Cart getCartByDealerId(@PathVariable String dealerId) throws CartNotFoundException {
         logger.info("Fetching cart by dealer ID: {}", dealerId);
         return cartService.getCartByDealerId(dealerId);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @PostMapping("/{dealerId}/create")
     public ResponseEntity<String> createCart(@PathVariable String dealerId) {
         logger.info("Creating cart for dealer ID: {}", dealerId);
@@ -49,6 +52,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Cart created successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @PostMapping("/{dealerId}/items")
     public ResponseEntity<String> addToCart(@PathVariable String dealerId, @RequestParam String cropId,
                                             @RequestParam int quantity) throws InvalidProductException, CartNotFoundException {
@@ -57,6 +61,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body("Crop added to cart successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @PutMapping("/{dealerId}/items/{cropId}")
     public ResponseEntity<String> updateCartItemQuantity(@PathVariable String dealerId, @PathVariable String cropId,
                                                          @RequestParam int quantity) throws CartNotFoundException, InvalidProductException {
@@ -65,6 +70,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body("Cart item quantity updated successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @DeleteMapping("/{dealerId}/items/{cropId}")
     public ResponseEntity<String> removeCartItem(@PathVariable String dealerId, @PathVariable String cropId)
             throws CartNotFoundException, InvalidProductException {
@@ -73,6 +79,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body("Cart item removed successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     @DeleteMapping("/{dealerId}")
     public ResponseEntity<String> clearCart(@PathVariable String dealerId) throws CartNotFoundException {
         logger.info("Clearing cart for dealer ID: {}", dealerId);

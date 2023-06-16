@@ -24,8 +24,8 @@ public class WebSecurityConfig {
 	        .csrf().disable()
 	        .authorizeHttpRequests()
 	        .requestMatchers("/products").permitAll()
-//	        .requestMatchers("/products/add").hasAnyRole("ADMIN", "FARMER")
-//	        .requestMatchers("/products/id").permitAll()
+	        .requestMatchers("/products/findById/**").permitAll()
+	        .requestMatchers("/products/*/updateQuantity").permitAll()
 	        .anyRequest().authenticated()
 	        .and()
 	        .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

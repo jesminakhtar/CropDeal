@@ -2,6 +2,8 @@ package com.cropdeal.inventoryservice.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import com.cropdeal.inventoryservice.service.InventoryService;
 @RestController
 @RequestMapping("/products")
 public class InventoryController {
+	
+	Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     @Autowired
     private InventoryService inventoryService;
@@ -36,7 +40,8 @@ public class InventoryController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/findById/{productId}")
+//    @PreAuthorize("permitAll()")
     public ResponseEntity<Product> getProductById(@PathVariable String productId) {
         try {
             Product product = inventoryService.getProductById(productId);
@@ -89,10 +94,12 @@ public class InventoryController {
     }
 
     @PutMapping("/{productId}/updateQuantity")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestParam int quantity) {
         try {
+        	log.info("Updating product with id {} quantity {}", productId, quantity);
             inventoryService.updateProductQuantity(productId, quantity);
+            log.info("Product quantity updated successfully.");
             return ResponseEntity.ok("Product quantity updated successfully.");
         } catch (InvalidProductException e) {
             return ResponseEntity.notFound().build();
