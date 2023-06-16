@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class InventoryController {
 
     @Autowired
     private InventoryService inventoryService;
-
+    
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = inventoryService.getAllProducts();
@@ -46,14 +47,14 @@ public class InventoryController {
     }
 
     @PostMapping("/add")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         Product savedProduct = inventoryService.addProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping("/{productId}")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<String> updateProduct(@PathVariable String productId, @RequestBody Product updatedProduct) {
         try {
             inventoryService.updateProduct(productId, updatedProduct);
@@ -64,7 +65,7 @@ public class InventoryController {
     }
 
     @DeleteMapping("/{productId}")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
     public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
         try {
             inventoryService.deleteProduct(productId);
@@ -75,7 +76,7 @@ public class InventoryController {
     }
     
     @PostMapping("/{productId}/ratings")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> addRating(@PathVariable String productId, @RequestBody Rating rating) {
         try {
             inventoryService.addRating(productId, rating);
@@ -88,7 +89,7 @@ public class InventoryController {
     }
 
     @PutMapping("/{productId}/updateQuantity")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
     public ResponseEntity<String> updateProductQuantity(@PathVariable String productId, @RequestParam int quantity) {
         try {
             inventoryService.updateProductQuantity(productId, quantity);

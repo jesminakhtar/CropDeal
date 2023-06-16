@@ -7,4 +7,5 @@ import com.cropdeal.inventoryservice.entity.Product;
 
 @Repository
 public interface InventoryRepository extends MongoRepository<Product, String> {
+    boolean existsByFarmerIdAndName(String farmerId, String name);
 }

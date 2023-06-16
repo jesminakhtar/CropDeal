@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +25,8 @@ import com.cropdeal.orderservice.repository.OrderRepository;
 
 @Service
 public class OrderService {
+
+	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -80,42 +84,42 @@ public class OrderService {
 	}
 
 	public Receipt createOrder(Order order) throws PaymentNotDoneException {
-	    double amount = calculateTotalPrice(order.getOrderItems());
+		double amount = calculateTotalPrice(order.getOrderItems());
 
-	    // Process payment and get the payment ID
-//	    String paymentId = paymentService.processPayment(amount, order.getOrderId());
+		// Process payment and get the payment ID
+//		String paymentId = paymentService.processPayment(amount, order.getOrderId());
 //
-//	    // Check if the payment was successful
-//	    boolean isPaymentDone = paymentService.checkPaymentStatus(paymentId);
-	    
-	    boolean isPaymentDone = true;
+//		// Check if the payment was successful
+//		boolean isPaymentDone = paymentService.checkPaymentStatus(paymentId);
 
-	    if (isPaymentDone) {
-	        for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
-	            String productId = orderItemEntry.getKey();
-	            int quantity = orderItemEntry.getValue();
-	            updateInventory(productId, quantity);
-	        }
+		boolean isPaymentDone = true;
 
-	        // Save the order to the database
-	        Order placedOrder = repository.save(order);
+		if (isPaymentDone) {
+			for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
+				String productId = orderItemEntry.getKey();
+				int quantity = orderItemEntry.getValue();
+				updateInventory(productId, quantity);
+			}
 
-	        // Create the receipt
-	        Receipt receipt = new Receipt();
-	        receipt.setOrderId(placedOrder.getOrderId());
-	        receipt.setDealerId(order.getDealerId());
-	        receipt.setOrderItems(order.getOrderItems());
-	        receipt.setTotalPrice(amount);
-	        receipt.setStatus("Placed");
-//	        receipt.setRazorpayOrderId(paymentId);
+			// Save the order to the database
+			Order placedOrder = repository.save(order);
+			log.info("Order created with ID: {}", placedOrder.getOrderId());
 
-	        return receiptService.createReceipt(receipt);
-	    } else {
-	        // Handle the case when payment is not done
-	        throw new PaymentNotDoneException("Payment is not done for the order");
-	    }
+			// Create the receipt
+			Receipt receipt = new Receipt();
+			receipt.setOrderId(placedOrder.getOrderId());
+			receipt.setDealerId(order.getDealerId());
+			receipt.setOrderItems(order.getOrderItems());
+			receipt.setTotalPrice(amount);
+			receipt.setStatus("Placed");
+//			receipt.setRazorpayOrderId(paymentId);
+
+			return receiptService.createReceipt(receipt);
+		} else {
+			// Handle the case when payment is not done
+			throw new PaymentNotDoneException("Payment is not done for the order");
+		}
 	}
-
 
 	public void cancelOrder(String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
 		Order order = getOrderById(orderId);
@@ -136,6 +140,7 @@ public class OrderService {
 		receipt.setStatus("Cancelled");
 		receiptService.updateReceipt(orderId, receipt);
 		repository.delete(order);
+		log.info("Order cancelled with ID: {}", orderId);
 	}
 
 	public Order updateOrder(String orderId, Order updatedOrder) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
@@ -148,7 +153,9 @@ public class OrderService {
 		}
 
 		order.setOrderItems(updatedOrder.getOrderItems());
-		return repository.save(order);
+		order = repository.save(order);
+		log.info("Order updated with ID: {}", orderId);
+		return order;
 	}
 
 	private void updateInventory(String productId, int quantity) {
@@ -172,7 +179,6 @@ public class OrderService {
 		String url = INVENTORY_SERVICE_URL + "/products/" + productId;
 		return restTemplate.getForObject(url, Product.class);
 	}
-
 
 	public String generateOrderId() {
 		LocalDateTime now = LocalDateTime.now();

@@ -18,6 +18,5 @@ public class RegistrationRequest {
     private String name;
     private String email;
 
-    // Constructors, getters, and setters
 }
 

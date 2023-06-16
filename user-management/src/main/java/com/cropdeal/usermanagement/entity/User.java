@@ -42,5 +42,4 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
     
-    // constructors, getters, and setters
 }

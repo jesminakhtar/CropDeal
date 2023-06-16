@@ -1,6 +1,8 @@
 package com.cropdeal.orderservice.service;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,45 +14,50 @@ import com.razorpay.RazorpayException;
 @Service
 public class PaymentService {
 
-    @Autowired
-    private RazorpayClient razorpayClient;
+	private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
-    public String processPayment(double amount, String receiptId) throws PaymentNotDoneException {
-        try {
-            JSONObject orderRequest = new JSONObject();
-            orderRequest.put("amount", amount); // amount in the smallest currency unit
-            orderRequest.put("currency", "INR");
-            orderRequest.put("receipt", receiptId);
+	@Autowired
+	private RazorpayClient razorpayClient;
 
-            Order razorpayOrder = razorpayClient.orders.create(orderRequest);
+	public String processPayment(double amount, String receiptId) throws PaymentNotDoneException {
+		try {
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("amount", amount); // amount in the smallest currency unit
+			orderRequest.put("currency", "INR");
+			orderRequest.put("receipt", receiptId);
 
-            // Verify the payment status
-            if (razorpayOrder != null && razorpayOrder.get("status").equals("created")) {
-                // Payment is successful
-                // You can retrieve the Razorpay order ID using razorpayOrder.get("id")
-                return razorpayOrder.get("id").toString();
-            } else {
-                // Payment failed
-                throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
-            }
-        } catch (RazorpayException e) {
-            throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
-        }
-    }
+			Order razorpayOrder = razorpayClient.orders.create(orderRequest);
 
+			// Verify the payment status
+			if (razorpayOrder != null && razorpayOrder.get("status").equals("created")) {
+				// Payment is successful
+				String razorpayOrderId = razorpayOrder.get("id").toString();
+				log.info("Payment processed successfully. Razorpay Order ID: {}", razorpayOrderId);
+				return razorpayOrderId;
+			} else {
+				// Payment failed
+				throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
+			}
+		} catch (RazorpayException e) {
+			log.error("Payment processing failed for receipt: " + receiptId, e);
+			throw new PaymentNotDoneException("Payment processing failed for receipt: " + receiptId);
+		}
+	}
 
-    public boolean checkPaymentStatus(String razorpayOrderId) {
-        try {
-            // Fetch the payment order details from Razorpay
-            Order razorpayOrder = razorpayClient.orders.fetch(razorpayOrderId);
+	public boolean checkPaymentStatus(String razorpayOrderId) {
+		try {
+			// Fetch the payment order details from Razorpay
+			Order razorpayOrder = razorpayClient.orders.fetch(razorpayOrderId);
 
-            // Check the payment status
-            return razorpayOrder != null && razorpayOrder.get("status").equals("paid");
-        } catch (RazorpayException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+			// Check the payment status
+			boolean isPaid = razorpayOrder != null && razorpayOrder.get("status").equals("paid");
+			log.info("Payment status for Razorpay Order ID {}: {}", razorpayOrderId, isPaid ? "Paid" : "Not Paid");
+			return isPaid;
+		} catch (RazorpayException e) {
+			log.error("Error checking payment status for Razorpay Order ID: " + razorpayOrderId, e);
+			return false;
+		}
+	}
 
     public void processPaymentAdjustment(String razorpayOrderId, double newAmount) throws PaymentNotDoneException {
 //        try {

@@ -3,6 +3,7 @@ package com.cropdeal.inventoryservice.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cropdeal.inventoryservice.entity.Product;
@@ -11,6 +12,7 @@ import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
+
 
 @Service
 public class InventoryService {
@@ -27,9 +29,15 @@ public class InventoryService {
 	}
 
 	public Product addProduct(Product product) {
-
-		return repository.save(product);
+	    String farmerId = retrieveUserId();
+	    if (repository.existsByFarmerIdAndName(farmerId, product.getName())) {
+	        product.setFarmerId(farmerId);
+	        return repository.save(product);
+	    } else {
+	        throw new IllegalArgumentException("Product with the same farmerId and name already exists.");
+	    }
 	}
+
 
 	public void updateProduct(String id, Product updatedProduct) throws InvalidProductException {
 		Product product = getProductById(id);
@@ -62,8 +70,16 @@ public class InventoryService {
 	}
 
 	public void addRating(String productId, Rating rating) throws InvalidProductException {
+		String dealerId = retrieveUserId();
+		rating.setDealerId(dealerId);
 		Product product = getProductById(productId);
 		product.getRatings().add(rating);
 		repository.save(product);
 	}
+	
+	public String retrieveUserId() {
+    	String id = SecurityContextHolder.getContext().getAuthentication().getName();
+    	System.out.println("Userid retrieve : " + id);
+    	return id;
+    }
 }

@@ -2,6 +2,8 @@ package com.cropdeal.orderservice.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,46 +29,53 @@ import com.cropdeal.orderservice.service.OrderService;
 @RequestMapping("/orders")
 public class OrderController {
 
-	@Autowired
-	private OrderService orderService;
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-//	@PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
-	@GetMapping("/all")
-	public List<Order> getAllOrders() {
-	    return orderService.getAllOrders();
-	}
+    @Autowired
+    private OrderService orderService;
 
-//	@PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
-	@GetMapping("/{id}")
-	public Order getOrderById(@PathVariable String id) throws InvalidOrderException {
-	    return orderService.getOrderById(id);
-	}
+    @GetMapping("/all")
+    public List<Order> getAllOrders() {
+        logger.info("Fetching all orders");
+        return orderService.getAllOrders();
+    }
 
-//	@PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
-	@PostMapping("/place-order-cart/{dealerId}")
-	public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
-	    Receipt receipt = orderService.placeOrderFromCart(dealerId);
-	    return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
-	}
+    @GetMapping("/{id}")
+//    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
+    public Order getOrderById(@PathVariable String id) throws InvalidOrderException {
+        logger.info("Fetching order with ID: {}", id);
+        return orderService.getOrderById(id);
+    }
 
-//	@PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
-	@PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
-	public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
-		Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);
-	    return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
-	}
+    @PostMapping("/place-order-cart/{dealerId}")
+//    @PreAuthorize("hasAnyAuthority('Admin', 'SCOPE_internal')")
+    public ResponseEntity<Receipt> placeOrder(@PathVariable String dealerId) throws InvalidOrderException, CartNotFoundException, PaymentNotDoneException {
+        logger.info("Placing order from cart for dealer with ID: {}", dealerId);
+        Receipt receipt = orderService.placeOrderFromCart(dealerId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
+    }
 
-//	@PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
-	@PutMapping("/{dealerId}")
-	public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {
-	    orderService.updateOrder(dealerId, order);
-	    return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
-	}
+    @PostMapping("/place-order/{dealerId}/{cropId}/{quantity}")
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
+    public ResponseEntity<Receipt> createOrder(@PathVariable String dealerId, @PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
+        logger.info("Placing direct order for dealer with ID: {} for crop with ID: {} and quantity: {}", dealerId, cropId, quantity);
+        Receipt receipt = orderService.placeOrderDirectly(dealerId, cropId, quantity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
+    }
 
-//	@PreAuthorize("hasAnyAuthority('Admin', 'Dealer')")
-	@DeleteMapping("/{orderId}")
-	public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
-	    orderService.cancelOrder(orderId);
-	    return ResponseEntity.status(HttpStatus.OK).body("Order cancelled successfully.");
-	}
+    @PutMapping("/{dealerId}")
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
+    public ResponseEntity<String> updateOrder(@PathVariable String dealerId, @RequestBody Order order) throws InvalidOrderException, PaymentNotDoneException, ReceiptNotFoundException {
+        logger.info("Updating order for dealer with ID: {}", dealerId);
+        orderService.updateOrder(dealerId, order);
+        return ResponseEntity.status(HttpStatus.OK).body("Order updated successfully.");
+    }
+
+    @DeleteMapping("/{orderId}")
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'DEALER')")
+    public ResponseEntity<String> deleteOrder(@PathVariable String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
+        logger.info("Deleting order with ID: {}", orderId);
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body("Order cancelled successfully.");
+    }
 }
