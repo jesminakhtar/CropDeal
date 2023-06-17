@@ -1,5 +1,10 @@
 package com.cropdeal.usermanagement.service;
 
+import java.util.Random;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,8 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	Logger log = LoggerFactory.getLogger(UserService.class);
+	
 	public User registerUser(RegistrationRequest registrationRequest) throws UserAlreadyExistsException {
 	    if (userRepository.existsByEmail(registrationRequest.getEmail())) {
 	        throw new UserAlreadyExistsException("Email already exists");
@@ -30,14 +37,19 @@ public class UserService {
 	    user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
 	    user.setName(registrationRequest.getName());
 	    user.setUsername(registrationRequest.getUsername());
+	    user.setBankAccount(registrationRequest.getBankAccount());
 	    
 	    // Set the role based on the value provided in the RegistrationRequest
 	    String role = registrationRequest.getRole();
-	    if (Role.DEALER.name().equalsIgnoreCase(role) || Role.FARMER.name().equalsIgnoreCase(role)) {
-	        user.setRole(role.toUpperCase());
-	    } else {
-	        // Default role if no valid role is provided
-	        user.setRole(Role.FARMER.name());
+	    if (Role.DEALER.name().equalsIgnoreCase(role)) {
+	    	user.setRole(role.toUpperCase());
+	    	user.setId("D" + generateUniqueId());
+	    	log.info("Dealer id : {}", user.getId());
+	    }
+	    else if (Role.FARMER.name().equalsIgnoreCase(role)) {
+	    	user.setRole(role.toUpperCase());
+	    	user.setId("F" + generateUniqueId());
+	    	log.info("Farmer id : {}", user.getId());
 	    }
 
 	    return userRepository.save(user);
@@ -49,11 +61,10 @@ public class UserService {
 
 	public void updateUser(String userId, User user) throws UserNotFoundException {
         User existingUser = getUserById(userId);
-
-        // Update common fields
         existingUser.setEmail(user.getEmail());
         existingUser.setName(user.getName());
         existingUser.setUsername(user.getUsername());
+        existingUser.setBankAccount(user.getBankAccount());
         
         userRepository.save(existingUser);
     }
@@ -64,7 +75,13 @@ public class UserService {
 	}
 
 	public User findUserByUsername(String username) throws UserNotFoundException {
-		// TODO Auto-generated method stub
 		return userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException("User not found with username : " + username));
 	}
+	
+	private String generateUniqueId() {
+	    String uniqueId = UUID.randomUUID().toString();
+	    return uniqueId.replaceAll("-", "").substring(0,6);
+	}
+
+
 }

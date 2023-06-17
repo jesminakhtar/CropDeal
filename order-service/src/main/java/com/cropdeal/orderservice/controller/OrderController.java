@@ -30,7 +30,7 @@ import com.cropdeal.orderservice.service.OrderService;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderService orderService;

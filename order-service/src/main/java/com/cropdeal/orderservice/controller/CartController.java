@@ -26,7 +26,7 @@ import com.cropdeal.orderservice.service.CartService;
 @RequestMapping("/carts")
 public class CartController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CartController.class);
+    Logger logger = LoggerFactory.getLogger(CartController.class);
 
     @Autowired
     private CartService cartService;

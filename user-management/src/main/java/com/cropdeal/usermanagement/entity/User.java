@@ -42,4 +42,6 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
     
+    private BankAccount bankAccount;
+    
 }

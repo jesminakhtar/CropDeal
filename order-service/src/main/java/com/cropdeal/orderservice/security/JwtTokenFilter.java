@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
+    Logger log = LoggerFactory.getLogger(JwtTokenFilter.class);
 
     private JwtTokenProvider jwtTokenProvider;
 
@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            logger.debug("Token validated and authentication set for the request: {}", request.getRequestURI());
+            log.debug("Token validated and authentication set for the request: {}", request.getRequestURI());
         }
 
         filterChain.doFilter(request, response);

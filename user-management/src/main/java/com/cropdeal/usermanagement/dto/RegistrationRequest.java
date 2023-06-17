@@ -1,5 +1,7 @@
 package com.cropdeal.usermanagement.dto;
 
+import com.cropdeal.usermanagement.entity.BankAccount;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,6 +19,7 @@ public class RegistrationRequest {
     private String role;
     private String name;
     private String email;
+    private BankAccount bankAccount;
 
 }
 

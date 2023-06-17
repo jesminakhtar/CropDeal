@@ -1,6 +1,7 @@
 package com.cropdeal.inventoryservice.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +13,6 @@ import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
-
 
 @Service
 public class InventoryService {
@@ -29,15 +29,18 @@ public class InventoryService {
 	}
 
 	public Product addProduct(Product product) {
-	    String farmerId = retrieveUserId();
-	    if (repository.existsByFarmerIdAndName(farmerId, product.getName())) {
-	        product.setFarmerId(farmerId);
-	        return repository.save(product);
-	    } else {
-	        throw new IllegalArgumentException("Product with the same farmerId and name already exists.");
-	    }
+		String farmerId = retrieveUserId();
+		Product productOptional = repository.findByFarmerIdAndName(farmerId, product.getName()).orElse(null);
+		if (productOptional != null) {
+			throw new IllegalArgumentException(
+					"Product with the same farmerId" + farmerId + " and name " + product.getName() + " already exists.");
+		} else {
+			product.setFarmerId(farmerId);
+			String category = product.getCategory();
+			product.setId(category.substring(0,1) + generateUniqueId());
+			return repository.save(product);
+		}
 	}
-
 
 	public void updateProduct(String id, Product updatedProduct) throws InvalidProductException {
 		Product product = getProductById(id);
@@ -62,7 +65,8 @@ public class InventoryService {
 			throw new OutOfStockException("Product " + id + " is currently out of stock");
 		}
 		if (quantity > prevQuantity) {
-			throw new InsufficientQuantityException("Requested quantity, " + quantity + " exceeds the available quantity, " + prevQuantity + " for product " + id);
+			throw new InsufficientQuantityException("Requested quantity, " + quantity
+					+ " exceeds the available quantity, " + prevQuantity + " for product " + id);
 		}
 
 		product.setQuantity(product.getQuantity() - quantity);
@@ -76,10 +80,16 @@ public class InventoryService {
 		product.getRatings().add(rating);
 		repository.save(product);
 	}
-	
+
 	public String retrieveUserId() {
-    	String id = SecurityContextHolder.getContext().getAuthentication().getName();
-    	System.out.println("Userid retrieve : " + id);
-    	return id;
-    }
+		String id = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println("Userid retrieve : " + id);
+		return id;
+	}
+	
+	private String generateUniqueId() {
+	    String uniqueId = UUID.randomUUID().toString();
+	    return uniqueId.replaceAll("-", "").substring(0,6);
+	}
+
 }

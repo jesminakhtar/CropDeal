@@ -13,21 +13,17 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
-
-//	private static final long TOKEN_VALIDITY = 86400000L; // 24 hours
-//	private static final String AUTHORITIES_KEY = "roles";
 	
 	private static final String key = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
 	public Authentication getAuthentication(String token) {
 		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-
-//		String username = claims.getSubject();
 		String userId = (String) claims.get("id");
-		System.out.println("Userid : " + userId);
 		@SuppressWarnings("unchecked")
 		List<String> roles = (List<String>) claims.get("roles");
 
@@ -39,23 +35,22 @@ public class JwtTokenProvider {
 	}
 
 	public String resolveToken(HttpServletRequest request) {
+		log.info("Resolving bearer token");
 		String bearerToken = request.getHeader("Authorization");
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-			System.out.println("Token : " + bearerToken.substring(7));
+			log.info("Token resolved {}", bearerToken.substring(7));
 			return bearerToken.substring(7);
 		}
+		log.info("Couldn't resolve token");
 		return null;
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			System.out.println("Validatkion...... token : " + token);
+			log.info("Validating token {}", token);
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//			Claims claim =  claims.getBody();
-//			claim.getSubject();
 			
-			
-			System.out.println("...... token : " + token);
+			log.info("Token validated.");
 			return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
