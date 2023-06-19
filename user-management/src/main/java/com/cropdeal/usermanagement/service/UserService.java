@@ -1,6 +1,5 @@
 package com.cropdeal.usermanagement.service;
 
-import java.util.Random;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -82,6 +81,5 @@ public class UserService {
 	    String uniqueId = UUID.randomUUID().toString();
 	    return uniqueId.replaceAll("-", "").substring(0,6);
 	}
-
 
 }

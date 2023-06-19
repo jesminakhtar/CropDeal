@@ -17,17 +17,17 @@ import com.cropdeal.orderservice.entity.Cart;
 import com.cropdeal.orderservice.entity.Order;
 import com.cropdeal.orderservice.entity.Receipt;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
-import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
-import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
+import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
+import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
 import com.cropdeal.orderservice.model.Product;
 import com.cropdeal.orderservice.repository.OrderRepository;
 
 @Service
 public class OrderService {
 
-	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+	Logger log = LoggerFactory.getLogger(OrderService.class);
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -51,50 +51,37 @@ public class OrderService {
 	}
 
 	public Order getOrderById(String orderId) throws InvalidOrderException {
-//		String dealerId = retrieveUserId();
-		return repository.findById(orderId).orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + orderId));
+		return repository.findById(orderId)
+				.orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + orderId));
 	}
 
-	public Receipt placeOrderFromCart()
-			throws CartNotFoundException, PaymentNotDoneException {
-		// Retrieve the dealer's cart
+	public Receipt placeOrderFromCart() throws CartNotFoundException, PaymentNotDoneException {
 		String dealerId = retrieveUserId();
 		Cart cart = cartService.getCartByDealerId(dealerId);
 
-		// Create a new order
 		Order order = new Order();
 		order.setDealerId(dealerId);
 		order.setOrderItems(cart.getCartItems());
 
-		// Clear the dealer's cart
-		cartService.clearCart(dealerId);
+		cartService.clearCart();
 
 		return createOrder(order);
 	}
 
 	public Receipt placeOrderDirectly(String productId, int quantity)
 			throws InvalidProductException, PaymentNotDoneException {
-		// Create a new order
 		Map<String, Integer> orderItems = Map.of(productId, quantity);
 		Order order = new Order(retrieveUserId(), orderItems);
 
-		// Generate and set the orderId
 		String orderId = generateOrderId();
 		order.setOrderId(orderId);
 
-		// Save the order to the database
 		return createOrder(order);
 	}
 
 	public Receipt createOrder(Order order) throws PaymentNotDoneException {
 		double amount = calculateTotalPrice(order.getOrderItems());
-
-		// Process payment and get the payment ID
-//		String paymentId = paymentService.processPayment(amount, order.getOrderId());
-//
-//		// Check if the payment was successful
-//		boolean isPaymentDone = paymentService.checkPaymentStatus(paymentId);
-
+		
 		boolean isPaymentDone = true;
 
 		if (isPaymentDone) {
@@ -104,36 +91,31 @@ public class OrderService {
 				updateInventory(productId, quantity);
 			}
 
-			// Save the order to the database
 			Order placedOrder = repository.save(order);
 			log.info("Order created with ID: {}", placedOrder.getOrderId());
 
-			// Create the receipt
 			Receipt receipt = new Receipt();
 			receipt.setOrderId(placedOrder.getOrderId());
 			receipt.setDealerId(retrieveUserId());
 			receipt.setOrderItems(order.getOrderItems());
 			receipt.setTotalPrice(amount);
 			receipt.setStatus("Placed");
-//			receipt.setRazorpayOrderId(paymentId);
 
 			return receiptService.createReceipt(receipt);
 		} else {
-			// Handle the case when payment is not done
 			throw new PaymentNotDoneException("Payment is not done for the order");
 		}
 	}
 
-	public void cancelOrder(String orderId) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
+	public void cancelOrder(String orderId)
+			throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
 		Order order = getOrderById(orderId);
 		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
 
-		// Process payment refund if the order has been paid
 		if (receipt.getStatus().equals("Paid")) {
 			paymentService.processPaymentRefund(receipt.getRazorpayOrderId());
 		}
 
-		// Update inventory for each order item
 		for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
 			String productId = orderItemEntry.getKey();
 			int quantity = orderItemEntry.getValue();
@@ -146,13 +128,14 @@ public class OrderService {
 		log.info("Order cancelled with ID: {}", orderId);
 	}
 
-	public Order updateOrder(String orderId, Order updatedOrder) throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
+	public Order updateOrder(String orderId, Order updatedOrder)
+			throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
 		Order order = getOrderById(orderId);
 		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
 
-		// Process payment adjustment if the order has been paid
 		if (receipt.getStatus().equals("Paid")) {
-			paymentService.processPaymentAdjustment(receipt.getRazorpayOrderId(), calculateTotalPrice(updatedOrder.getOrderItems()));
+			paymentService.processPaymentAdjustment(receipt.getRazorpayOrderId(),
+					calculateTotalPrice(updatedOrder.getOrderItems()));
 		}
 
 		order.setOrderItems(updatedOrder.getOrderItems());
@@ -165,7 +148,7 @@ public class OrderService {
 		log.info("Updating product with id {} quantity {}", productId, quantity);
 		String url = INVENTORY_SERVICE_URL + "/products/" + productId + "/updateQuantity?quantity=" + quantity;
 		restTemplate.put(url, null);
-		log.info("Updated invenoty sucessfully");
+		log.info("Updated inventory successfully");
 	}
 
 	private double calculateTotalPrice(Map<String, Integer> orderItems) {
@@ -181,10 +164,10 @@ public class OrderService {
 	}
 
 	private Product getProductById(String productId) {
-		log.info("Retrieveing product using RestTemplate...");
+		log.info("Retrieving product using RestTemplate...");
 		String url = INVENTORY_SERVICE_URL + "/products/findById/" + productId;
 		Product product = restTemplate.getForObject(url, Product.class);
-		log.info("Obtained product {} using gresttemplate", product);
+		log.info("Obtained product {} using RestTemplate", product);
 		return product;
 	}
 
@@ -198,11 +181,13 @@ public class OrderService {
 
 		return timestamp + randomNumber;
 	}
-	
+
 	public String retrieveUserId() {
-    	String id = SecurityContextHolder.getContext().getAuthentication().getName();
-    	System.out.println("Userid retrieve : " + id);
-    	return id;
-    }
+		String id = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println("Userid retrieve : " + id);
+		return id;
+	}
 	
+	
+
 }

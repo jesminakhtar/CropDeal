@@ -26,6 +26,9 @@ public class WebSecurityConfig {
 			.csrf().disable()
 			.authorizeHttpRequests()
 			.requestMatchers("/orders/**").permitAll()
+			.requestMatchers("/carts/**").permitAll()
+			.requestMatchers("/receipts/**").permitAll()
+			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

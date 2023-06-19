@@ -36,6 +36,7 @@ public class InventoryController {
     
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
+    	log.info("Fetching all products");
         List<Product> products = inventoryService.getAllProducts();
         return ResponseEntity.ok(products);
     }

@@ -20,6 +20,5 @@ public class RegistrationRequest {
     private String name;
     private String email;
     private BankAccount bankAccount;
-
 }
 

@@ -2,6 +2,7 @@ package com.cropdeal.orderservice.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +16,14 @@ import com.cropdeal.orderservice.repository.ReceiptRepository;
 @Service
 public class ReceiptService {
 
-	private static final Logger log = LoggerFactory.getLogger(ReceiptService.class);
+	Logger log = LoggerFactory.getLogger(ReceiptService.class);
 
 	@Autowired
 	private ReceiptRepository repository;
 
 	public Receipt createReceipt(Receipt receipt) {
 		// Save the receipt to the database
+		receipt.setId(generateUniqueReceiptId());
 		Receipt savedReceipt = repository.save(receipt);
 		log.info("Receipt created with ID: {}", savedReceipt.getId());
 		return savedReceipt;
@@ -62,5 +64,10 @@ public class ReceiptService {
 		} else {
 			throw new ReceiptNotFoundException("Receipt not found for order ID: " + orderId);
 		}
+	}
+	
+	private String generateUniqueReceiptId() {
+	    String uniqueId = UUID.randomUUID().toString();
+	    return uniqueId.replaceAll("-", "").substring(0,6);
 	}
 }

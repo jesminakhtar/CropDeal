@@ -45,45 +45,45 @@ public class CartController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    @PostMapping("/{dealerId}/create")
-    public ResponseEntity<String> createCart(@PathVariable String dealerId) {
-        logger.info("Creating cart for dealer ID: {}", dealerId);
-        cartService.createCart(dealerId);
+    @PostMapping("/create")
+    public ResponseEntity<String> createCart() {
+        logger.info("Creating cart");
+        cartService.createCart();
         return ResponseEntity.status(HttpStatus.CREATED).body("Cart created successfully.");
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    @PostMapping("/{dealerId}/items")
-    public ResponseEntity<String> addToCart(@PathVariable String dealerId, @RequestParam String cropId,
+    @PostMapping("/items")
+    public ResponseEntity<String> addToCart(@RequestParam String cropId,
                                             @RequestParam int quantity) throws InvalidProductException, CartNotFoundException {
-        logger.info("Adding crop to cart. Dealer ID: {}, Crop ID: {}, Quantity: {}", dealerId, cropId, quantity);
-        cartService.addToCart(dealerId, cropId, quantity);
+        logger.info("Adding crop to cart. Crop ID: {}, Quantity: {}",cropId, quantity);
+        cartService.addToCart(cropId, quantity);
         return ResponseEntity.status(HttpStatus.OK).body("Crop added to cart successfully.");
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    @PutMapping("/{dealerId}/items/{cropId}")
-    public ResponseEntity<String> updateCartItemQuantity(@PathVariable String dealerId, @PathVariable String cropId,
+    @PutMapping("/items/{cropId}")
+    public ResponseEntity<String> updateCartItemQuantity(@PathVariable String cropId,
                                                          @RequestParam int quantity) throws CartNotFoundException, InvalidProductException {
-        logger.info("Updating cart item quantity. Dealer ID: {}, Crop ID: {}, Quantity: {}", dealerId, cropId, quantity);
-        cartService.updateCartItemQuantity(dealerId, cropId, quantity);
+        logger.info("Updating cart item quantity. Crop ID: {}, Quantity: {}", cropId, quantity);
+        cartService.updateCartItemQuantity(cropId, quantity);
         return ResponseEntity.status(HttpStatus.OK).body("Cart item quantity updated successfully.");
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    @DeleteMapping("/{dealerId}/items/{cropId}")
-    public ResponseEntity<String> removeCartItem(@PathVariable String dealerId, @PathVariable String cropId)
+    @DeleteMapping("/items/{cropId}")
+    public ResponseEntity<String> removeCartItem(@PathVariable String cropId)
             throws CartNotFoundException, InvalidProductException {
-        logger.info("Removing cart item. Dealer ID: {}, Crop ID: {}", dealerId, cropId);
-        cartService.removeCartItem(dealerId, cropId);
+        logger.info("Removing cart item. Crop ID: {}", cropId);
+        cartService.removeCartItem(cropId);
         return ResponseEntity.status(HttpStatus.OK).body("Cart item removed successfully.");
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    @DeleteMapping("/{dealerId}")
-    public ResponseEntity<String> clearCart(@PathVariable String dealerId) throws CartNotFoundException {
-        logger.info("Clearing cart for dealer ID: {}", dealerId);
-        cartService.clearCart(dealerId);
+    @DeleteMapping
+    public ResponseEntity<String> clearCart() throws CartNotFoundException {
+        logger.info("Clearing cart");
+        cartService.clearCart();
         return ResponseEntity.status(HttpStatus.OK).body("Cart cleared successfully.");
     }
 }

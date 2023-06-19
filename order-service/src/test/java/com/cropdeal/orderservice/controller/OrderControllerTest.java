@@ -18,10 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.cropdeal.orderservice.entity.Order;
-import com.cropdeal.orderservice.entity.Receipt;
-import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
-import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
 import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
 import com.cropdeal.orderservice.service.OrderService;

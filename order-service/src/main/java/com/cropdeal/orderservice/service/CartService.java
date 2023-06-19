@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,21 +30,25 @@ public class CartService {
     private RestTemplate restTemplate;
 
     private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+    
+//    private String dealerId = retrieveUserId() ;
 
-    public Cart getCartByDealerId(String dealerId) throws CartNotFoundException {
-        log.info("Fetching cart for dealer: {}", dealerId);
-        return cartRepository.findByDealerId(dealerId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for dealer: " + dealerId));
+    public Cart getCartByDealerId(String dId) throws CartNotFoundException {
+        log.info("Fetching cart for dealer: {}", dId);
+        return cartRepository.findByDealerId(dId)
+                .orElseThrow(() -> new CartNotFoundException("Cart not found for dealer: " + dId));
     }
 
-    public Cart createCart(String dealerId) {
+    public Cart createCart() {
+    	String dealerId = retrieveUserId();
         log.info("Creating cart for dealer: {}", dealerId);
         Cart cart = new Cart(dealerId, new HashMap<>());
         return cartRepository.save(cart);
     }
 
-    public Cart addToCart(String dealerId, String productId, int quantity) throws InvalidProductException, CartNotFoundException {
-        log.info("Adding product {} with quantity {} to cart for dealer: {}", productId, quantity, dealerId);
+    public Cart addToCart(String productId, int quantity) throws InvalidProductException, CartNotFoundException {
+    	String dealerId = retrieveUserId();
+    	log.info("Adding product {} with quantity {} to cart for dealer: {}", productId, quantity, dealerId);
         Cart cart = getCartByDealerId(dealerId);
 
         ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/" + productId,
@@ -59,8 +64,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    public Cart updateCartItemQuantity(String dealerId, String productId, int quantity)
+    public Cart updateCartItemQuantity(String productId, int quantity)
             throws CartNotFoundException, InvalidProductException {
+    	String dealerId = retrieveUserId();
         log.info("Updating quantity of product {} to {} in cart for dealer: {}", productId, quantity, dealerId);
         Cart cart = getCartByDealerId(dealerId);
         Map<String, Integer> cartItems = cart.getCartItems();
@@ -74,8 +80,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    public Cart removeCartItem(String dealerId, String productId) throws CartNotFoundException, InvalidProductException {
-        log.info("Removing product {} from cart for dealer: {}", productId, dealerId);
+    public Cart removeCartItem(String productId) throws CartNotFoundException, InvalidProductException {
+    	String dealerId = retrieveUserId();
+    	log.info("Removing product {} from cart for dealer: {}", productId, dealerId);
         Cart cart = getCartByDealerId(dealerId);
         Map<String, Integer> cartItems = cart.getCartItems();
 
@@ -88,8 +95,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    public void clearCart(String dealerId) throws CartNotFoundException {
-        log.info("Clearing cart for dealer: {}", dealerId);
+    public void clearCart() throws CartNotFoundException {
+    	String dealerId = retrieveUserId();
+    	log.info("Clearing cart for dealer: {}", dealerId);
         Cart cart = getCartByDealerId(dealerId);
         if (cart != null) {
             cartRepository.delete(cart);
@@ -100,4 +108,10 @@ public class CartService {
         log.info("Fetching all carts");
         return cartRepository.findAll();
     }
+    
+    private String retrieveUserId() {
+		String id = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println("Userid retrieve : " + id);
+		return id;
+	}
 }
