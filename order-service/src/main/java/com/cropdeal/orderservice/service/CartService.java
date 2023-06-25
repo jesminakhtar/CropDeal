@@ -51,15 +51,22 @@ public class CartService {
     	log.info("Adding product {} with quantity {} to cart for dealer: {}", productId, quantity, dealerId);
         Cart cart = getCartByDealerId(dealerId);
 
-        ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/" + productId,
+        ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/findById/" + productId,
                 Product.class);
         Product product = response.getBody();
+        
+        log.info("Product : {}" , product);
+        
         if (product == null) {
             throw new InvalidProductException("Invalid product ID: " + productId);
         }
-
+        
         Map<String, Integer> cartItems = cart.getCartItems();
+        log.info("CartItems : {}" , cartItems);
+        
         cartItems.put(productId, quantity);
+        
+        log.info("Added product in cart : {}" , cartItems);
 
         return cartRepository.save(cart);
     }

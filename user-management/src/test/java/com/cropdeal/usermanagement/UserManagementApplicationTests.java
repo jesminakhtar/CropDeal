@@ -1,13 +1,20 @@
 package com.cropdeal.usermanagement;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class UserManagementApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+	@Autowired
+    private UserManagementApplication userManagementApplication;
+
+    @Test
+    void contextLoads() {
+        assertNotNull(userManagementApplication);
+    }
 
 }

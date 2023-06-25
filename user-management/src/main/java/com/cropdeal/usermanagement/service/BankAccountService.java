@@ -25,11 +25,10 @@ public class BankAccountService {
 
     public BankAccount getBankAccountById(String id) throws BankAccountNotFoundException {
         logger.info("Fetching bank account by ID: {}", id);
-        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(() -> {
+        return bankAccountRepository.findById(id).orElseThrow(() -> {
             logger.error("Bank account not found with ID: {}", id);
             return new BankAccountNotFoundException("Bank account not found with ID: " + id);
         });
-        return bankAccount;
     }
 
     public BankAccount createBankAccount(BankAccount bankAccount) {

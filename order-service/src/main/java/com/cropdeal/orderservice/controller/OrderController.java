@@ -56,11 +56,11 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
-    @PostMapping("/place-order/{cropId}/{quantity}")
+    @PostMapping("/place-order/{productId}/{quantity}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_DEALER')")
-    public ResponseEntity<Receipt> createOrder(@PathVariable String cropId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
-        logger.info("Placing direct order for dealer for crop with ID: {} and quantity: {}", cropId, quantity);
-        Receipt receipt = orderService.placeOrderDirectly(cropId, quantity);
+    public ResponseEntity<Receipt> createOrder(@PathVariable String productId, @PathVariable int quantity) throws PaymentNotDoneException, InvalidProductException {
+        logger.info("Placing direct order for dealer for crop with ID: {} and quantity: {}", productId, quantity);
+        Receipt receipt = orderService.placeOrderDirectly(productId, quantity);
         return ResponseEntity.status(HttpStatus.CREATED).body(receipt);
     }
 
