@@ -5,15 +5,22 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cropdeal.usermanagement.dto.AuthenticationRequest;
+import com.cropdeal.usermanagement.dto.AuthenticationResponse;
 import com.cropdeal.usermanagement.dto.RegistrationRequest;
 import com.cropdeal.usermanagement.entity.Role;
 import com.cropdeal.usermanagement.entity.User;
 import com.cropdeal.usermanagement.exception.UserAlreadyExistsException;
 import com.cropdeal.usermanagement.exception.UserNotFoundException;
+import com.cropdeal.usermanagement.messaging.MessageProducer;
 import com.cropdeal.usermanagement.repository.UserRepository;
+import com.cropdeal.usermanagement.security.JwtTokenProvider;
 
 @Service
 public class UserService {
@@ -24,7 +31,36 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	Logger log = LoggerFactory.getLogger(UserService.class);
+	private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MessageProducer messageProducer;
+
+    Logger log = LoggerFactory.getLogger(UserService.class);
+    
+    public UserService(AuthenticationManager authenticationManager , JwtTokenProvider jwtTokenProvider, MessageProducer messageProducer) {
+    	this.authenticationManager = authenticationManager;
+    	this.jwtTokenProvider = jwtTokenProvider;
+    	this.messageProducer = messageProducer;
+    }
+	
+	public AuthenticationResponse loginUser(AuthenticationRequest loginRequest) throws UserNotFoundException {
+		
+		String userName = loginRequest.getUsername();
+		
+		Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userName, loginRequest.getPassword()));
+
+        String token = jwtTokenProvider.generateToken(authentication);
+        
+        User user = getUserByUsername(userName);
+        
+        messageProducer.sendMessage("user_events_exchange", "login_event_routing_key", "User logged in: " + userName);
+        
+        return new AuthenticationResponse(token,user.getId(), user.getUsername(), user.getRole(), user.getName(), user.getEmail());
+        
+
+	}
+	
 	
 	public User registerUser(RegistrationRequest registrationRequest) throws UserAlreadyExistsException {
 	    if (userRepository.existsByEmail(registrationRequest.getEmail())) {
@@ -50,16 +86,18 @@ public class UserService {
 	    	user.setId("F" + generateUniqueId());
 	    	log.info("Farmer id : {}", user.getId());
 	    }
+	    
+	    messageProducer.sendMessage("user_events_exchange", "registration_event_routing_key", "User registered: " + registrationRequest.getUsername());
 
 	    return userRepository.save(user);
 	}
 
-	public User getUserById(String userId) throws UserNotFoundException {
-		return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found with id : " + userId));
+	public User getUserByUsername(String username) throws UserNotFoundException {
+		return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with id : " + username));
 	}
 
-	public void updateUser(String userId, User user) throws UserNotFoundException {
-        User existingUser = getUserById(userId);
+	public void updateUser(String username, User user) throws UserNotFoundException {
+        User existingUser = getUserByUsername(username);
         existingUser.setEmail(user.getEmail());
         existingUser.setName(user.getName());
         existingUser.setUsername(user.getUsername());
@@ -68,8 +106,8 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-	public void deleteUser(String userId) throws UserNotFoundException {
-		User user = getUserById(userId);
+	public void deleteUser(String username) throws UserNotFoundException {
+		User user = getUserByUsername(username);
 		userRepository.delete(user);
 	}
 

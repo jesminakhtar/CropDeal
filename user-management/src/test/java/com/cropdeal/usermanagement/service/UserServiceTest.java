@@ -107,7 +107,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
 
         // Act
-        User resultUser = userService.getUserById(userId);
+        User resultUser = userService.getUserByUsername(userId);
 
         // Assert
         assertNotNull(resultUser);
@@ -121,7 +121,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act and Assert
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(userId));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserByUsername(userId));
     }
 
     @Test
