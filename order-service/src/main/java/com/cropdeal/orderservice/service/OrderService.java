@@ -24,6 +24,9 @@ import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
 import com.cropdeal.orderservice.model.Product;
 import com.cropdeal.orderservice.repository.OrderRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
 @Service
 public class OrderService {
 
@@ -41,9 +44,11 @@ public class OrderService {
 	@Autowired
 	private ReceiptService receiptService;
 
-	@Autowired
-	private PaymentService paymentService;
-
+//	@Autowired
+//	private PaymentService paymentService;
+	
+	private static final String CIRCUIT_BREAKER_NAME = "inventoryServiceCircuitBreaker";
+	private static final String RETRY_NAME = "inventoryServiceRetry";
 	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
 
 	public List<Order> getAllOrders() {
@@ -69,7 +74,7 @@ public class OrderService {
 	}
 
 	public Receipt placeOrderDirectly(String productId, int quantity)
-			throws InvalidProductException, PaymentNotDoneException {
+			throws PaymentNotDoneException {
 		Map<String, Integer> orderItems = Map.of(productId, quantity);
 		Order order = new Order(retrieveUserId(), orderItems);
 
@@ -108,13 +113,13 @@ public class OrderService {
 	}
 
 	public void cancelOrder(String orderId)
-			throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
+			throws InvalidOrderException, ReceiptNotFoundException{
 		Order order = getOrderById(orderId);
 		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
 
-		if (receipt.getStatus().equals("Paid")) {
-			paymentService.processPaymentRefund(receipt.getRazorpayOrderId());
-		}
+//		if (receipt.getStatus().equals("Paid")) {
+//			paymentService.processPaymentRefund(receipt.getRazorpayOrderId());
+//		}
 
 		for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
 			String productId = orderItemEntry.getKey();
@@ -129,14 +134,14 @@ public class OrderService {
 	}
 
 	public Order updateOrder(String orderId, Order updatedOrder)
-			throws InvalidOrderException, ReceiptNotFoundException, PaymentNotDoneException {
+			throws InvalidOrderException{
 		Order order = getOrderById(orderId);
-		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
-
-		if (receipt.getStatus().equals("Paid")) {
-			paymentService.processPaymentAdjustment(receipt.getRazorpayOrderId(),
-					calculateTotalPrice(updatedOrder.getOrderItems()));
-		}
+//		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
+//
+//		if (receipt.getStatus().equals("Paid")) {
+//			paymentService.processPaymentAdjustment(receipt.getRazorpayOrderId(),
+//					calculateTotalPrice(updatedOrder.getOrderItems()));
+//		}
 
 		order.setOrderItems(updatedOrder.getOrderItems());
 		order = repository.save(order);
@@ -144,11 +149,17 @@ public class OrderService {
 		return order;
 	}
 
+	@Retry(name = RETRY_NAME, fallbackMethod = "updateInventoryFallback")
+    @CircuitBreaker(name = CIRCUIT_BREAKER_NAME, fallbackMethod = "updateInventoryFallback")
 	private void updateInventory(String productId, int quantity) {
 		log.info("Updating product with id {} quantity {}", productId, quantity);
 		String url = INVENTORY_SERVICE_URL + "/products/" + productId + "/updateQuantity?quantity=" + quantity;
 		restTemplate.put(url, null);
 		log.info("Updated inventory successfully");
+	}
+	
+	private void updateInventoryFallback(String productId, int quantity, Throwable throwable) {
+	    log.error("Failed to update inventory for product {} with quantity {}", productId, quantity);
 	}
 
 	private double calculateTotalPrice(Map<String, Integer> orderItems) {
@@ -163,13 +174,23 @@ public class OrderService {
 		return totalPrice;
 	}
 
-	private Product getProductById(String productId) {
-		log.info("Retrieving product using RestTemplate...");
-		String url = INVENTORY_SERVICE_URL + "/products/findById/" + productId;
-		Product product = restTemplate.getForObject(url, Product.class);
-		log.info("Obtained product {} using RestTemplate", product);
-		return product;
-	}
+	@Retry(name = RETRY_NAME, fallbackMethod = "getProductByIdFallback")
+    @CircuitBreaker(name = CIRCUIT_BREAKER_NAME, fallbackMethod = "getProductByIdFallback")
+    public Product getProductById(String productId) {
+        log.info("Retrieving product using RestTemplate...");
+        String url = INVENTORY_SERVICE_URL + "/products/findById/" + productId;
+        Product product = restTemplate.getForObject(url, Product.class);
+        log.info("Obtained product {} using RestTemplate", product);
+        return product;
+    }
+
+    // Fallback method for Circuit Breaker and Retry
+    private Product getProductByIdFallback(String productId, Exception ex) {
+        log.error("Error occurred while retrieving product with ID: {}. Returning fallback response.", productId);
+        return null; 
+    }
+	
+	
 
 	public String generateOrderId() {
 		LocalDateTime now = LocalDateTime.now();

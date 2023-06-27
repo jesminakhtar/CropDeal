@@ -1,13 +1,8 @@
 package com.cropdeal.orderservice.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import com.cropdeal.orderservice.entity.Receipt;
+import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
+import com.cropdeal.orderservice.service.ReceiptService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,11 +11,22 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.cropdeal.orderservice.entity.Receipt;
-import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
-import com.cropdeal.orderservice.service.ReceiptService;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ReceiptControllerTest {
+
     @Mock
     private ReceiptService receiptService;
 
@@ -28,105 +34,103 @@ class ReceiptControllerTest {
     private ReceiptController receiptController;
 
     @BeforeEach
-    void setUp() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testCreateReceipt() {
-        // Prepare data
-        Receipt inputReceipt = new Receipt();
-        Receipt expectedReceipt = new Receipt();
+    void createReceipt_WithValidReceipt_ShouldReturnCreatedReceipt() {
+        // Arrange
+        Receipt receipt = new Receipt();
+        when(receiptService.createReceipt(any(Receipt.class))).thenReturn(receipt);
 
-        // Mock the receiptService.createReceipt() method
-        when(receiptService.createReceipt(inputReceipt)).thenReturn(expectedReceipt);
+        // Act
+        ResponseEntity<Receipt> response = receiptController.createReceipt(receipt);
 
-        // Call the controller method
-        ResponseEntity<Receipt> responseEntity = receiptController.createReceipt(inputReceipt);
-
-        // Verify the result
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(expectedReceipt, responseEntity.getBody());
-        verify(receiptService, times(1)).createReceipt(inputReceipt);
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(receipt, response.getBody());
+        verify(receiptService, times(1)).createReceipt(eq(receipt));
     }
 
     @Test
-    void testGetReceiptById() throws ReceiptNotFoundException {
-        // Prepare data
+    void getReceiptById_WithExistingReceiptId_ShouldReturnReceipt() throws ReceiptNotFoundException {
+        // Arrange
         String orderId = "123";
-        Receipt expectedReceipt = new Receipt();
+        Receipt receipt = new Receipt();
+        when(receiptService.getReceiptByOrderId(orderId)).thenReturn(receipt);
 
-        // Mock the receiptService.getReceiptByOrderId() method
-        when(receiptService.getReceiptByOrderId(orderId)).thenReturn(expectedReceipt);
+        // Act
+        ResponseEntity<Receipt> response = receiptController.getReceiptById(orderId);
 
-        // Call the controller method
-        ResponseEntity<Receipt> responseEntity = receiptController.getReceiptById(orderId);
-
-        // Verify the result
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedReceipt, responseEntity.getBody());
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(receipt, response.getBody());
         verify(receiptService, times(1)).getReceiptByOrderId(orderId);
     }
 
     @Test
-    void testGetReceiptById_NotFound() throws ReceiptNotFoundException {
-        // Prepare data
+    void getReceiptById_WithNonExistingReceiptId_ShouldReturnNotFound() throws ReceiptNotFoundException {
+        // Arrange
         String orderId = "123";
+        doThrow(new ReceiptNotFoundException("")).when(receiptService).getReceiptByOrderId(orderId);
 
-        // Mock the receiptService.getReceiptByOrderId() method to throw ReceiptNotFoundException
-        when(receiptService.getReceiptByOrderId(orderId)).thenThrow(new ReceiptNotFoundException("Receipt not found."));
+        // Act
+        ResponseEntity<Receipt> response = receiptController.getReceiptById(orderId);
 
-        // Call the controller method
-        ResponseEntity<Receipt> responseEntity = receiptController.getReceiptById(orderId);
-
-        // Verify the result
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
         verify(receiptService, times(1)).getReceiptByOrderId(orderId);
     }
 
     @Test
-    void testGetAllReceipts() {
-        // Prepare data
-        List<Receipt> expectedReceipts = List.of(new Receipt(), new Receipt());
+    void getAllReceipts_ShouldReturnAllReceipts() {
+        // Arrange
+        List<Receipt> receipts = new ArrayList<>();
+        receipts.add(new Receipt());
+        receipts.add(new Receipt());
+        when(receiptService.getAllReceipts()).thenReturn(receipts);
 
-        // Mock the receiptService.getAllReceipts() method
-        when(receiptService.getAllReceipts()).thenReturn(expectedReceipts);
+        // Act
+        ResponseEntity<List<Receipt>> response = receiptController.getAllReceipts();
 
-        // Call the controller method
-        ResponseEntity<List<Receipt>> responseEntity = receiptController.getAllReceipts();
-
-        // Verify the result
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedReceipts, responseEntity.getBody());
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(receipts, response.getBody());
         verify(receiptService, times(1)).getAllReceipts();
     }
 
     @Test
-    void testDeleteReceipt() throws ReceiptNotFoundException {
-        // Prepare data
+    void deleteReceipt_WithExistingReceiptId_ShouldReturnNoContent() throws ReceiptNotFoundException {
+        // Arrange
         String orderId = "123";
+        doNothing().when(receiptService).deleteReceipt(orderId);
 
-        // Call the controller method
-        ResponseEntity<Void> responseEntity = receiptController.deleteReceipt(orderId);
+        // Act
+        ResponseEntity<Void> response = receiptController.deleteReceipt(orderId);
 
-        // Verify the result
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
         verify(receiptService, times(1)).deleteReceipt(orderId);
     }
 
     @Test
-    void testDeleteReceipt_NotFound() throws ReceiptNotFoundException {
-        // Prepare data
+    void deleteReceipt_WithNonExistingReceiptId_ShouldReturnNotFound() throws ReceiptNotFoundException {
+        // Arrange
         String orderId = "123";
+        doThrow(new ReceiptNotFoundException("")).when(receiptService).deleteReceipt(orderId);
 
-        // Mock the receiptService.deleteReceipt() method to throw ReceiptNotFoundException
-        doThrow(new ReceiptNotFoundException("Receipt not found.")).when(receiptService).deleteReceipt(orderId);
+        // Act
+        ResponseEntity<Void> response = receiptController.deleteReceipt(orderId);
 
-        // Call the controller method
-        ResponseEntity<Void> responseEntity = receiptController.deleteReceipt(orderId);
-
-        // Verify the result
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
         verify(receiptService, times(1)).deleteReceipt(orderId);
     }
 }

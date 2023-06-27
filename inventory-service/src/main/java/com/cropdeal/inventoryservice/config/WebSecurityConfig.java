@@ -21,39 +21,37 @@ import com.cropdeal.inventoryservice.security.JwtTokenProvider;
 public class WebSecurityConfig {
 
 	@Autowired
-    private JwtTokenProvider jwtTokenProvider;
-	
+	private JwtTokenProvider jwtTokenProvider;
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
-	    security
-	        .csrf().disable()
-	        .cors().and()
-	        .authorizeHttpRequests()
-	        .requestMatchers("/products").permitAll()
-	        .requestMatchers("/products/findById/**").permitAll()
-	        .requestMatchers("/products/*/updateQuantity").permitAll()
-	        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-	        .anyRequest().authenticated()
-	        .and()
-	        .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-	    return security.build();
+		security
+			.csrf().disable()
+			.cors().and()
+			.authorizeHttpRequests()
+			.requestMatchers("/products").permitAll()
+			.requestMatchers("/products/findById/**").permitAll()
+			.requestMatchers("/products/findByFarmerId/**").permitAll()
+			.requestMatchers("/products/*/updateQuantity").permitAll()
+			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+			.anyRequest().authenticated().and()
+			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		return security.build();
 	}
 
-	
 	@Bean
-    public JwtTokenFilter jwtTokenFilter() {
-        return new JwtTokenFilter(jwtTokenProvider);
-    }
-	
+	public JwtTokenFilter jwtTokenFilter() {
+		return new JwtTokenFilter(jwtTokenProvider);
+	}
+
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("*"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-	
 
 }

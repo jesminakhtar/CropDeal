@@ -51,6 +51,16 @@ public class InventoryController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+//    @CrossOrigin
+    @GetMapping("/findByFarmerId/{farmerId}")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    public ResponseEntity<List<Product>> getProductsByFarmerId(@PathVariable String farmerId) {
+    	log.info("Fetching products for farmer {}", farmerId);
+        List<Product> products = inventoryService.getProductsByFarmerId(farmerId);
+        log.info("Products found : {}", products);
+        return ResponseEntity.ok(products);
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")

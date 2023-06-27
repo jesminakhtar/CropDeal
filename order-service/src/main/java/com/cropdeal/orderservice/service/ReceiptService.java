@@ -44,30 +44,23 @@ public class ReceiptService {
 
 	public void updateReceipt(String orderId, Receipt updatedReceipt) throws ReceiptNotFoundException {
 		Receipt receipt = getReceiptByOrderId(orderId);
-		if (receipt != null) {
-			receipt.setDealerId(updatedReceipt.getDealerId());
-			receipt.setOrderItems(updatedReceipt.getOrderItems());
-			receipt.setTotalPrice(updatedReceipt.getTotalPrice());
-			receipt.setStatus(updatedReceipt.getStatus());
-			receipt = repository.save(receipt);
-			log.info("Receipt updated with ID: {}", receipt.getId());
-		} else {
-			throw new ReceiptNotFoundException("Receipt not found for order ID: " + orderId);
-		}
+		receipt.setDealerId(updatedReceipt.getDealerId());
+		receipt.setOrderItems(updatedReceipt.getOrderItems());
+		receipt.setTotalPrice(updatedReceipt.getTotalPrice());
+		receipt.setStatus(updatedReceipt.getStatus());
+		receipt = repository.save(receipt);
+		log.info("Receipt updated with ID: {}", receipt.getId());
+
 	}
 
 	public void deleteReceipt(String orderId) throws ReceiptNotFoundException {
 		Receipt receipt = getReceiptByOrderId(orderId);
-		if (receipt != null) {
-			repository.delete(receipt);
-			log.info("Receipt deleted with ID: {}", receipt.getId());
-		} else {
-			throw new ReceiptNotFoundException("Receipt not found for order ID: " + orderId);
-		}
+		repository.delete(receipt);
+		log.info("Receipt deleted with ID: {}", receipt.getId());
 	}
-	
+
 	private String generateUniqueReceiptId() {
-	    String uniqueId = UUID.randomUUID().toString();
-	    return uniqueId.replaceAll("-", "").substring(0,6);
+		String uniqueId = UUID.randomUUID().toString();
+		return uniqueId.replace("-", "").substring(0, 6);
 	}
 }

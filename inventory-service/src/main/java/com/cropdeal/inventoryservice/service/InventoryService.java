@@ -89,7 +89,11 @@ public class InventoryService {
 	
 	private String generateUniqueId() {
 	    String uniqueId = UUID.randomUUID().toString();
-	    return uniqueId.replaceAll("-", "").substring(0,6);
+	    return uniqueId.replace("-", "").substring(0,6);
+	}
+
+	public List<Product> getProductsByFarmerId(String farmerId) {
+		return repository.findByFarmerId(farmerId);
 	}
 
 }

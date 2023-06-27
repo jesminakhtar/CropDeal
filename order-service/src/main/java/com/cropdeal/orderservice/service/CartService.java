@@ -30,8 +30,6 @@ public class CartService {
     private RestTemplate restTemplate;
 
     private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
-    
-//    private String dealerId = retrieveUserId() ;
 
     public Cart getCartByDealerId(String dId) throws CartNotFoundException {
         log.info("Fetching cart for dealer: {}", dId);
@@ -118,7 +116,7 @@ public class CartService {
     
     private String retrieveUserId() {
 		String id = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println("Userid retrieve : " + id);
+		log.info("Userid retrieve : {}", id);
 		return id;
 	}
 }
