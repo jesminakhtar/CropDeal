@@ -42,12 +42,23 @@ public class ReceiptController {
         try {
             logger.info("Fetching receipt by order ID: {}", orderID);
             Receipt receipt = receiptService.getReceiptByOrderId(orderID);
+            logger.info("Found receipt: {}", receipt);
             return new ResponseEntity<>(receipt, HttpStatus.OK);
         } catch (ReceiptNotFoundException e) {
             logger.error("Receipt not found for order ID: {}", orderID);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    
+    
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Receipt>> getReceiptByUserId(@PathVariable String userId) throws ReceiptNotFoundException {
+        logger.info("Fetching receipt for user : {}", userId);
+        List<Receipt> receipts = receiptService.getReceiptByUserId(userId);
+		logger.info("Found receipt: {}", receipts);
+		return new ResponseEntity<>(receipts, HttpStatus.OK);
+    }
+    
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

@@ -9,17 +9,25 @@ import org.springframework.stereotype.Service;
 
 import com.cropdeal.inventoryservice.entity.Product;
 import com.cropdeal.inventoryservice.entity.Rating;
+import com.cropdeal.inventoryservice.entity.Shop;
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
+import com.cropdeal.inventoryservice.exception.ShopNotFoundException;
 import com.cropdeal.inventoryservice.repository.InventoryRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class InventoryService {
 
 	@Autowired
 	private InventoryRepository repository;
-
+	
+	@Autowired
+	private ShopService shopService;
+	
 	public List<Product> getAllProducts() {
 		return repository.findAll();
 	}
@@ -28,16 +36,25 @@ public class InventoryService {
 		return repository.findById(id).orElseThrow(() -> new InvalidProductException("Invalid product ID: " + id));
 	}
 
-	public Product addProduct(Product product) {
-		String farmerId = retrieveUserId();
-		Product productOptional = repository.findByFarmerIdAndName(farmerId, product.getName()).orElse(null);
+	public Product addProduct(Product product) throws ShopNotFoundException {
+		String shopId = product.getShopId();
+		Shop shop = shopService.getShopById(shopId);
+		Product productOptional = repository.findByShopIdAndName(shopId, product.getName()).orElse(null);
 		if (productOptional != null) {
-			throw new IllegalArgumentException(
-					"Product with the same farmerId" + farmerId + " and name " + product.getName() + " already exists.");
+			throw new IllegalArgumentException(product.getName() + "already exists in" + shopId);
 		} else {
-			product.setFarmerId(farmerId);
+			
+			product.setShopId(shopId);
 			String category = product.getCategory();
 			product.setId(category.substring(0,1) + generateUniqueId());
+			
+            List<Product> products = shop.getProducts();
+            products.add(product);
+            
+            shop.setProducts(products);
+            
+            shopService.addShop(shop);
+			
 			return repository.save(product);
 		}
 	}
@@ -51,8 +68,13 @@ public class InventoryService {
 		repository.save(product);
 	}
 
-	public void deleteProduct(String id) throws InvalidProductException {
+	public void deleteProduct(String id) throws InvalidProductException, ShopNotFoundException {
 		Product product = getProductById(id);
+		
+		Shop shop = shopService.getShopById(product.getShopId());
+		shop.getProducts().remove(product);
+		
+		shopService.addShop(shop);
 		repository.delete(product);
 	}
 
@@ -82,18 +104,14 @@ public class InventoryService {
 	}
 
 	public String retrieveUserId() {
-		String id = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println("Userid retrieve : " + id);
-		return id;
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		log.info("Userid retrieve : {}", username);
+		return username;
 	}
 	
 	private String generateUniqueId() {
 	    String uniqueId = UUID.randomUUID().toString();
 	    return uniqueId.replace("-", "").substring(0,6);
-	}
-
-	public List<Product> getProductsByFarmerId(String farmerId) {
-		return repository.findByFarmerId(farmerId);
 	}
 
 }

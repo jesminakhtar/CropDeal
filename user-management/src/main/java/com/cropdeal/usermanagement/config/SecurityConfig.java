@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -57,13 +58,18 @@ public class SecurityConfig {
         log.debug("Configuring security filter chain");
         http
                 .csrf().disable()
-                .cors().and()
+//                .cors().and()
                 .authorizeHttpRequests()
-//                .requestMatchers("/users/**").permitAll()
+//                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/address/**").permitAll()
+                .requestMatchers("/users/**").permitAll()
+                .requestMatchers("/bank-accounts/**").permitAll()
                 .requestMatchers("/users/login").permitAll()
                 .requestMatchers("/users/register").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .anyRequest().authenticated()
+//                .requestMatchers("/websocket/**").permitAll()
+//                .requestMatchers("/topic/messages").permitAll()
+//                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .anyRequest().permitAll()
                 .and()
                 // Add JWT token filter before each request
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -78,7 +84,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtTokenFilter jwtTokenFilter() {
-        log.debug("Creating JWT token filter bean");
+        log.info("Creating JWT token filter bean");
         return new JwtTokenFilter(jwtTokenProvider);
     }
 
@@ -90,4 +96,5 @@ public class SecurityConfig {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         };
     }
+
 }

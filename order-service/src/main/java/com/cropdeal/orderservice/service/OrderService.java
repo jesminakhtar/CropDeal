@@ -1,5 +1,7 @@
 package com.cropdeal.orderservice.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -16,13 +18,15 @@ import org.springframework.web.client.RestTemplate;
 import com.cropdeal.orderservice.entity.Cart;
 import com.cropdeal.orderservice.entity.Order;
 import com.cropdeal.orderservice.entity.Receipt;
+import com.cropdeal.orderservice.entity.Transaction;
+import com.cropdeal.orderservice.entity.TransactionType;
 import com.cropdeal.orderservice.exception.CartNotFoundException;
 import com.cropdeal.orderservice.exception.InvalidOrderException;
-import com.cropdeal.orderservice.exception.InvalidProductException;
 import com.cropdeal.orderservice.exception.PaymentNotDoneException;
 import com.cropdeal.orderservice.exception.ReceiptNotFoundException;
 import com.cropdeal.orderservice.model.Product;
 import com.cropdeal.orderservice.repository.OrderRepository;
+import com.razorpay.RazorpayException;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -44,13 +48,16 @@ public class OrderService {
 	@Autowired
 	private ReceiptService receiptService;
 
-//	@Autowired
-//	private PaymentService paymentService;
+	@Autowired
+	private TransactionService transactionService;
+	
+	@Autowired
+	private PaymentService paymentService;
 	
 	private static final String CIRCUIT_BREAKER_NAME = "inventoryServiceCircuitBreaker";
 	private static final String RETRY_NAME = "inventoryServiceRetry";
 	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
-
+	
 	public List<Order> getAllOrders() {
 		return repository.findAll();
 	}
@@ -60,66 +67,68 @@ public class OrderService {
 				.orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + orderId));
 	}
 
-	public Receipt placeOrderFromCart() throws CartNotFoundException, PaymentNotDoneException {
-		String dealerId = retrieveUserId();
+	public Order placeOrder(String dealerId, String addressId) throws CartNotFoundException, NoSuchAlgorithmException {
+		
 		Cart cart = cartService.getCartByDealerId(dealerId);
-
 		Order order = new Order();
+		
+		order.setOrderId(generateOrderId());
 		order.setDealerId(dealerId);
 		order.setOrderItems(cart.getCartItems());
-
-		cartService.clearCart();
-
-		return createOrder(order);
-	}
-
-	public Receipt placeOrderDirectly(String productId, int quantity)
-			throws PaymentNotDoneException {
-		Map<String, Integer> orderItems = Map.of(productId, quantity);
-		Order order = new Order(retrieveUserId(), orderItems);
-
-		String orderId = generateOrderId();
-		order.setOrderId(orderId);
-
-		return createOrder(order);
-	}
-
-	public Receipt createOrder(Order order) throws PaymentNotDoneException {
-		double amount = calculateTotalPrice(order.getOrderItems());
+		order.setTotalPrice(cart.getTotalPrice());
+		order.setDeliveryAddressId(addressId);
+		order.setStatus("Pending");
 		
-		boolean isPaymentDone = true;
+		cartService.clearCart(dealerId);
+		
+		log.info("Pending order : {}", order);
 
-		if (isPaymentDone) {
+		return repository.save(order);
+	}
+
+	public Receipt createOrder(String orderId, String paymentId) throws PaymentNotDoneException, InvalidOrderException, RazorpayException  {
+		
+		log.info("Creating order for order id : {}", orderId);
+		boolean isPaid = paymentService.verifyPayment(paymentId);
+		
+		Order order = getOrderById(orderId);
+		
+		if (isPaid) {
+			
+			order.setStatus("Placed");
+			
+			repository.save(order);
+			
 			for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
 				String productId = orderItemEntry.getKey();
 				int quantity = orderItemEntry.getValue();
 				updateInventory(productId, quantity);
 			}
-
-			Order placedOrder = repository.save(order);
-			log.info("Order created with ID: {}", placedOrder.getOrderId());
-
+			
+			log.info("Order plcaed with ID: {}", orderId);
+			
 			Receipt receipt = new Receipt();
-			receipt.setOrderId(placedOrder.getOrderId());
-			receipt.setDealerId(retrieveUserId());
+			receipt.setOrderId(order.getOrderId());
+			receipt.setDealerId(order.getDealerId());
 			receipt.setOrderItems(order.getOrderItems());
-			receipt.setTotalPrice(amount);
-			receipt.setStatus("Placed");
+			receipt.setTotalPrice(order.getTotalPrice());
+			receipt.setStatus("Paid");
+			
+			paymentService.addTransaction(order, paymentId);
+			
+			receipt.setTransactionId(paymentId);
+			receiptService.createReceipt(receipt);
+			
+			
 
-			return receiptService.createReceipt(receipt);
-		} else {
-			throw new PaymentNotDoneException("Payment is not done for the order");
+			return receipt;
 		}
+		return null;
 	}
 
-	public void cancelOrder(String orderId)
-			throws InvalidOrderException, ReceiptNotFoundException{
+	public void cancelOrder(String orderId) throws InvalidOrderException, ReceiptNotFoundException {
 		Order order = getOrderById(orderId);
 		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
-
-//		if (receipt.getStatus().equals("Paid")) {
-//			paymentService.processPaymentRefund(receipt.getRazorpayOrderId());
-//		}
 
 		for (Map.Entry<String, Integer> orderItemEntry : order.getOrderItems().entrySet()) {
 			String productId = orderItemEntry.getKey();
@@ -131,22 +140,17 @@ public class OrderService {
 		receiptService.updateReceipt(orderId, receipt);
 		repository.delete(order);
 		log.info("Order cancelled with ID: {}", orderId);
-	}
 
-	public Order updateOrder(String orderId, Order updatedOrder)
-			throws InvalidOrderException{
-		Order order = getOrderById(orderId);
-//		Receipt receipt = receiptService.getReceiptByOrderId(orderId);
-//
-//		if (receipt.getStatus().equals("Paid")) {
-//			paymentService.processPaymentAdjustment(receipt.getRazorpayOrderId(),
-//					calculateTotalPrice(updatedOrder.getOrderItems()));
-//		}
+		// Create a transaction entry for cancellation
+		Transaction transaction = new Transaction();
+		transaction.setId(receipt.getTransactionId());
+		transaction.setId(receipt.getOrderId());
+		transaction.setAmount(receipt.getTotalPrice());
+		transaction.setType(TransactionType.CREDIT); // Refund
+		transaction.setUsername(retrieveUserId());
+		transaction.setTimestamp(LocalDateTime.now());
 
-		order.setOrderItems(updatedOrder.getOrderItems());
-		order = repository.save(order);
-		log.info("Order updated with ID: {}", orderId);
-		return order;
+		transactionService.createTransaction(transaction);
 	}
 
 	@Retry(name = RETRY_NAME, fallbackMethod = "updateInventoryFallback")
@@ -158,11 +162,12 @@ public class OrderService {
 		log.info("Updated inventory successfully");
 	}
 	
+	@SuppressWarnings("unused")
 	private void updateInventoryFallback(String productId, int quantity, Throwable throwable) {
 	    log.error("Failed to update inventory for product {} with quantity {}", productId, quantity);
 	}
 
-	private double calculateTotalPrice(Map<String, Integer> orderItems) {
+	public double calculateTotalPrice(Map<String, Integer> orderItems) {
 		double totalPrice = 0;
 		for (Map.Entry<String, Integer> orderItemEntry : orderItems.entrySet()) {
 			String productId = orderItemEntry.getKey();
@@ -185,19 +190,20 @@ public class OrderService {
     }
 
     // Fallback method for Circuit Breaker and Retry
-    private Product getProductByIdFallback(String productId, Exception ex) {
+    @SuppressWarnings("unused")
+	private Product getProductByIdFallback(String productId, Exception ex) {
         log.error("Error occurred while retrieving product with ID: {}. Returning fallback response.", productId);
         return null; 
     }
 	
 	
 
-	public String generateOrderId() {
+	public String generateOrderId() throws NoSuchAlgorithmException {
 		LocalDateTime now = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		String timestamp = now.format(formatter);
 
-		Random random = new Random();
+		Random random = SecureRandom.getInstanceStrong();
 		int randomNumber = random.nextInt(10000);
 
 		return timestamp + randomNumber;
@@ -205,10 +211,12 @@ public class OrderService {
 
 	public String retrieveUserId() {
 		String id = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println("Userid retrieve : " + id);
+		log.info("Userid retrieve : {}", id);
 		return id;
 	}
-	
-	
+
+	public List<Order> getOrderByDealerId(String id) {
+		return repository.findByDealerId(id);	
+	}
 
 }

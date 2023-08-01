@@ -29,13 +29,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             // Get token from request header
             String token = getTokenFromRequest(request);
-
             // Validate token
             if (token != null && jwtTokenProvider.validateToken(token)) {
-                // Get user details from token and set authentication in the security context
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            	// Get user details from token and set authentication in the security context
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);             
+                
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("Authenticated user '{}'", authentication.getName());
+                log.info("Authenticated user '{}'", authentication.getName());
             }
         } catch (Exception e) {
             log.error("Authentication error: {}", e.getMessage());
@@ -46,8 +46,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
+    	log.info("request : {}", request);
         String bearerToken = request.getHeader("Authorization");
+        log.info("bearerToken : {}", bearerToken );
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        	log.info("bearerToken.substring(7) : {}", bearerToken.substring(7) );
             return bearerToken.substring(7);
         }
         return null;

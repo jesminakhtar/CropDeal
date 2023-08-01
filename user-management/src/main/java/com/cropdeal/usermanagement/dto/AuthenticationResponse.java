@@ -12,7 +12,8 @@ public class AuthenticationResponse {
     private String userId;
     private String username;
     private String role;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
 
     

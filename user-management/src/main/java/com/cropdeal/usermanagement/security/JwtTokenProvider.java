@@ -3,9 +3,6 @@ package com.cropdeal.usermanagement.security;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +17,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -28,7 +26,7 @@ public class JwtTokenProvider {
 
     private static final long TOKEN_VALIDITY = 86400000L; // 24 hours
     private static final String AUTHORITIES_KEY = "roles";
-    private static final String key = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    private static final String KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     public String generateToken(Authentication authentication) {
         UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
@@ -36,13 +34,13 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
         claims.put(AUTHORITIES_KEY, userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
-        claims.put("id", userDetails.getId());
-        System.out.println("user id : " + userDetails.getId());
+                .toList());
+        claims.put("username", userDetails.getUsername());
+        log.info("username : " + userDetails.getUsername());
         // Add roles to claims
-        claims.put("roles", userDetails.getAuthorities().stream()
+        claims.put(AUTHORITIES_KEY, userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
+                .toList());
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + TOKEN_VALIDITY);
@@ -59,27 +57,25 @@ public class JwtTokenProvider {
     }
 
     private Key getSignKey() {
-
-        byte[] keyButes=Decoders.BASE64.decode(key);
+        byte[] keyButes=Decoders.BASE64.decode(KEY);
         return Keys.hmacShaKeyFor(keyButes);
-
     }
     
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
         String username = claims.getSubject();
         @SuppressWarnings("unchecked")
-        List<String> roles = (List<String>) claims.get("roles");
+        List<String> roles = (List<String>) claims.get(AUTHORITIES_KEY);
 
         UserDetails userDetails = User.builder()
                 .username(username)
                 .password("") // Password is not needed for authentication
-                .authorities(roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
+                .authorities(roles.stream().map(SimpleGrantedAuthority::new).toList())
                 .build();
 
         log.debug("Authenticated user '{}'", username);
@@ -96,7 +92,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(KEY).build().parseClaimsJws(token);
             log.debug("Valid JWT token");
             return true;
         } catch (Exception e) {

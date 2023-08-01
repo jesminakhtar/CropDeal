@@ -1,8 +1,12 @@
 package com.cropdeal.usermanagement.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -15,7 +19,6 @@ import org.slf4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.cropdeal.usermanagement.dto.RegistrationRequest;
-import com.cropdeal.usermanagement.entity.BankAccount;
 import com.cropdeal.usermanagement.entity.Role;
 import com.cropdeal.usermanagement.entity.User;
 import com.cropdeal.usermanagement.exception.UserAlreadyExistsException;
@@ -47,25 +50,17 @@ class UserServiceTest {
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setEmail("test@example.com");
         registrationRequest.setPassword("password");
-        registrationRequest.setName("John Doe");
+        registrationRequest.setFirstName("John");
+        registrationRequest.setLastName("Doe");
         registrationRequest.setUsername("johndoe");
-
-        BankAccount bankAccount = new BankAccount();
-        bankAccount.setAccountNumber("1234567890");
-        bankAccount.setAccountHolderName("John Doe");
-        bankAccount.setBankName("Bank of Example");
-        bankAccount.setIfscCode("ABC123");
-
-        registrationRequest.setBankAccount(bankAccount);
-
         registrationRequest.setRole(Role.DEALER.name());
 
         User mockUser = new User();
         mockUser.setEmail(registrationRequest.getEmail());
         mockUser.setPassword(registrationRequest.getPassword());
-        mockUser.setName(registrationRequest.getName());
+        mockUser.setFirstName(registrationRequest.getFirstName());
+        mockUser.setLastName(registrationRequest.getLastName());
         mockUser.setUsername(registrationRequest.getUsername());
-        mockUser.setBankAccount(registrationRequest.getBankAccount());
         mockUser.setRole(registrationRequest.getRole().toUpperCase());
         mockUser.setId("D123456");
 
@@ -79,9 +74,9 @@ class UserServiceTest {
         // Assert
         assertNotNull(registeredUser);
         assertEquals(registrationRequest.getEmail(), registeredUser.getEmail());
-        assertEquals(registrationRequest.getName(), registeredUser.getName());
+        assertEquals(registrationRequest.getFirstName(), registeredUser.getFirstName());
+        assertEquals(registrationRequest.getLastName(), registeredUser.getLastName());
         assertEquals(registrationRequest.getUsername(), registeredUser.getUsername());
-        assertEquals(registrationRequest.getBankAccount(), registeredUser.getBankAccount());
         assertEquals(registrationRequest.getRole().toUpperCase(), registeredUser.getRole());
     }
 
@@ -139,9 +134,8 @@ class UserServiceTest {
         // Assert
         verify(userRepository).save(existingUser);
         assertEquals(updatedUser.getEmail(), existingUser.getEmail());
-        assertEquals(updatedUser.getName(), existingUser.getName());
+        assertEquals(updatedUser.getFirstName(), existingUser.getFirstName());
         assertEquals(updatedUser.getUsername(), existingUser.getUsername());
-        assertEquals(updatedUser.getBankAccount(), existingUser.getBankAccount());
     }
 
     @Test

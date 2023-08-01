@@ -1,12 +1,15 @@
 package com.cropdeal.usermanagement.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,11 +32,19 @@ public class UserController {
 	@Autowired
     private UserService userService;
     
-//    private final UserEventProducer userEventProducer;
-
+//	@GetMapping("/verify")
+//	public void verifyService() {
+//		userService.createVerifyService();
+//	}
+	
+	@GetMapping
+	public ResponseEntity<List<User>> getAllUsers() {
+		log.info("Trying to fetch all users");
+		List<User> users = userService.getAllUsers();
+		return ResponseEntity.ok(users);
+	}
 
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest loginRequest) throws UserNotFoundException {
         
     	log.info("Trying to login {}", loginRequest);
@@ -44,7 +55,6 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<User> registerUser(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException {
         
     	log.info("Trying to register {}", registrationRequest);
@@ -58,7 +68,9 @@ public class UserController {
 
     @GetMapping("/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) throws UserNotFoundException {
-        User user = userService.findUserByUsername(username);
+        
+    	log.info("Trying to fetch user with username {}", username);
+    	User user = userService.findUserByUsername(username);
         if (user != null) {
             log.info("User '{}' found.", username);
             return ResponseEntity.ok(user);
@@ -67,4 +79,20 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+   @PutMapping("/{username}")
+   public ResponseEntity<String> updateUser(@PathVariable String username, @RequestBody User user) throws UserNotFoundException {
+       
+	   log.info("Trying to update user with username {}", username);
+	   userService.updateUser(username, user);
+       return ResponseEntity.ok("User updated successfully");
+   }
+   
+   @DeleteMapping("/{username}")
+   public ResponseEntity<String> deleteUser(@PathVariable String username) throws UserNotFoundException {
+       
+	   log.info("Trying to delete user with username {}", username);
+	   userService.deleteUser(username);
+       return ResponseEntity.ok("User deleted successfully");
+   }
 }

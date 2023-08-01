@@ -37,6 +37,16 @@ public class ReceiptService {
 			throw new ReceiptNotFoundException("Receipt not found for order ID: " + orderId);
 		}
 	}
+	
+	public List<Receipt> getReceiptByUserId(String userId) throws ReceiptNotFoundException {
+		
+		return repository.findByDealerId(userId);
+//		if (optionalReceipt.isPresent()) {
+//			return optionalReceipt.get();
+//		} else {
+//			throw new ReceiptNotFoundException("Receipt not found for user: " + userId);
+//		}
+	}
 
 	public List<Receipt> getAllReceipts() {
 		return repository.findAll();
@@ -59,8 +69,10 @@ public class ReceiptService {
 		log.info("Receipt deleted with ID: {}", receipt.getId());
 	}
 
-	private String generateUniqueReceiptId() {
+	public String generateUniqueReceiptId() {
 		String uniqueId = UUID.randomUUID().toString();
 		return uniqueId.replace("-", "").substring(0, 6);
 	}
+
+	
 }

@@ -16,30 +16,35 @@ import lombok.Setter;
 @Document(collection = "products")
 public class Product {
 
-    @Id
+	@Id
     private String id;
     private String name;
     private String category;
     private int quantity;
     private double price;
     private String description;
-    private String farmerId;
+    private String shopId;
+    private byte[] imageData;
     private List<Rating> ratings;
-    private String imageUrl;
     
     public Product() {
 		this.ratings = new ArrayList<>();
 	}
-    
-	public Product(String name, String category, int quantity, double price, String description,String imageUrl) {
+
+	public Product(String name, String category, int quantity, double price, String description, String shopId,
+			byte[] imageData) {
+		super();
 		this.name = name;
 		this.category = category;
 		this.quantity = quantity;
 		this.price = price;
 		this.description = description;
+		this.shopId = shopId;
 		this.ratings = new ArrayList<>();
-		this.imageUrl = imageUrl;
-	}   
+		this.imageData = imageData;
+	}
+    
+	
     
     
 }

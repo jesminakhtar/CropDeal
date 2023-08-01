@@ -1,5 +1,6 @@
 package com.cropdeal.inventoryservice.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cropdeal.inventoryservice.entity.Product;
 import com.cropdeal.inventoryservice.entity.Rating;
 import com.cropdeal.inventoryservice.exception.InsufficientQuantityException;
 import com.cropdeal.inventoryservice.exception.InvalidProductException;
 import com.cropdeal.inventoryservice.exception.OutOfStockException;
+import com.cropdeal.inventoryservice.exception.ShopNotFoundException;
 import com.cropdeal.inventoryservice.service.InventoryService;
 
 @RestController
@@ -32,7 +35,7 @@ public class InventoryController {
 	Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryService inventoryService;    
     
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -51,22 +54,30 @@ public class InventoryController {
             return ResponseEntity.notFound().build();
         }
     }
-    
-//    @CrossOrigin
-    @GetMapping("/findByFarmerId/{farmerId}")
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
-    public ResponseEntity<List<Product>> getProductsByFarmerId(@PathVariable String farmerId) {
-    	log.info("Fetching products for farmer {}", farmerId);
-        List<Product> products = inventoryService.getProductsByFarmerId(farmerId);
-        log.info("Products found : {}", products);
-        return ResponseEntity.ok(products);
-    }
+
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        Product savedProduct = inventoryService.addProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    public ResponseEntity<Product> addProduct(@RequestParam("file") MultipartFile file,
+                                              @RequestParam("name") String name,
+                                              @RequestParam("shopId") String shopId,
+                                              @RequestParam("category") String category,
+                                              @RequestParam("quantity") int quantity,
+                                              @RequestParam("price") double price,
+                                              @RequestParam("description") String description) throws ShopNotFoundException {
+        try {
+            // Read the image file and convert it to byte[]
+            byte[] imageData = file.getBytes();
+
+            // Create a new Product instance with the image data
+            Product product = new Product(name, category, quantity, price, description, shopId, imageData);
+            Product savedProduct = inventoryService.addProduct(product);
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{productId}")
@@ -81,8 +92,8 @@ public class InventoryController {
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
-    public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_FARMER')")
+    public ResponseEntity<String> deleteProduct(@PathVariable String productId) throws ShopNotFoundException {
         try {
             inventoryService.deleteProduct(productId);
             return ResponseEntity.ok("Product deleted successfully.");
