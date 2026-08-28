@@ -1,0 +1,21 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Maven
+target/
+
+# Environment/secrets
+.env
+.env.*
+application-local.properties
+application-local.yml
+
+# OS
+.DS_Store
+Thumbs.db
