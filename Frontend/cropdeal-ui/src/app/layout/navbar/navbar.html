@@ -1,9 +1,7 @@
 <header class="navbar">
-
   <div class="container navbar__inner">
 
     <a routerLink="/" class="brand">
-
       <span class="brand__icon">
         <svg viewBox="0 0 24 24">
           <path
@@ -13,39 +11,73 @@
       </span>
 
       <span>CropDeal</span>
-
     </a>
 
 
     <nav class="nav-links">
-
       <a routerLink="/marketplace">
         Marketplace
       </a>
 
-      <a href="#how-it-works">
+      <a routerLink="/" fragment="how-it-works">
         How it works
       </a>
 
-      <a href="#farmers">
+      <a routerLink="/" fragment="farmers">
         For farmers
       </a>
-
     </nav>
 
 
     <div class="nav-actions">
 
-      <a routerLink="/login" class="sign-in">
-        Sign in
-      </a>
+      @if (currentUser; as user) {
 
-      <a routerLink="/register" class="btn btn-primary">
-        Get started
-      </a>
+        <div class="user-info">
+
+          <div class="user-avatar">
+            {{ user.firstName.charAt(0) }}
+          </div>
+
+          <div class="user-details">
+            <strong>
+              {{ user.firstName }} {{ user.lastName }}
+            </strong>
+
+            <span>
+              {{ displayRole }}
+            </span>
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="logout-button"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+
+      } @else {
+
+        <a
+          routerLink="/login"
+          class="sign-in"
+        >
+          Sign in
+        </a>
+
+        <a
+          routerLink="/register"
+          class="btn btn-primary"
+        >
+          Get started
+        </a>
+
+      }
 
     </div>
 
   </div>
-
 </header>
