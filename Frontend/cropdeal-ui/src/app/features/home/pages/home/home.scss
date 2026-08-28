@@ -526,3 +526,189 @@ h1 span {
     padding: 18px;
   }
 }
+
+/* COMMON SECTION */
+
+.categories,
+.featured {
+  padding: 92px 0;
+}
+
+.section-header {
+  margin-bottom: 42px;
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 32px;
+}
+
+.section-eyebrow {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-header h2 {
+  margin: 0;
+
+  font-size: clamp(31px, 4vw, 42px);
+
+  line-height: 1.12;
+
+  letter-spacing: -0.045em;
+}
+
+.section-header p {
+  margin: 14px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 15px;
+}
+
+.section-link {
+  flex-shrink: 0;
+
+  color: var(--primary);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* CATEGORIES */
+
+.category-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 18px;
+}
+
+.category-card {
+  position: relative;
+
+  min-height: 190px;
+
+  padding: 23px;
+
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  background: white;
+
+  cursor: pointer;
+
+  transition:
+    transform 170ms ease,
+    border-color 170ms ease,
+    box-shadow 170ms ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #ccdad0;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.category-card__icon {
+  width: 53px;
+  height: 53px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: var(--primary-soft);
+
+  font-size: 25px;
+}
+
+.category-card h3 {
+  margin: 25px 0 7px;
+
+  font-size: 17px;
+}
+
+.category-card p {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 12px;
+}
+
+.category-card > span {
+  position: absolute;
+
+  right: 22px;
+  bottom: 20px;
+
+  color: var(--primary);
+
+  font-weight: 700;
+}
+
+
+/* FEATURED */
+
+.featured {
+  background: var(--surface);
+}
+
+.crop-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 18px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .category-grid,
+  .crop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .categories,
+  .featured {
+    padding: 66px 0;
+  }
+
+  .section-header {
+    display: block;
+  }
+
+  .section-link {
+    display: inline-block;
+
+    margin-top: 20px;
+  }
+
+  .category-grid,
+  .crop-grid {
+    grid-template-columns: 1fr;
+  }
+}

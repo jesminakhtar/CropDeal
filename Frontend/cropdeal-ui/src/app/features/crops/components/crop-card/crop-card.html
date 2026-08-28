@@ -1,0 +1,87 @@
+<article class="crop-card">
+
+  <div
+    class="crop-card__image"
+    [class.crop-card__image--tomato]="crop.visualType === 'tomato'"
+    [class.crop-card__image--wheat]="crop.visualType === 'wheat'"
+    [class.crop-card__image--potato]="crop.visualType === 'potato'"
+    [class.crop-card__image--rice]="crop.visualType === 'rice'"
+  >
+
+    <span class="crop-card__category">
+      {{ crop.category }}
+    </span>
+
+    <span class="crop-card__visual">
+      @switch (crop.visualType) {
+        @case ('tomato') { 🍅 }
+        @case ('wheat') { 🌾 }
+        @case ('potato') { 🥔 }
+        @case ('rice') { 🌾 }
+      }
+    </span>
+
+  </div>
+
+
+  <div class="crop-card__body">
+
+    <div class="crop-card__title-row">
+
+      <div>
+        <h3>{{ crop.name }}</h3>
+
+        <p class="crop-card__farmer">
+          {{ crop.farmer }}
+        </p>
+      </div>
+
+      <button
+        class="crop-card__favorite"
+        aria-label="Save crop"
+      >
+        ♡
+      </button>
+
+    </div>
+
+
+    <div class="crop-card__meta">
+
+      <span>{{ crop.location }}</span>
+
+      <span class="crop-card__dot"></span>
+
+      <span>
+        {{ crop.availableQuantity }} kg available
+      </span>
+
+    </div>
+
+
+    <div class="crop-card__footer">
+
+      <div class="crop-card__price">
+
+        <strong>
+          ₹{{ crop.price }}
+        </strong>
+
+        <span>
+          / {{ crop.unit }}
+        </span>
+
+      </div>
+
+      <button
+        class="crop-card__arrow"
+        aria-label="View crop"
+      >
+        →
+      </button>
+
+    </div>
+
+  </div>
+
+</article>

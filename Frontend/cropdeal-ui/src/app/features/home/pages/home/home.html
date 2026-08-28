@@ -208,4 +208,156 @@
 
   </section>
 
+  <section class="categories">
+
+  <div class="container">
+
+    <div class="section-header">
+
+      <div>
+        <span class="section-eyebrow">
+          Explore marketplace
+        </span>
+
+        <h2>
+          Browse fresh produce
+        </h2>
+
+        <p>
+          Discover quality crops directly from farmers
+          across India.
+        </p>
+      </div>
+
+
+      <a class="section-link">
+        View all categories →
+      </a>
+
+    </div>
+
+
+    <div class="category-grid">
+
+      <article class="category-card">
+
+        <div class="category-card__icon">
+          🥬
+        </div>
+
+        <h3>Vegetables</h3>
+
+        <p>
+          Farm-fresh everyday produce
+        </p>
+
+        <span>→</span>
+
+      </article>
+
+
+      <article class="category-card">
+
+        <div class="category-card__icon">
+          🍎
+        </div>
+
+        <h3>Fruits</h3>
+
+        <p>
+          Seasonal and fresh-picked
+        </p>
+
+        <span>→</span>
+
+      </article>
+
+
+      <article class="category-card">
+
+        <div class="category-card__icon">
+          🌾
+        </div>
+
+        <h3>Grains</h3>
+
+        <p>
+          Rice, wheat and cereals
+        </p>
+
+        <span>→</span>
+
+      </article>
+
+
+      <article class="category-card">
+
+        <div class="category-card__icon">
+          🫘
+        </div>
+
+        <h3>Pulses</h3>
+
+        <p>
+          Lentils and quality pulses
+        </p>
+
+        <span>→</span>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="featured">
+
+  <div class="container">
+
+    <div class="section-header">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Fresh listings
+        </span>
+
+        <h2>
+          Available from farmers
+        </h2>
+
+        <p>
+          Recently listed agricultural produce ready
+          for purchase.
+        </p>
+
+      </div>
+
+
+      <a class="section-link">
+        Browse marketplace →
+      </a>
+
+    </div>
+
+
+    <div class="crop-grid">
+
+      @for (crop of crops; track crop.id) {
+
+        <app-crop-card
+          [crop]="crop"
+        />
+
+      }
+
+    </div>
+
+  </div>
+
+</section>
+
 </main>
