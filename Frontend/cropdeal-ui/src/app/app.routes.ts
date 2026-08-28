@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { farmerGuard } from './core/guards/farmer.guard';
 
 export const routes: Routes = [
   {
@@ -20,7 +21,14 @@ export const routes: Routes = [
         .then(m => m.RegisterComponent)
   },
   {
+    path: 'farmer/dashboard',
+    canActivate: [farmerGuard],
+    loadComponent: () =>
+      import('./features/farmer/pages/dashboard/dashboard')
+        .then(m => m.DashboardComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
-  }
+  },
 ];

@@ -1,0 +1,397 @@
+<main class="dashboard-page">
+
+  <div class="container">
+
+    <!-- HEADER -->
+
+    <section class="dashboard-header">
+
+      <div>
+
+        <span class="dashboard-eyebrow">
+          Farmer workspace
+        </span>
+
+        <h1>
+          Good to see you,
+          {{ currentUser?.firstName }}.
+        </h1>
+
+        <p>
+          Manage your shop, products and marketplace activity
+          from one place.
+        </p>
+
+      </div>
+
+      @if (shop) {
+        <button class="primary-action">
+          + Add product
+        </button>
+      }
+
+    </section>
+
+
+    @if (loading) {
+
+      <div class="dashboard-loading">
+
+        <span class="loader"></span>
+
+        <p>
+          Loading your farm dashboard...
+        </p>
+
+      </div>
+
+    } @else if (errorMessage) {
+
+      <div class="dashboard-error">
+        {{ errorMessage }}
+      </div>
+
+    } @else if (!shop) {
+
+      <!-- NO SHOP -->
+
+      <section class="empty-shop">
+
+        <div class="empty-shop__visual">
+
+          <span>🌱</span>
+
+        </div>
+
+
+        <div class="empty-shop__content">
+
+          <span class="dashboard-eyebrow">
+            Start selling
+          </span>
+
+          <h2>
+            Create your first CropDeal shop.
+          </h2>
+
+          <p>
+            Your shop is where buyers discover your farm,
+            browse your products and purchase your produce.
+          </p>
+
+          <button class="primary-action">
+            Create my shop
+            <span>→</span>
+          </button>
+
+        </div>
+
+      </section>
+
+    } @else {
+
+      <!-- STATS -->
+
+      <section class="stats-grid">
+
+        <article class="stat-card">
+
+          <div class="stat-icon">
+            ◫
+          </div>
+
+          <div>
+            <span>Products</span>
+
+            <strong>
+              {{ totalProducts }}
+            </strong>
+
+            <small>
+              Active listings
+            </small>
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon">
+            ▦
+          </div>
+
+          <div>
+            <span>Available stock</span>
+
+            <strong>
+              {{ totalStock | number }}
+            </strong>
+
+            <small>
+              Total units available
+            </small>
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon">
+            ₹
+          </div>
+
+          <div>
+            <span>Inventory value</span>
+
+            <strong>
+              ₹{{ inventoryValue | number:'1.0-0' }}
+            </strong>
+
+            <small>
+              Current listed value
+            </small>
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon">
+            ★
+          </div>
+
+          <div>
+            <span>Shop rating</span>
+
+            <strong>
+              @if (rating !== null) {
+                {{ rating | number:'1.1-1' }}
+              } @else {
+                —
+              }
+            </strong>
+
+            <small>
+              @if (rating !== null) {
+                Buyer rating
+              } @else {
+                No ratings yet
+              }
+            </small>
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- SHOP + PRODUCTS -->
+
+      <section class="dashboard-grid">
+
+        <article class="shop-panel">
+
+          <div class="panel-heading">
+
+            <div>
+              <span class="panel-eyebrow">
+                My shop
+              </span>
+
+              <h2>
+                {{ shop.name }}
+              </h2>
+            </div>
+
+            <button class="secondary-action">
+              Edit
+            </button>
+
+          </div>
+
+
+          <div class="shop-identity">
+
+            <div class="shop-image">
+
+              @if (shop.imageData) {
+
+                <img
+                  [src]="'data:image/jpeg;base64,' + shop.imageData"
+                  [alt]="shop.name"
+                />
+
+              } @else {
+
+                <span>🌾</span>
+
+              }
+
+            </div>
+
+
+            <div>
+
+              <strong>
+                {{ shop.name }}
+              </strong>
+
+              <span>
+                Managed by {{ currentUser?.firstName }}
+                {{ currentUser?.lastName }}
+              </span>
+
+              <small>
+                Shop ID · {{ shop.id }}
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="shop-status">
+
+            <span class="status-dot"></span>
+
+            Shop is active on CropDeal
+
+          </div>
+
+        </article>
+
+
+        <article class="products-panel">
+
+          <div class="panel-heading">
+
+            <div>
+              <span class="panel-eyebrow">
+                Inventory
+              </span>
+
+              <h2>
+                Recent products
+              </h2>
+            </div>
+
+            @if (products.length) {
+              <button class="secondary-action">
+                View all
+              </button>
+            }
+
+          </div>
+
+
+          @if (!products.length) {
+
+            <div class="empty-products">
+
+              <div>＋</div>
+
+              <strong>
+                No products listed yet
+              </strong>
+
+              <p>
+                Add your first crop and make it available
+                to buyers in the marketplace.
+              </p>
+
+              <button class="primary-action">
+                Add first product
+              </button>
+
+            </div>
+
+          } @else {
+
+            <div class="product-list">
+
+              @for (
+                product of products.slice(0, 4);
+                track product.id
+              ) {
+
+                <div class="product-row">
+
+                  <div class="product-thumbnail">
+
+                    @if (product.imageData) {
+
+                      <img
+                        [src]="
+                          'data:image/jpeg;base64,' +
+                          product.imageData
+                        "
+                        [alt]="product.name"
+                      />
+
+                    } @else {
+
+                      <span>🌱</span>
+
+                    }
+
+                  </div>
+
+
+                  <div class="product-info">
+
+                    <strong>
+                      {{ product.name }}
+                    </strong>
+
+                    <span>
+                      {{ product.category }}
+                    </span>
+
+                  </div>
+
+
+                  <div class="product-quantity">
+
+                    <span>
+                      Stock
+                    </span>
+
+                    <strong>
+                      {{ product.quantity | number }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="product-price">
+
+                    <span>
+                      Price
+                    </span>
+
+                    <strong>
+                      ₹{{ product.price | number:'1.0-2' }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          }
+
+        </article>
+
+      </section>
+
+    }
+
+  </div>
+
+</main>

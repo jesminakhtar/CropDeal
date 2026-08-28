@@ -19,11 +19,11 @@
         Marketplace
       </a>
 
-      <a routerLink="/" fragment="how-it-works">
+      <a href="#how-it-works" fragment="how-it-works">
         How it works
       </a>
 
-      <a routerLink="/" fragment="farmers">
+      <a href="#farmers" fragment="farmers">
         For farmers
       </a>
     </nav>
@@ -32,6 +32,14 @@
     <div class="nav-actions">
 
       @if (currentUser; as user) {
+        @if (user.role === 'FARMER') {
+          <a
+            routerLink="/farmer/dashboard"
+            class="dashboard-link"
+          >
+            Dashboard
+          </a>
+        }
 
         <div class="user-info">
 
