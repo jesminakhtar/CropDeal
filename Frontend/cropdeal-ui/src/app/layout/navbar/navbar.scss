@@ -1,0 +1,100 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  height: 74px;
+
+  border-bottom: 1px solid rgba(226, 232, 228, 0.85);
+
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+}
+
+.navbar__inner {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  letter-spacing: -0.04em;
+}
+
+.brand__icon {
+  width: 35px;
+  height: 35px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: var(--primary);
+}
+
+.brand__icon svg {
+  width: 21px;
+  height: 21px;
+
+  fill: none;
+  stroke: white;
+
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+
+  gap: 34px;
+}
+
+.nav-links a,
+.sign-in {
+  color: #465149;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: color 150ms ease;
+}
+
+.nav-links a:hover,
+.sign-in:hover {
+  color: var(--primary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+}
+
+@media (max-width: 850px) {
+  .nav-links {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .sign-in {
+    display: none;
+  }
+
+  .navbar {
+    height: 66px;
+  }
+}
