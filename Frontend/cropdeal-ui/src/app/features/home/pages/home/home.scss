@@ -712,3 +712,354 @@ h1 span {
     grid-template-columns: 1fr;
   }
 }
+
+/* HOW IT WORKS */
+
+.how-it-works {
+  padding: 100px 0;
+  background: white;
+}
+
+.how-header {
+  max-width: 650px;
+  margin: 0 auto 55px;
+  text-align: center;
+}
+
+.how-header h2 {
+  margin: 0;
+
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1.1;
+
+  letter-spacing: -0.045em;
+}
+
+.how-header p {
+  max-width: 570px;
+
+  margin: 17px auto 0;
+
+  color: var(--text-muted);
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+
+.steps-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+
+.step-card {
+  position: relative;
+
+  padding: 31px;
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  background: white;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow: var(--shadow-sm);
+}
+
+
+.step-number {
+  position: absolute;
+
+  top: 22px;
+  right: 24px;
+
+  color: #dce6df;
+
+  font-size: 30px;
+  font-weight: 800;
+}
+
+
+.step-icon {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: var(--primary-soft);
+}
+
+.step-icon svg {
+  width: 23px;
+  height: 23px;
+
+  fill: none;
+
+  stroke: var(--primary);
+  stroke-width: 1.7;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.step-card h3 {
+  margin: 27px 0 10px;
+
+  font-size: 18px;
+
+  letter-spacing: -0.02em;
+}
+
+.step-card p {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* FARMER CTA */
+
+.farmer-cta {
+  padding: 40px 0 100px;
+}
+
+.farmer-cta__box {
+  min-height: 410px;
+
+  padding: 65px 70px;
+
+  display: grid;
+
+  grid-template-columns: 1.1fr 0.9fr;
+
+  align-items: center;
+
+  gap: 60px;
+
+  overflow: hidden;
+
+  border-radius: 26px;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 255, 255, 0.12),
+      transparent 28%
+    ),
+    var(--primary-dark);
+}
+
+
+.farmer-cta__content {
+  max-width: 590px;
+}
+
+.farmer-cta__eyebrow {
+  display: block;
+
+  margin-bottom: 16px;
+
+  color: #a9d7b9;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.farmer-cta h2 {
+  margin: 0;
+
+  font-size: clamp(34px, 5vw, 49px);
+
+  line-height: 1.07;
+
+  letter-spacing: -0.05em;
+}
+
+.farmer-cta p {
+  max-width: 535px;
+
+  margin: 22px 0 0;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+
+.farmer-cta__actions {
+  margin-top: 31px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 25px;
+}
+
+
+.farmer-cta__primary {
+  color: var(--primary-dark);
+
+  background: white;
+}
+
+.farmer-cta__primary:hover {
+  background: #f1f5f2;
+}
+
+
+.farmer-cta__secondary {
+  color: white;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.farmer-cta__visual {
+  position: relative;
+
+  min-height: 260px;
+
+  display: grid;
+  place-items: center;
+}
+
+
+.farmer-illustration {
+  width: 225px;
+  height: 225px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.06);
+}
+
+
+.farmer-illustration__circle {
+  width: 150px;
+  height: 150px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  font-size: 72px;
+}
+
+
+.farmer-stat {
+  position: absolute;
+
+  min-width: 145px;
+
+  padding: 14px 17px;
+
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  backdrop-filter: blur(10px);
+}
+
+.farmer-stat span,
+.farmer-stat strong {
+  display: block;
+}
+
+.farmer-stat span {
+  margin-bottom: 5px;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 9px;
+}
+
+.farmer-stat strong {
+  font-size: 12px;
+}
+
+.farmer-stat--top {
+  top: 9px;
+  right: 0;
+}
+
+.farmer-stat--bottom {
+  bottom: 10px;
+  left: 0;
+}
+
+
+@media (max-width: 850px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .farmer-cta__box {
+    padding: 50px 40px;
+
+    grid-template-columns: 1fr;
+  }
+
+  .farmer-cta__visual {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 550px) {
+  .how-it-works {
+    padding: 70px 0;
+  }
+
+  .farmer-cta {
+    padding-bottom: 70px;
+  }
+
+  .farmer-cta__box {
+    padding: 42px 25px;
+
+    border-radius: 20px;
+  }
+
+  .farmer-cta__actions {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 18px;
+  }
+}
