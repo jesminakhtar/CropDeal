@@ -68,8 +68,9 @@ public class ShopController {
 			
 			byte[] imageData = file.getBytes();
 			Shop shop = new Shop();
+
 			shop.setName(name);
-			shop.setId(farmerUsername);
+			shop.setFarmerUsername(farmerUsername);
 			shop.setImageData(imageData);
 			
 			Shop addedShop = shopService.addShop(shop);
