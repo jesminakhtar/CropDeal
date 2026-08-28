@@ -1,0 +1,419 @@
+<main class="register-page">
+
+  <section class="register-container container">
+
+    <div class="register-card">
+
+      <!-- LEFT SIDE -->
+
+      <aside class="register-showcase">
+
+        <a routerLink="/" class="showcase-brand">
+          <span>🌱</span>
+          CropDeal
+        </a>
+
+        <div class="showcase-content">
+
+          <span class="showcase-eyebrow">
+            Join the marketplace
+          </span>
+
+          <h1>
+            Agriculture works better when everyone connects directly.
+          </h1>
+
+          <p>
+            Create your CropDeal account and start buying
+            or selling agricultural produce through one
+            transparent marketplace.
+          </p>
+
+          <div class="benefits">
+
+            <div class="benefit">
+              <span>✓</span>
+              <div>
+                <strong>Direct connections</strong>
+                <small>Trade directly between farmers and buyers.</small>
+              </div>
+            </div>
+
+            <div class="benefit">
+              <span>✓</span>
+              <div>
+                <strong>Transparent marketplace</strong>
+                <small>Clear crop quantities and pricing.</small>
+              </div>
+            </div>
+
+            <div class="benefit">
+              <span>✓</span>
+              <div>
+                <strong>Manage everything online</strong>
+                <small>Listings, orders and account activity.</small>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+
+      <!-- FORM -->
+
+      <section class="register-form-section">
+
+        <div class="register-form-wrapper">
+
+          <a routerLink="/login" class="back-link">
+            ← Already have an account?
+          </a>
+
+          <div class="register-heading">
+
+            <span class="register-eyebrow">
+              Create account
+            </span>
+
+            <h2>Get started with CropDeal</h2>
+
+            <p>
+              Tell us how you'll be using the marketplace.
+            </p>
+
+          </div>
+
+
+          @if (errorMessage) {
+            <div class="error-alert">
+              <span>!</span>
+              {{ errorMessage }}
+            </div>
+          }
+
+
+          <form
+            [formGroup]="registerForm"
+            (ngSubmit)="register()"
+          >
+
+            <!-- ROLE -->
+
+            <div class="role-section">
+
+              <label class="field-label">
+                I want to join as
+              </label>
+
+              <div class="role-grid">
+
+                <label
+                  class="role-card"
+                  [class.role-card--selected]="
+                    registerForm.controls.role.value === 'FARMER'
+                  "
+                >
+
+                  <input
+                    type="radio"
+                    value="FARMER"
+                    formControlName="role"
+                  />
+
+                  <span class="role-icon">
+                    🌱
+                  </span>
+
+                  <div>
+                    <strong>Farmer</strong>
+
+                    <small>
+                      List and sell agricultural produce
+                    </small>
+                  </div>
+
+                  <span class="role-check">✓</span>
+
+                </label>
+
+
+                <label
+                  class="role-card"
+                  [class.role-card--selected]="
+                    registerForm.controls.role.value === 'DEALER'
+                  "
+                >
+
+                  <input
+                    type="radio"
+                    value="DEALER"
+                    formControlName="role"
+                  />
+
+                  <span class="role-icon">
+                    🛒
+                  </span>
+
+                  <div>
+                    <strong>Buyer</strong>
+
+                    <small>
+                      Discover and purchase fresh produce
+                    </small>
+                  </div>
+
+                  <span class="role-check">✓</span>
+
+                </label>
+
+              </div>
+
+            </div>
+
+
+            <!-- NAME -->
+
+            <div class="form-row">
+
+              <div class="form-field">
+                <label for="firstName">
+                  First name
+                </label>
+
+                <input
+                  id="firstName"
+                  type="text"
+                  formControlName="firstName"
+                  placeholder="First name"
+                />
+              </div>
+
+
+              <div class="form-field">
+                <label for="lastName">
+                  Last name
+                </label>
+
+                <input
+                  id="lastName"
+                  type="text"
+                  formControlName="lastName"
+                  placeholder="Last name"
+                />
+              </div>
+
+            </div>
+
+
+            <!-- USERNAME + EMAIL -->
+
+            <div class="form-row">
+
+              <div class="form-field">
+
+                <label for="username">
+                  Username
+                </label>
+
+                <input
+                  id="username"
+                  type="text"
+                  formControlName="username"
+                  placeholder="Choose a username"
+                  autocomplete="username"
+                />
+
+                @if (
+                  registerForm.controls.username.touched &&
+                  registerForm.controls.username.invalid
+                ) {
+                  <small class="field-error">
+                    Enter at least 4 characters.
+                  </small>
+                }
+
+              </div>
+
+
+              <div class="form-field">
+
+                <label for="email">
+                  Email
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                />
+
+                @if (
+                  registerForm.controls.email.touched &&
+                  registerForm.controls.email.invalid
+                ) {
+                  <small class="field-error">
+                    Enter a valid email address.
+                  </small>
+                }
+
+              </div>
+
+            </div>
+
+
+            <!-- PHONE + GENDER -->
+
+            <div class="form-row">
+
+              <div class="form-field">
+
+                <label for="phoneNumber">
+                  Phone number
+                </label>
+
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  maxlength="10"
+                  formControlName="phoneNumber"
+                  placeholder="10-digit number"
+                />
+
+                @if (
+                  registerForm.controls.phoneNumber.touched &&
+                  registerForm.controls.phoneNumber.invalid
+                ) {
+                  <small class="field-error">
+                    Enter a valid 10-digit number.
+                  </small>
+                }
+
+              </div>
+
+
+              <div class="form-field">
+
+                <label for="gender">
+                  Gender
+                </label>
+
+                <select
+                  id="gender"
+                  formControlName="gender"
+                >
+                  <option value="" disabled>
+                    Select gender
+                  </option>
+
+                  <option value="Female">
+                    Female
+                  </option>
+
+                  <option value="Male">
+                    Male
+                  </option>
+
+                  <option value="Other">
+                    Other
+                  </option>
+
+                  <option value="Prefer not to say">
+                    Prefer not to say
+                  </option>
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-row">
+
+              <div class="form-field">
+
+                <label for="password">
+                  Password
+                </label>
+
+                <div class="password-field">
+
+                  <input
+                    id="password"
+                    [type]="showPassword ? 'text' : 'password'"
+                    formControlName="password"
+                    placeholder="Minimum 8 characters"
+                    autocomplete="new-password"
+                  />
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePassword()"
+                  >
+                    {{ showPassword ? 'Hide' : 'Show' }}
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-field">
+
+                <label for="confirmPassword">
+                  Confirm password
+                </label>
+
+                <input
+                  id="confirmPassword"
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  placeholder="Repeat password"
+                  autocomplete="new-password"
+                />
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="register-button"
+              [disabled]="loading"
+            >
+
+              @if (loading) {
+                <span class="spinner"></span>
+                Creating account...
+              } @else {
+                Create account
+                <span>→</span>
+              }
+
+            </button>
+
+          </form>
+
+
+          <p class="terms">
+            By creating an account, you agree to CropDeal's
+            Terms and Privacy Policy.
+          </p>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </section>
+
+</main>

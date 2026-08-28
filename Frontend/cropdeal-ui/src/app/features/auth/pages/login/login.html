@@ -1,0 +1,247 @@
+<main class="auth-page">
+
+  <section class="auth-container container">
+
+    <div class="auth-card">
+
+      <div class="auth-form-section">
+
+        <div class="auth-form-wrapper">
+
+          <a routerLink="/" class="back-link">
+            ← Back to marketplace
+          </a>
+
+          <div class="auth-heading">
+
+            <span class="auth-eyebrow">
+              Welcome back
+            </span>
+
+            <h1>Sign in to CropDeal</h1>
+
+            <p>
+              Access your marketplace account and continue
+              trading directly with farmers and buyers.
+            </p>
+
+          </div>
+
+
+          @if (errorMessage) {
+            <div class="error-alert">
+              <span>!</span>
+              {{ errorMessage }}
+            </div>
+          }
+
+
+          <form
+            [formGroup]="loginForm"
+            (ngSubmit)="login()"
+          >
+
+            <div class="form-field">
+
+              <label for="username">
+                Username
+              </label>
+
+              <input
+                id="username"
+                type="text"
+                formControlName="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+              />
+
+              @if (
+                loginForm.controls.username.touched &&
+                loginForm.controls.username.invalid
+              ) {
+                <small class="field-error">
+                  Username is required.
+                </small>
+              }
+
+            </div>
+
+
+            <div class="form-field">
+
+              <div class="label-row">
+                <label for="password">
+                  Password
+                </label>
+
+                <a class="forgot-password">
+                  Forgot password?
+                </a>
+              </div>
+
+              <div class="password-field">
+
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePassword()"
+                >
+                  {{ showPassword ? 'Hide' : 'Show' }}
+                </button>
+
+              </div>
+
+              @if (
+                loginForm.controls.password.touched &&
+                loginForm.controls.password.invalid
+              ) {
+                <small class="field-error">
+                  Password is required.
+                </small>
+              }
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="login-button"
+              [disabled]="loading"
+            >
+              @if (loading) {
+                <span class="spinner"></span>
+                Signing in...
+              } @else {
+                Sign in
+                <span>→</span>
+              }
+            </button>
+
+          </form>
+
+
+          <p class="register-text">
+            New to CropDeal?
+            <a routerLink="/register">
+              Create an account
+            </a>
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="auth-showcase">
+
+        <div class="showcase-decoration showcase-decoration--one">
+        </div>
+
+        <div class="showcase-decoration showcase-decoration--two">
+        </div>
+
+
+        <div class="showcase-content">
+
+          <span class="showcase-badge">
+            CropDeal Marketplace
+          </span>
+
+          <h2>
+            Better agricultural trade starts with a direct connection.
+          </h2>
+
+          <p>
+            Manage produce, discover opportunities and trade
+            through one transparent marketplace.
+          </p>
+
+
+          <div class="showcase-features">
+
+            <div class="showcase-feature">
+              <span class="feature-icon">✓</span>
+
+              <div>
+                <strong>Direct marketplace</strong>
+                <small>
+                  Farmers and buyers connect directly
+                </small>
+              </div>
+            </div>
+
+
+            <div class="showcase-feature">
+              <span class="feature-icon">✓</span>
+
+              <div>
+                <strong>Transparent pricing</strong>
+                <small>
+                  Clear crop prices and quantities
+                </small>
+              </div>
+            </div>
+
+
+            <div class="showcase-feature">
+              <span class="feature-icon">✓</span>
+
+              <div>
+                <strong>Simple order management</strong>
+                <small>
+                  Track marketplace transactions easily
+                </small>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="showcase-card">
+
+          <div class="showcase-card__top">
+
+            <div>
+              <span>Marketplace activity</span>
+              <strong>Fresh produce</strong>
+            </div>
+
+            <span class="live-indicator">
+              Live
+            </span>
+
+          </div>
+
+
+          <div class="showcase-product">
+
+            <div class="product-image">
+              🌾
+            </div>
+
+            <div>
+              <strong>Premium Wheat</strong>
+              <span>Direct from verified farmers</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>

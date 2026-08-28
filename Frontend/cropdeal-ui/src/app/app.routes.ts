@@ -7,7 +7,18 @@ export const routes: Routes = [
       import('./features/home/pages/home/home')
         .then(m => m.HomeComponent)
   },
-
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./features/auth/pages/login/login')
+        .then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/auth/pages/register/register')
+        .then(m => m.RegisterComponent)
+  },
   {
     path: '**',
     redirectTo: ''
