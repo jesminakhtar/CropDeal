@@ -32,10 +32,19 @@ public class ShopService {
         return shopRepository.findById(id).orElseThrow(() -> new ShopNotFoundException("Shop with id " + id + "does not exist"));
     }
 
-    public Shop addShop(Shop shop) {
-    	shop.setId(shop.getFarmerUsername().substring(0,1) + generateUniqueId());
-        return shopRepository.save(shop);
-    }
+	public Shop addShop(Shop shop) {
+		if (shop.getId() == null || shop.getId().isBlank()) {
+			shop.setId(
+					shop.getFarmerUsername().substring(0, 1)
+							+ generateUniqueId()
+			);
+		}
+		return shopRepository.save(shop);
+	}
+
+	public Shop saveShop(Shop shop) {
+		return shopRepository.save(shop);
+	}
 
     public List<Shop> getAllShops() {
         return shopRepository.findAll();

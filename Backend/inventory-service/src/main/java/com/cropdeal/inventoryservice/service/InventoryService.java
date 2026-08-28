@@ -52,8 +52,8 @@ public class InventoryService {
             products.add(product);
             
             shop.setProducts(products);
-            
-            shopService.addShop(shop);
+
+			shopService.saveShop(shop);
 			
 			return repository.save(product);
 		}
@@ -73,8 +73,8 @@ public class InventoryService {
 		
 		Shop shop = shopService.getShopById(product.getShopId());
 		shop.getProducts().remove(product);
-		
-		shopService.addShop(shop);
+
+		shopService.saveShop(shop);
 		repository.delete(product);
 	}
 
