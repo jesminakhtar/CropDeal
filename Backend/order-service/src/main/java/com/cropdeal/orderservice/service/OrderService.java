@@ -56,7 +56,8 @@ public class OrderService {
 	
 	private static final String CIRCUIT_BREAKER_NAME = "inventoryServiceCircuitBreaker";
 	private static final String RETRY_NAME = "inventoryServiceRetry";
-	private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+	private static final String INVENTORY_SERVICE_URL =
+			"http://inventory-service";
 	
 	public List<Order> getAllOrders() {
 		return repository.findAll();

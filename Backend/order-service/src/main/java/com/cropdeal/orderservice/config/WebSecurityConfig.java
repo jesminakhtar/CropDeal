@@ -18,27 +18,34 @@ public class WebSecurityConfig {
 
 	@Autowired
     private JwtTokenProvider jwtTokenProvider;
-	
+
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
+	public SecurityFilterChain filterChain(
+			HttpSecurity security) throws Exception {
+
 		security
-			.csrf().disable()
-			.cors().and()
-			.authorizeHttpRequests()
-			.requestMatchers("/orders/**").permitAll()
-			.requestMatchers("/carts/**").permitAll()
-			.requestMatchers("/receipts/**").permitAll()
-			.requestMatchers("/payments/**").permitAll()
-			.requestMatchers("/transactions").permitAll()
-			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-			.anyRequest().authenticated()
-			.and()
-			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		
-		
+				.csrf(csrf -> csrf.disable())
+				.cors(cors -> cors.disable())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/orders/**").permitAll()
+						.requestMatchers("/carts/**").permitAll()
+						.requestMatchers("/receipts/**").permitAll()
+						.requestMatchers("/payments/**").permitAll()
+						.requestMatchers("/transactions/**").permitAll()
+						.requestMatchers(
+								"/v3/api-docs/**",
+								"/swagger-ui/**",
+								"/swagger-ui.html"
+						).permitAll()
+						.anyRequest().authenticated()
+				)
+				.addFilterBefore(
+						jwtTokenFilter(),
+						UsernamePasswordAuthenticationFilter.class
+				);
+
 		return security.build();
 	}
-	
 	@Bean
     public JwtTokenFilter jwtTokenFilter() {
         return new JwtTokenFilter(jwtTokenProvider);

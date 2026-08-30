@@ -31,7 +31,8 @@ public class CartService {
     private RestTemplate restTemplate;
 
 
-    private static final String INVENTORY_SERVICE_URL = "http://localhost:8082";
+    private static final String INVENTORY_SERVICE_URL =
+            "http://inventory-service";
 
     public Cart getCartByDealerId(String dId) throws CartNotFoundException {
         log.info("Fetching cart for dealer: {}", dId);
@@ -49,34 +50,37 @@ public class CartService {
     }
 
     public Cart addToCart(String dealerId, String productId, int quantity) throws InvalidProductException, CartNotFoundException, OutOfStockException {
-    	log.info("Adding product {} with quantity {} to cart for dealer: {}", productId, quantity, dealerId);
+        log.info("Adding product {} with quantity {} to cart for dealer: {}", productId, quantity, dealerId);
         Cart cart = cartRepository.findByDealerId(dealerId).orElse(null);
-        
+
         if (cart == null) {
-			cart = createCart(dealerId);
+            cart = createCart(dealerId);
         }
-			
+
         Product product = getProductByRestTemplate(productId);
-        
-        log.info("Product : {}" , product);
-        
+
+        log.info("Product : {}", product);
+
         if (product == null) {
             throw new InvalidProductException("Invalid product ID: " + productId);
         }
-        
-        if (product.getQuantity() < quantity) {
-        	throw new OutOfStockException("Product " + productId + " is out of stock");
-		}
-        
-        Map<String, Integer> cartItems = cart.getCartItems();
-        log.info("CartItems : {}" , cartItems);
-        
-        cartItems.put(productId, quantity);
-        cart.setTotalPrice(getTotalPrice(dealerId));
 
-        log.info("Added product in cart : {}" , cartItems);
-        log.info("Cart value : {}" , cart.getTotalPrice());
-        
+        if (product.getQuantity() < quantity) {
+            throw new OutOfStockException("Product " + productId + " is out of stock");
+        }
+
+        Map<String, Integer> cartItems = cart.getCartItems();
+        log.info("CartItems : {}", cartItems);
+
+        cartItems.put(productId, quantity);
+
+        double totalPrice = calculateTotalPrice(cartItems);
+        cart.setTotalPrice(totalPrice);
+
+        log.info(
+                "Total immediately before save: {}",
+                cart.getTotalPrice()
+        );
 
         return cartRepository.save(cart);
     }
@@ -92,7 +96,7 @@ public class CartService {
         }
 
         cartItems.put(productId, quantity);
-        cart.setTotalPrice(getTotalPrice(dealerId));
+        cart.setTotalPrice(calculateTotalPrice(cartItems));
 
         return cartRepository.save(cart);
     }
@@ -107,7 +111,7 @@ public class CartService {
         }
 
         cartItems.remove(productId);
-        cart.setTotalPrice(getTotalPrice(dealerId));
+        cart.setTotalPrice(calculateTotalPrice(cartItems));
 
         return cartRepository.save(cart);
     }
@@ -127,6 +131,48 @@ public class CartService {
 		}
 		return totalPrice;
     	 
+    }
+
+    private double calculateTotalPrice(
+            Map<String, Integer> cartItems) {
+
+        double totalPrice = 0.0;
+
+        for (Map.Entry<String, Integer> entry
+                : cartItems.entrySet()) {
+
+            String productId = entry.getKey();
+            int quantity = entry.getValue();
+
+            Product product =
+                    getProductByRestTemplate(productId);
+
+            log.info(
+                    "CART CALC -> productId={}, product={}, price={}, quantity={}",
+                    productId,
+                    product.getName(),
+                    product.getPrice(),
+                    quantity
+            );
+
+            double itemPrice =
+                    product.getPrice() * quantity;
+
+            totalPrice += itemPrice;
+
+            log.info(
+                    "CART CALC -> itemPrice={}, runningTotal={}",
+                    itemPrice,
+                    totalPrice
+            );
+        }
+
+        log.info(
+                "CART CALC -> FINAL TOTAL={}",
+                totalPrice
+        );
+
+        return totalPrice;
     }
 
     public void clearCart(String dealerId) throws CartNotFoundException {
