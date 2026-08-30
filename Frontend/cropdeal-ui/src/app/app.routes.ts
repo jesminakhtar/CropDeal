@@ -34,6 +34,13 @@ export const routes: Routes = [
       import('./features/farmer/pages/create-shop/create-shop')
         .then(m => m.CreateShopComponent)
   },
+  {
+    path: 'farmer/products/new/:shopId',
+    canActivate: [farmerGuard],
+    loadComponent: () =>
+      import('./features/farmer/pages/add-product/add-product')
+        .then(m => m.AddProductComponent)
+  },
 
   {
     path: '**',

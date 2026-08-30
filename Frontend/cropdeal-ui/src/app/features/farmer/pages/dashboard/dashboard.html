@@ -25,9 +25,12 @@
       </div>
 
       @if (shop) {
-        <button class="primary-action">
+        <a
+          [routerLink]="['/farmer/products/new', shop.id]"
+          class="primary-action"
+        >
           + Add product
-        </button>
+        </a>
       }
 
     </section>
@@ -304,9 +307,12 @@
                 to buyers in the marketplace.
               </p>
 
-              <button class="primary-action">
+              <a
+                [routerLink]="['/farmer/products/new', shop.id]"
+                class="primary-action"
+              >
                 Add first product
-              </button>
+              </a>
 
             </div>
 

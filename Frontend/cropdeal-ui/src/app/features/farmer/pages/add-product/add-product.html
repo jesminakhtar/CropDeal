@@ -1,0 +1,333 @@
+<main class="add-product-page">
+
+  <div class="container">
+
+    <div class="product-layout">
+
+      <section class="product-form-panel">
+
+        <a
+          routerLink="/farmer/dashboard"
+          class="back-link"
+        >
+          ← Back to dashboard
+        </a>
+
+        <div class="page-heading">
+
+          <span class="eyebrow">
+            Inventory
+          </span>
+
+          <h1>Add a new product</h1>
+
+          <p>
+            List fresh produce in your shop and make it
+            available to buyers on CropDeal.
+          </p>
+
+        </div>
+
+
+        @if (errorMessage()) {
+
+          <div class="error-alert">
+            {{ errorMessage() }}
+          </div>
+
+        }
+
+
+        <form
+          [formGroup]="productForm"
+          (ngSubmit)="addProduct()"
+        >
+
+          <div class="form-row">
+
+            <div class="form-field">
+
+              <label for="name">
+                Product name
+              </label>
+
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                placeholder="e.g. Fresh Tomatoes"
+              />
+
+              @if (
+                productForm.controls.name.touched &&
+                productForm.controls.name.invalid
+              ) {
+                <small>
+                  Enter a product name.
+                </small>
+              }
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label for="category">
+                Category
+              </label>
+
+              <select
+                id="category"
+                formControlName="category"
+              >
+
+                <option value="" disabled>
+                  Select category
+                </option>
+
+                <option value="Vegetables">
+                  Vegetables
+                </option>
+
+                <option value="Fruits">
+                  Fruits
+                </option>
+
+                <option value="Grains">
+                  Grains
+                </option>
+
+                <option value="Pulses">
+                  Pulses
+                </option>
+
+                <option value="Spices">
+                  Spices
+                </option>
+
+                <option value="Other">
+                  Other
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-row">
+
+            <div class="form-field">
+
+              <label for="quantity">
+                Available quantity (kg)
+              </label>
+
+              <input
+                id="quantity"
+                type="number"
+                min="1"
+                formControlName="quantity"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label for="price">
+                Price per kg (₹)
+              </label>
+
+              <input
+                id="price"
+                type="number"
+                min="1"
+                step="0.01"
+                formControlName="price"
+              />
+
+            </div>
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label for="description">
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              rows="5"
+              formControlName="description"
+              placeholder="Tell buyers about quality, harvest, variety or other useful details..."
+            ></textarea>
+
+            @if (
+              productForm.controls.description.touched &&
+              productForm.controls.description.invalid
+            ) {
+              <small>
+                Enter at least 10 characters.
+              </small>
+            }
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label>
+              Product image
+            </label>
+
+            <label class="upload-box">
+
+              <input
+                type="file"
+                accept="image/*"
+                (change)="selectImage($event)"
+              />
+
+              @if (previewUrl()) {
+
+                <img
+                  [src]="previewUrl()"
+                  alt="Product preview"
+                />
+
+                <div class="upload-overlay">
+                  Change image
+                </div>
+
+              } @else {
+
+                <div class="upload-placeholder">
+
+                  <span>↑</span>
+
+                  <strong>
+                    Upload a product photo
+                  </strong>
+
+                  <small>
+                    JPG, PNG or WEBP · Max 5 MB
+                  </small>
+
+                </div>
+
+              }
+
+            </label>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="loading()"
+          >
+
+            @if (loading()) {
+
+              Adding product...
+
+            } @else {
+
+              Add product
+              <span>→</span>
+
+            }
+
+          </button>
+
+        </form>
+
+      </section>
+
+
+      <aside class="preview-panel">
+
+        <span class="preview-label">
+          LISTING PREVIEW
+        </span>
+
+        <article class="preview-card">
+
+          <div class="preview-image">
+
+            @if (previewUrl()) {
+
+              <img
+                [src]="previewUrl()"
+                alt="Product"
+              />
+
+            } @else {
+
+              <span>🌱</span>
+
+            }
+
+            <span class="category-badge">
+              {{
+                productForm.controls.category.value ||
+                'Category'
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="preview-body">
+
+            <h2>
+              {{
+                productForm.controls.name.value ||
+                'Your product'
+              }}
+            </h2>
+
+            <p>
+              {{
+                productForm.controls.description.value ||
+                'Your product description will appear here.'
+              }}
+            </p>
+
+
+            <div class="preview-meta">
+
+              <div>
+                <span>Available</span>
+
+                <strong>
+                  {{ productForm.controls.quantity.value }} kg
+                </strong>
+              </div>
+
+              <div>
+                <span>Price</span>
+
+                <strong>
+                  ₹{{ productForm.controls.price.value }}/kg
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+</main>

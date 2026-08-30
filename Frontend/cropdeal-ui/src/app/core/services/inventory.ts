@@ -49,4 +49,29 @@ export class InventoryService {
       formData
     );
   }
+
+  addProduct(
+    shopId: string,
+    name: string,
+    category: string,
+    quantity: number,
+    price: number,
+    description: string,
+    image: File
+  ) {
+    const formData = new FormData();
+
+    formData.append('file', image);
+    formData.append('name', name);
+    formData.append('shopId', shopId);
+    formData.append('category', category);
+    formData.append('quantity', quantity.toString());
+    formData.append('price', price.toString());
+    formData.append('description', description);
+
+    return this.http.post<Product>(
+      `${this.apiUrl}/products/add`,
+      formData
+    );
+  }
 }
