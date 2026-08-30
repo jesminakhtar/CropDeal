@@ -9,7 +9,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
-import { AuthService } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth-service';
 
 import { Cart } from '../../../../core/models/cart.model';
 import { Product } from '../../../../core/models/inventory.model';

@@ -6,7 +6,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth-service';
 import { InventoryService } from '../../../../core/services/inventory-service';
 
 @Component({

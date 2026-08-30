@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { farmerGuard } from './core/guards/farmer.guard';
+import { buyerGuard } from './core/guards/buyer.guard';
 
 export const routes: Routes = [
   {
@@ -58,6 +59,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/cart/pages/cart/cart')
         .then(m => m.CartComponent)
+  },
+  {
+  path: 'checkout',
+    canActivate: [buyerGuard],
+    loadComponent: () =>
+      import('./features/checkout/pages/checkout/checkout')
+        .then(m => m.CheckoutComponent)
   },
   {
     path: '**',

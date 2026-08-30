@@ -1,0 +1,502 @@
+<main class="checkout-page">
+
+  <div class="container">
+
+    <a
+      routerLink="/cart"
+      class="back-link"
+    >
+      ← Back to cart
+    </a>
+
+
+    @if (placedOrder(); as order) {
+
+      <section class="order-success">
+
+        <div class="success-icon">
+          ✓
+        </div>
+
+        <span class="eyebrow">
+          Order created
+        </span>
+
+        <h1>
+          Your order is pending payment.
+        </h1>
+
+        <p>
+          CropDeal has created your order successfully.
+          Payment will be completed in the next step.
+        </p>
+
+
+        <div class="order-reference">
+
+          <div>
+
+            <span>
+              Order ID
+            </span>
+
+            <strong>
+              {{ order.orderId }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Status
+            </span>
+
+            <strong class="pending">
+              {{ order.status }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Total
+            </span>
+
+            <strong>
+              ₹{{ order.totalPrice | number:'1.0-2' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="payment-button"
+          type="button"
+        >
+          Continue to payment
+          <span>→</span>
+        </button>
+
+        <a
+          routerLink="/marketplace"
+          class="continue-link"
+        >
+          Return to marketplace
+        </a>
+
+      </section>
+
+    } @else {
+
+      <div class="page-heading">
+
+        <span class="eyebrow">
+          Secure checkout
+        </span>
+
+        <h1>
+          Delivery & order review
+        </h1>
+
+        <p>
+          Choose where your produce should be delivered
+          before placing the order.
+        </p>
+
+      </div>
+
+
+      @if (errorMessage()) {
+
+        <div class="error-alert">
+          {{ errorMessage() }}
+        </div>
+
+      }
+
+
+      @if (loading()) {
+
+        <div class="loading-state">
+          Loading checkout...
+        </div>
+
+      } @else {
+
+        <div class="checkout-layout">
+
+
+          <!-- ADDRESS -->
+
+          <section class="address-panel">
+
+            <div class="panel-heading">
+
+              <div>
+
+                <span class="eyebrow">
+                  Delivery
+                </span>
+
+                <h2>
+                  Delivery address
+                </h2>
+
+              </div>
+
+
+              @if (addresses().length) {
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  (click)="toggleAddressForm()"
+                >
+                  + Add address
+                </button>
+
+              }
+
+            </div>
+
+
+            @if (addresses().length) {
+
+              <div class="address-list">
+
+                @for (
+                  address of addresses();
+                  track address.id
+                ) {
+
+                  <button
+                    type="button"
+                    class="address-card"
+                    [class.address-card--selected]="
+                      selectedAddressId() ===
+                      address.id
+                    "
+                    (click)="selectAddress(address.id)"
+                  >
+
+                    <span class="address-radio">
+                      @if (
+                        selectedAddressId() ===
+                        address.id
+                      ) {
+                        ✓
+                      }
+                    </span>
+
+
+                    <div>
+
+                      <strong>
+                        {{ address.name }}
+                      </strong>
+
+                      <p>
+                        {{ address.houseNo }},
+                        {{ address.roadName }}
+                      </p>
+
+                      @if (address.landmark) {
+                        <p>
+                          {{ address.landmark }}
+                        </p>
+                      }
+
+                      <p>
+                        {{ address.city }},
+                        {{ address.state }}
+                        {{ address.pin }}
+                      </p>
+
+                      <small>
+                        {{ address.country }}
+                      </small>
+
+                    </div>
+
+                  </button>
+
+                }
+
+              </div>
+
+            }
+
+
+            @if (showAddressForm()) {
+
+              <form
+                class="address-form"
+                [formGroup]="addressForm"
+                (ngSubmit)="saveAddress()"
+              >
+
+                <h3>
+                  Add delivery address
+                </h3>
+
+
+                <div class="form-row">
+
+                  <div class="form-field">
+
+                    <label>
+                      Label
+                    </label>
+
+                    <input
+                      type="text"
+                      formControlName="name"
+                      placeholder="Home"
+                    />
+
+                  </div>
+
+
+                  <div class="form-field">
+
+                    <label>
+                      House / Flat no.
+                    </label>
+
+                    <input
+                      type="text"
+                      formControlName="houseNo"
+                    />
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-field">
+
+                  <label>
+                    Road / Street
+                  </label>
+
+                  <input
+                    type="text"
+                    formControlName="roadName"
+                  />
+
+                </div>
+
+
+                <div class="form-field">
+
+                  <label>
+                    Landmark
+                  </label>
+
+                  <input
+                    type="text"
+                    formControlName="landmark"
+                  />
+
+                </div>
+
+
+                <div class="form-row">
+
+                  <div class="form-field">
+
+                    <label>
+                      PIN code
+                    </label>
+
+                    <input
+                      type="text"
+                      maxlength="6"
+                      formControlName="pin"
+                    />
+
+                  </div>
+
+
+                  <div class="form-field">
+
+                    <label>
+                      City
+                    </label>
+
+                    <input
+                      type="text"
+                      formControlName="city"
+                    />
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                  <div class="form-field">
+
+                    <label>
+                      State
+                    </label>
+
+                    <input
+                      type="text"
+                      formControlName="state"
+                    />
+
+                  </div>
+
+
+                  <div class="form-field">
+
+                    <label>
+                      Country
+                    </label>
+
+                    <input
+                      type="text"
+                      formControlName="country"
+                    />
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="submit"
+                  class="save-address-button"
+                  [disabled]="submitting()"
+                >
+                  Save address
+                </button>
+
+              </form>
+
+            }
+
+          </section>
+
+
+          <!-- ORDER SUMMARY -->
+
+          <aside class="summary-panel">
+
+            <span class="eyebrow">
+              Order summary
+            </span>
+
+            <h2>
+              Review your order
+            </h2>
+
+
+            <div class="summary-row">
+
+              <span>
+                Products
+              </span>
+
+              <strong>
+                {{ productCount }}
+              </strong>
+
+            </div>
+
+
+            <div class="summary-row">
+
+              <span>
+                Subtotal
+              </span>
+
+              <strong>
+                ₹{{
+                  cart()?.totalPrice
+                  | number:'1.0-2'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="summary-row muted">
+
+              <span>
+                Delivery
+              </span>
+
+              <span>
+                Calculated separately
+              </span>
+
+            </div>
+
+
+            <div class="summary-total">
+
+              <div>
+                <span>
+                  Total
+                </span>
+
+                <small>
+                  Before delivery
+                </small>
+              </div>
+
+              <strong>
+                ₹{{
+                  cart()?.totalPrice
+                  | number:'1.0-2'
+                }}
+              </strong>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="place-order-button"
+              [disabled]="
+                submitting() ||
+                !selectedAddressId()
+              "
+              (click)="placeOrder()"
+            >
+
+              @if (submitting()) {
+                Placing order...
+              } @else {
+                Place order
+                <span>→</span>
+              }
+
+            </button>
+
+
+            <p class="payment-note">
+              Payment will be completed after the
+              pending order is created.
+            </p>
+
+          </aside>
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</main>

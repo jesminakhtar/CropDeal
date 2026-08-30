@@ -13,7 +13,7 @@ import {
 
 import { InventoryService } from '../../../../core/services/inventory-service';
 import { CartService } from '../../../../core/services/cart-service';
-import { AuthService } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth-service';
 
 import { Product } from '../../../../core/models/inventory.model';
 

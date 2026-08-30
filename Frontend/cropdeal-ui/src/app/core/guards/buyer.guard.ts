@@ -3,10 +3,9 @@ import {
   CanActivateFn,
   Router
 } from '@angular/router';
-
 import { AuthService } from '../services/auth-service';
 
-export const farmerGuard: CanActivateFn = () => {
+export const buyerGuard: CanActivateFn = () => {
 
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -17,7 +16,7 @@ export const farmerGuard: CanActivateFn = () => {
     return router.createUrlTree(['/login']);
   }
 
-  if (user.role !== 'FARMER') {
+  if (user.role !== 'DEALER') {
     return router.createUrlTree(['/']);
   }
 

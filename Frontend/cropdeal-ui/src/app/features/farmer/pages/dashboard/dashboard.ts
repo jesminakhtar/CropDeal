@@ -7,7 +7,7 @@ import {
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth-service';
 import { InventoryService } from '../../../../core/services/inventory-service';
 
 import {
