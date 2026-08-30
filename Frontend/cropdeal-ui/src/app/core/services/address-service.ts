@@ -10,7 +10,6 @@ import {
   providedIn: 'root'
 })
 export class AddressService {
-
   private readonly apiUrl = 'http://localhost:8080/address';
 
   constructor(private http: HttpClient) {}
@@ -25,6 +24,12 @@ export class AddressService {
     return this.http.post<Address>(
       `${this.apiUrl}/add`,
       request
+    );
+  }
+
+  getAddressById(addressId: string) {
+    return this.http.get<Address>(
+        `${this.apiUrl}/${addressId}`
     );
   }
 }

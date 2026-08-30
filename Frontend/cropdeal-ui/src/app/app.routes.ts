@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { farmerGuard } from './core/guards/farmer.guard';
 import { buyerGuard } from './core/guards/buyer.guard';
 import { OrdersComponent } from './features/buyer/orders/orders';
+import { OrderDetailsComponent } from './features/buyer/order-details/order-details';
 
 export const routes: Routes = [
   {
@@ -71,6 +72,11 @@ export const routes: Routes = [
   {
   path: 'orders',
     component: OrdersComponent,
+    canActivate: [buyerGuard]
+  },
+  {
+  path: 'orders/:orderId',
+    component: OrderDetailsComponent,
     canActivate: [buyerGuard]
   },
   {

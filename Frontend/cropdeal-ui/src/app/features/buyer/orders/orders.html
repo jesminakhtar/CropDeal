@@ -131,13 +131,13 @@
 
                 </div>
 
-                <button
-                  type="button"
-                  class="details-button"
+                <a
+                    [routerLink]="['/orders', order.orderId]"
+                    class="details-button"
                 >
-                  View details
-                  <span>→</span>
-                </button>
+                    View details
+                    <span>→</span>
+                </a>
 
               </div>
 

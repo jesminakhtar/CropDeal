@@ -1,0 +1,225 @@
+<main class="order-details-page">
+  <div class="container">
+
+    <a routerLink="/orders" class="back-link">
+      ← Back to My Orders
+    </a>
+
+    @if (errorMessage()) {
+      <div class="error-alert">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (loading()) {
+
+      <div class="loading-state">
+        Loading order details...
+      </div>
+
+    } @else if (order(); as currentOrder) {
+
+      <div class="page-header">
+        <div>
+          <span class="eyebrow">Order details</span>
+          <h1>Order #{{ currentOrder.orderId }}</h1>
+          <p>Review your order, payment and delivery information.</p>
+        </div>
+
+        <span
+          class="status-badge"
+          [class.status-placed]="currentOrder.status === 'Placed'"
+          [class.status-pending]="currentOrder.status === 'Pending'"
+        >
+          {{ currentOrder.status }}
+        </span>
+      </div>
+
+      <div class="details-layout">
+
+        <div class="main-column">
+
+          <section class="details-card">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">Items</span>
+                <h2>Order summary</h2>
+              </div>
+            </div>
+
+            <div class="product-list">
+
+              @for (product of products(); track product.productId) {
+
+                <div class="product-row">
+
+                  <div class="product-image">
+                    @if (product.image) {
+                      <img [src]="product.image" [alt]="product.name">
+                    } @else {
+                      <span>🌾</span>
+                    }
+                  </div>
+
+                  <div class="product-info">
+                    <strong>{{ product.name }}</strong>
+                    <span>Product ID: {{ product.productId }}</span>
+                  </div>
+
+                  <div class="quantity">
+                    <span>Quantity</span>
+                    <strong>{{ product.quantity }}</strong>
+                  </div>
+
+                  <div class="item-price">
+                    <span>Price</span>
+
+                    @if (product.price > 0) {
+                      <strong>
+                        ₹{{ product.price | number:'1.0-2' }}
+                      </strong>
+                    } @else {
+                      <strong>—</strong>
+                    }
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+            <div class="order-total">
+              <span>Total paid</span>
+
+              <strong>
+                ₹{{ currentOrder.totalPrice | number:'1.0-2' }}
+              </strong>
+            </div>
+
+          </section>
+
+          <section class="details-card">
+            <span class="eyebrow">Delivery</span>
+            <h2>Delivery address</h2>
+
+            @if (address(); as deliveryAddress) {
+
+              <div class="address-details">
+
+                <strong>{{ deliveryAddress.name }}</strong>
+
+                <p>
+                  {{ deliveryAddress.houseNo }},
+                  {{ deliveryAddress.roadName }}
+                </p>
+
+                @if (deliveryAddress.landmark) {
+                  <p>{{ deliveryAddress.landmark }}</p>
+                }
+
+                <p>
+                  {{ deliveryAddress.city }},
+                  {{ deliveryAddress.state }}
+                  {{ deliveryAddress.pin }}
+                </p>
+
+                <p>{{ deliveryAddress.country }}</p>
+
+                @if (deliveryAddress.type) {
+                  <span class="address-type">
+                    {{ deliveryAddress.type }}
+                  </span>
+                }
+
+              </div>
+
+            } @else {
+
+              <p class="muted-text">
+                Delivery address could not be loaded.
+              </p>
+
+            }
+
+          </section>
+
+        </div>
+
+        <aside class="sidebar">
+
+          <section class="details-card payment-card">
+
+            <span class="eyebrow">Payment</span>
+            <h2>Payment details</h2>
+
+            <div class="detail-row">
+              <span>Payment status</span>
+
+              <strong
+                [class.success-text]="currentOrder.paymentStatus === 'Done'"
+              >
+                {{ currentOrder.paymentStatus || 'Pending' }}
+              </strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Payment method</span>
+              <strong>{{ paymentMethod }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Order status</span>
+              <strong>{{ currentOrder.status }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Amount</span>
+
+              <strong>
+                ₹{{ currentOrder.totalPrice | number:'1.0-2' }}
+              </strong>
+            </div>
+
+            @if (currentOrder.transactionId) {
+
+              <div class="transaction-box">
+
+                <span>Transaction ID</span>
+
+                <strong>
+                  {{ currentOrder.transactionId }}
+                </strong>
+
+                <small>
+                  ✓ Verified by Razorpay
+                </small>
+
+              </div>
+
+            }
+
+          </section>
+
+          <section class="support-card">
+
+            <h3>Need help?</h3>
+
+            <p>
+              Keep your order ID available when contacting CropDeal support.
+            </p>
+
+            <strong>
+              #{{ currentOrder.orderId }}
+            </strong>
+
+          </section>
+
+        </aside>
+
+      </div>
+
+    }
+
+  </div>
+</main>
