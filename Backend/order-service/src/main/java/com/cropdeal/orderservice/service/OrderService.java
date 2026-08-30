@@ -4,6 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,21 +69,32 @@ public class OrderService {
 				.orElseThrow(() -> new InvalidOrderException("Invalid order ID: " + orderId));
 	}
 
-	public Order placeOrder(String dealerId, String addressId) throws CartNotFoundException, NoSuchAlgorithmException {
-		
+	public Order placeOrder(
+			String dealerId,
+			String addressId
+	) throws CartNotFoundException,
+			NoSuchAlgorithmException {
+
 		Cart cart = cartService.getCartByDealerId(dealerId);
+
 		Order order = new Order();
-		
+
 		order.setOrderId(generateOrderId());
+
 		order.setDealerId(dealerId);
-		order.setOrderItems(cart.getCartItems());
+
+		order.setOrderItems(
+				new HashMap<>(
+						cart.getCartItems()
+				)
+		);
+
 		order.setTotalPrice(cart.getTotalPrice());
+
 		order.setDeliveryAddressId(addressId);
+
 		order.setStatus("Pending");
-		
-		cartService.clearCart(dealerId);
-		
-		log.info("Pending order : {}", order);
+		log.info("Pending order: {}", order);
 
 		return repository.save(order);
 	}
