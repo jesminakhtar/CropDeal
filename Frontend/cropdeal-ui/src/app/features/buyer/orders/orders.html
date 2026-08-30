@@ -1,0 +1,151 @@
+<main class="orders-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Your purchases</span>
+        <h1>My Orders</h1>
+        <p>Track your CropDeal orders and payment details.</p>
+      </div>
+
+      <a routerLink="/marketplace" class="marketplace-link">
+        Continue shopping
+        <span>→</span>
+      </a>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-alert">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="loading-state">
+        Loading your orders...
+      </div>
+    } @else {
+
+      @if (orders().length === 0) {
+
+        <section class="empty-state">
+          <div class="empty-icon">📦</div>
+
+          <span class="eyebrow">No orders yet</span>
+
+          <h2>Your first CropDeal order is waiting.</h2>
+
+          <p>
+            Browse fresh produce from farmers and add products
+            to your cart to get started.
+          </p>
+
+          <a routerLink="/marketplace" class="primary-button">
+            Browse marketplace
+            <span>→</span>
+          </a>
+        </section>
+
+      } @else {
+
+        <div class="orders-list">
+
+          @for (order of orders(); track order.orderId) {
+
+            <article class="order-card">
+
+              <div class="order-card-header">
+
+                <div>
+                  <span class="order-label">Order</span>
+                  <h2>#{{ order.orderId }}</h2>
+                </div>
+
+                <span
+                  class="status-badge"
+                  [class.status-placed]="order.status === 'Placed'"
+                  [class.status-pending]="order.status === 'Pending'"
+                >
+                  {{ order.status }}
+                </span>
+
+              </div>
+
+              <div class="order-info-grid">
+
+                <div class="order-info">
+                  <span>Amount</span>
+                  <strong>
+                    ₹{{ order.totalPrice | number:'1.0-2' }}
+                  </strong>
+                </div>
+
+                <div class="order-info">
+                  <span>Items</span>
+                  <strong>
+                    {{ getItemCount(order) }}
+                  </strong>
+                </div>
+
+                <div class="order-info">
+                  <span>Payment</span>
+
+                  <strong
+                    [class.payment-done]="order.paymentStatus === 'Done'"
+                    [class.payment-pending]="order.paymentStatus !== 'Done'"
+                  >
+                    {{ order.paymentStatus || 'Pending' }}
+                  </strong>
+                </div>
+
+                <div class="order-info">
+                  <span>Payment method</span>
+                  <strong>
+                    {{ getPaymentMethod(order) }}
+                  </strong>
+                </div>
+              </div>
+
+              @if (order.transactionId) {
+                <div class="transaction-row">
+                  <div>
+                    <span>Transaction ID</span>
+                    <strong>{{ order.transactionId }}</strong>
+                  </div>
+
+                  <span class="verified-badge">
+                    ✓ Verified
+                  </span>
+                </div>
+              }
+
+              <div class="order-card-footer">
+                <div class="order-note">
+                  @if (order.status === 'Placed') {
+                    <span class="success-dot"></span>
+                    Order confirmed and payment completed.
+                  } @else {
+                    <span class="pending-dot"></span>
+                    This order is waiting for payment.
+                  }
+
+                </div>
+
+                <button
+                  type="button"
+                  class="details-button"
+                >
+                  View details
+                  <span>→</span>
+                </button>
+
+              </div>
+
+            </article>
+
+          }
+        </div>
+      }
+    }
+  </div>
+</main>

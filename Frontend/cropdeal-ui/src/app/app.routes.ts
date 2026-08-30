@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { farmerGuard } from './core/guards/farmer.guard';
 import { buyerGuard } from './core/guards/buyer.guard';
+import { OrdersComponent } from './features/buyer/orders/orders';
 
 export const routes: Routes = [
   {
@@ -66,6 +67,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/checkout/pages/checkout/checkout')
         .then(m => m.CheckoutComponent)
+  },
+  {
+  path: 'orders',
+    component: OrdersComponent,
+    canActivate: [buyerGuard]
   },
   {
     path: '**',

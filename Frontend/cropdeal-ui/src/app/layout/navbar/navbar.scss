@@ -199,3 +199,31 @@
 .dashboard-link:hover {
   color: var(--primary-dark);
 }
+
+.nav-link {
+  position: relative;
+  color: #34423a;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-link.active-link {
+  color: var(--primary);
+}
+
+.nav-link.active-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+}
