@@ -3,6 +3,7 @@ import { farmerGuard } from './core/guards/farmer.guard';
 import { buyerGuard } from './core/guards/buyer.guard';
 import { OrdersComponent } from './features/buyer/orders/orders';
 import { OrderDetailsComponent } from './features/buyer/order-details/order-details';
+import { FarmerOrdersComponent } from './features/farmer/orders/orders';
 
 export const routes: Routes = [
   {
@@ -78,6 +79,11 @@ export const routes: Routes = [
   path: 'orders/:orderId',
     component: OrderDetailsComponent,
     canActivate: [buyerGuard]
+  },
+  {
+  path: 'farmer/orders',
+    component: FarmerOrdersComponent,
+    canActivate: [farmerGuard]
   },
   {
     path: '**',

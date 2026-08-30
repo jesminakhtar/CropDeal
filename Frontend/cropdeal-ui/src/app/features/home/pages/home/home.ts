@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CropCardComponent } from '../../../crops/components/crop-card/crop-card';
 import { Crop } from '../../../crops/models/crop.model';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'app-home',
@@ -9,6 +10,10 @@ import { Crop } from '../../../crops/models/crop.model';
   styleUrl: './home.scss'
 })
 export class HomeComponent {
+
+  constructor(
+    public authService: AuthService
+  ) {}
 
   crops: Crop[] = [
     {

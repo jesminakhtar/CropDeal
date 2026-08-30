@@ -1,77 +1,101 @@
 <header class="navbar">
-  <div class="container navbar__inner">
+
+  <div class="navbar-container">
 
     <a routerLink="/" class="brand">
-      <span class="brand__icon">
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M19.8 4.2C14.2 4.1 9.6 6 7.1 9.7c-1.8 2.7-1.9 5.7-1.2 8.1M19.8 4.2c-.1 5.6-2 10.1-5.7 12.6-2.5 1.7-5.3 1.9-7.6 1.3M19.8 4.2 6.1 17.9"
-          />
-        </svg>
-      </span>
-
-      <span>CropDeal</span>
+      <span class="brand-mark">C</span>
+      <span class="brand-name">CropDeal</span>
     </a>
 
-
     <nav class="nav-links">
-      <a routerLink="/marketplace">
+
+      <a
+        routerLink="/"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-link"
+      >
+        Home
+      </a>
+
+      <a
+        routerLink="/marketplace"
+        routerLinkActive="active-link"
+        class="nav-link"
+      >
         Marketplace
       </a>
 
-      <a href="#how-it-works" fragment="how-it-works">
-        How it works
-      </a>
-
-      <a href="#farmers" fragment="farmers">
-        For farmers
-      </a>
     </nav>
-
 
     <div class="nav-actions">
 
-      @if (currentUser; as user) {
-        @if (user.role === 'FARMER') {
-          <a
-            routerLink="/farmer/dashboard"
-            class="dashboard-link"
-          >
-            Dashboard
-          </a>
-        }
+      @if (currentUser(); as user) {
 
-        @if (user.role === 'DEALER') {
-          <a 
-            routerLink="/orders"
-            routerLinkActive="active-link"
-            class="nav-link"
-          >
-            My Orders
-          </a>
-          <a
-            routerLink="/cart"
-            routerLinkActive="active-link"
-            class="nav-link"
-          >
-            Cart
-          </a>
-        }
+        <div class="user-navigation">
+
+          @if (user.role === 'FARMER') {
+
+            <a
+              routerLink="/farmer/dashboard"
+              routerLinkActive="active-link"
+              class="nav-link"
+            >
+              Dashboard
+            </a>
+
+            <a
+              routerLink="/farmer/orders"
+              routerLinkActive="active-link"
+              class="nav-link"
+            >
+              Sales Orders
+            </a>
+
+          } @else {
+
+            <a
+              routerLink="/orders"
+              routerLinkActive="active-link"
+              class="nav-link"
+            >
+              My Orders
+            </a>
+
+            <a
+              routerLink="/cart"
+              routerLinkActive="active-link"
+              class="nav-link"
+            >
+              Cart
+            </a>
+
+          }
+
+        </div>
+
+        <div class="nav-divider"></div>
 
         <div class="user-info">
 
           <div class="user-avatar">
-            {{ user.firstName.charAt(0) }}
+            {{
+              user.firstName
+                ? user.firstName.charAt(0).toUpperCase()
+                : user.username.charAt(0).toUpperCase()
+            }}
           </div>
 
-          <div class="user-details">
+          <div class="user-text">
+
             <strong>
-              {{ user.firstName }} {{ user.lastName }}
+              {{ user.firstName || user.username }}
             </strong>
 
             <span>
               {{ displayRole }}
             </span>
+
           </div>
 
         </div>
@@ -81,21 +105,21 @@
           class="logout-button"
           (click)="logout()"
         >
-          Logout
+          Sign out
         </button>
 
       } @else {
 
         <a
           routerLink="/login"
-          class="sign-in"
+          class="sign-in-link"
         >
           Sign in
         </a>
 
         <a
           routerLink="/register"
-          class="btn btn-primary"
+          class="register-button"
         >
           Get started
         </a>
@@ -105,4 +129,5 @@
     </div>
 
   </div>
+
 </header>

@@ -4,6 +4,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ActivatedRoute,
   Router,
@@ -37,8 +38,14 @@ export class LoginComponent {
     private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.nonNullable.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      username: [
+        '',
+        Validators.required
+      ],
+      password: [
+        '',
+        Validators.required
+      ]
     });
 
     if (
@@ -58,10 +65,18 @@ export class LoginComponent {
 
     this.loading = true;
     this.errorMessage = '';
+    this.successMessage = '';
+
+    const credentials =
+      this.loginForm.getRawValue();
 
     this.authService
-      .login(this.loginForm.getRawValue())
+      .login({
+        username: credentials.username.trim(),
+        password: credentials.password
+      })
       .subscribe({
+
         next: response => {
 
           this.loading = false;
@@ -72,27 +87,55 @@ export class LoginComponent {
             response.role
           );
 
+          /*
+           * AuthService.login() already:
+           * - stores the token
+           * - stores the user
+           * - updates currentUser signal
+           *
+           * So navbar updates immediately.
+           */
           this.router.navigate(['/']);
         },
 
-        error: error => {
+        error: (error: HttpErrorResponse) => {
 
           this.loading = false;
 
-          console.error('Login failed', error);
+          console.error(
+            'Login failed',
+            error
+          );
 
-          if (error.status === 401 || error.status === 403) {
+          if (
+            error.status === 401 ||
+            error.status === 403
+          ) {
             this.errorMessage =
               'Incorrect username or password.';
-          } else {
-            this.errorMessage =
-              'Unable to sign in right now. Please try again.';
+            return;
           }
+
+          if (error.status === 404) {
+            this.errorMessage =
+              'No account was found with this username.';
+            return;
+          }
+
+          if (error.status === 0) {
+            this.errorMessage =
+              'Unable to connect to CropDeal. Please try again.';
+            return;
+          }
+
+          this.errorMessage =
+            'Unable to sign in right now. Please try again.';
         }
       });
   }
 
   togglePassword(): void {
-    this.showPassword = !this.showPassword;
+    this.showPassword =
+      !this.showPassword;
   }
 }

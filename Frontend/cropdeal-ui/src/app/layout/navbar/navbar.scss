@@ -1,209 +1,59 @@
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
-
-  height: 74px;
-
-  border-bottom: 1px solid rgba(226, 232, 228, 0.85);
-
-  background: rgba(255, 255, 255, 0.92);
+  z-index: 1000;
+  width: 100%;
+  border-bottom: 1px solid #e7ece8;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
 }
 
-.navbar__inner {
-  height: 100%;
-
+.navbar-container {
+  width: min(1200px, calc(100% - 40px));
+  min-height: 70px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 32px;
 }
 
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-
-  font-size: 20px;
-  font-weight: 800;
-
-  letter-spacing: -0.04em;
+  flex-shrink: 0;
+  color: #17241c;
+  text-decoration: none;
 }
 
-.brand__icon {
-  width: 35px;
-  height: 35px;
-
+.brand-mark {
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-
-  border-radius: 10px;
-
+  border-radius: 9px;
+  color: white;
   background: var(--primary);
+  font-size: 15px;
+  font-weight: 800;
 }
 
-.brand__icon svg {
-  width: 21px;
-  height: 21px;
-
-  fill: none;
-  stroke: white;
-
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-
-  gap: 34px;
-}
-
-.nav-links a,
-.sign-in {
-  color: #465149;
-
-  font-size: 14px;
-  font-weight: 500;
-
-  transition: color 150ms ease;
-}
-
-.nav-links a:hover,
-.sign-in:hover {
-  color: var(--primary);
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-
-  gap: 20px;
-}
-
-@media (max-width: 850px) {
-  .nav-links {
-    display: none;
-  }
-}
-
-@media (max-width: 520px) {
-  .sign-in {
-    display: none;
-  }
-
-  .navbar {
-    height: 66px;
-  }
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 10px;
-
-  color: white;
-  background: var(--primary);
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.user-details {
-  min-width: 0;
-}
-
-.user-details strong,
-.user-details span {
-  display: block;
-}
-
-.user-details strong {
-  max-width: 150px;
-
-  overflow: hidden;
-
-  color: var(--text);
-
-  font-size: 11px;
-  font-weight: 700;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.user-details span {
-  margin-top: 2px;
-
-  color: var(--text-muted);
-
-  font-size: 9px;
-}
-
-.logout-button {
-  min-height: 38px;
-
-  padding: 0 14px;
-
-  border: 1px solid var(--border);
-  border-radius: 9px;
-
-  color: #445047;
-  background: white;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  transition:
-    color 150ms ease,
-    border-color 150ms ease,
-    background 150ms ease;
-}
-
-.logout-button:hover {
-  color: var(--primary);
-
-  border-color: #cadacf;
-
-  background: var(--primary-soft);
-}
-
-@media (max-width: 650px) {
-  .user-details {
-    display: none;
-  }
-
-  .logout-button {
-    padding: 0 10px;
-  }
-}
-
-.dashboard-link {
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.dashboard-link:hover {
-  color: var(--primary-dark);
+  gap: 24px;
 }
 
 .nav-link {
   position: relative;
-  color: #34423a;
-  font-size: 13px;
+  color: #465249;
+  font-size: 12px;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -222,8 +72,201 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -8px;
+  bottom: -10px;
   height: 2px;
   border-radius: 999px;
   background: var(--primary);
+}
+
+.nav-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.user-navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 26px;
+  background: #e2e8e3;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--primary);
+  background: #edf7f0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.user-text {
+  display: grid;
+  min-width: 0;
+}
+
+.user-text strong {
+  max-width: 120px;
+  overflow: hidden;
+  color: #263229;
+  font-size: 10px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-text span {
+  margin-top: 2px;
+  color: #89918c;
+  font-size: 8px;
+}
+
+.sign-in-link {
+  color: #344139;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sign-in-link:hover {
+  color: var(--primary);
+}
+
+.register-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  color: white;
+  background: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.register-button:hover {
+  background: var(--primary-dark);
+}
+
+.logout-button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid #dce4de;
+  border-radius: 8px;
+  color: #465249;
+  background: white;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.logout-button:hover {
+  border-color: #c0cbc3;
+  color: var(--primary);
+  background: #f8faf8;
+}
+
+@media (max-width: 1050px) {
+  .navbar-container {
+    gap: 20px;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .user-navigation {
+    gap: 14px;
+  }
+
+  .user-text {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .nav-links {
+    display: none;
+  }
+
+  .brand {
+    margin-right: auto;
+  }
+
+  .nav-actions {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 650px) {
+  .navbar-container {
+    width: min(100% - 24px, 1200px);
+    min-height: 64px;
+  }
+
+  .user-navigation {
+    gap: 10px;
+  }
+
+  .nav-divider {
+    display: none;
+  }
+
+  .user-avatar {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .user-navigation {
+    display: none;
+  }
+
+  .register-button {
+    display: none;
+  }
+
+  .logout-button {
+    padding: 0 10px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 5px;
+  border-radius: 3px;
 }

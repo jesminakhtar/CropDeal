@@ -40,4 +40,10 @@ export class OrderService {
             `${this.apiUrl}/${orderId}`
         );
     }
+
+    getAllOrders() {
+        return this.http.get<Order[]>(
+            `${this.apiUrl}/all`
+        );
+    }
  }

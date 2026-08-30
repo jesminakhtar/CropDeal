@@ -1,74 +1,160 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
-import {
-  LoginRequest,
-  LoginResponse,
-  RegisterRequest
-} from '../models/auth.model';
+import { RegisterRequest } from '../models/auth.model';
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface AuthUser {
+  token: string;
+  userId: string;
+  username: string;
+  role: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private readonly apiUrl = 'http://localhost:8080/users';
+  private readonly apiUrl =
+    'http://localhost:8080/users';
 
-  constructor(private http: HttpClient) {}
+  private readonly USER_KEY =
+    'cropdeal_user';
 
-  login(request: LoginRequest) {
+  private readonly TOKEN_KEY =
+    'token';
+
+  private readonly currentUserSignal =
+    signal<AuthUser | null>(
+      this.loadStoredUser()
+    );
+
+  readonly currentUser =
+    this.currentUserSignal.asReadonly();
+
+  constructor(
+    private http: HttpClient
+  ) {}
+
+  login(
+    credentials: LoginRequest
+  ) {
     return this.http
-      .post<LoginResponse>(
+      .post<AuthUser>(
         `${this.apiUrl}/login`,
-        request
+        credentials
       )
       .pipe(
-        tap(response => {
-          this.saveSession(response);
+        tap(user => {
+          this.setUser(user);
         })
       );
   }
 
-  register(request: RegisterRequest) {
+  register(
+    request: RegisterRequest
+  ) {
     return this.http.post(
       `${this.apiUrl}/register`,
       request
     );
   }
 
-  logout(): void {
-    localStorage.removeItem('cropdeal_token');
-    localStorage.removeItem('cropdeal_user');
+  setUser(
+    user: AuthUser
+  ): void {
+
+    localStorage.setItem(
+      this.USER_KEY,
+      JSON.stringify(user)
+    );
+
+    if (user.token) {
+      localStorage.setItem(
+        this.TOKEN_KEY,
+        user.token
+      );
+    }
+
+    this.currentUserSignal.set(
+      user
+    );
+  }
+
+  getUser(): AuthUser | null {
+    return this.currentUserSignal();
   }
 
   getToken(): string | null {
-    return localStorage.getItem('cropdeal_token');
-  }
-
-  getUser(): LoginResponse | null {
-    const user = localStorage.getItem('cropdeal_user');
-
-    if (!user) {
-      return null;
-    }
-
-    return JSON.parse(user);
+    return localStorage.getItem(
+      this.TOKEN_KEY
+    );
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.currentUserSignal() !== null;
   }
 
-  private saveSession(response: LoginResponse): void {
-    localStorage.setItem(
-      'cropdeal_token',
-      response.token
+  isFarmer(): boolean {
+    return (
+      this.currentUserSignal()?.role ===
+      'FARMER'
+    );
+  }
+
+  isDealer(): boolean {
+    return (
+      this.currentUserSignal()?.role ===
+      'DEALER'
+    );
+  }
+
+  logout(): void {
+
+    localStorage.removeItem(
+      this.USER_KEY
     );
 
-    localStorage.setItem(
-      'cropdeal_user',
-      JSON.stringify(response)
+    localStorage.removeItem(
+      this.TOKEN_KEY
     );
+
+    this.currentUserSignal.set(
+      null
+    );
+  }
+
+  private loadStoredUser(): AuthUser | null {
+
+    const storedUser =
+      localStorage.getItem(
+        this.USER_KEY
+      );
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(
+        storedUser
+      ) as AuthUser;
+    } catch {
+
+      localStorage.removeItem(
+        this.USER_KEY
+      );
+
+      return null;
+    }
   }
 }

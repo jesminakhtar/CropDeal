@@ -1,40 +1,58 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive
+} from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
-import { LoginResponse } from '../../core/models/auth.model';
+
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink],
+  imports: [
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.scss',
+  styleUrl: './navbar.scss'
 })
 export class NavbarComponent {
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
-  ) {}
-
-  get currentUser(): LoginResponse | null {
-    return this.authService.getUser();
+  ) {
+    this.currentUser = this.authService.currentUser;
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
-  }
+  readonly currentUser: any;
 
   get displayRole(): string {
-    if (this.currentUser?.role === 'FARMER') {
+
+    const user =
+      this.currentUser();
+
+    if (!user) {
+      return '';
+    }
+
+    if (user.role === 'FARMER') {
       return 'Farmer';
     }
 
-    if (this.currentUser?.role === 'DEALER') {
+    if (user.role === 'DEALER') {
       return 'Buyer';
     }
 
-    return '';
+    return user.role;
+  }
+
+  logout(): void {
+
+    this.authService.logout();
+
+    this.router.navigate([
+      '/'
+    ]);
   }
 }

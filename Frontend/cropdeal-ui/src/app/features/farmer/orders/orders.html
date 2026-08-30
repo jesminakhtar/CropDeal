@@ -1,0 +1,351 @@
+<main class="farmer-orders-page">
+
+  <div class="container">
+
+    <div class="page-header">
+
+      <div>
+        <span class="eyebrow">
+          Farmer sales
+        </span>
+
+        <h1>
+          Sales Orders
+        </h1>
+
+        <p>
+          Track confirmed purchases containing products from your shops.
+        </p>
+      </div>
+
+
+      <a
+        routerLink="/farmer/dashboard"
+        class="dashboard-link"
+      >
+        Back to dashboard
+        <span>→</span>
+      </a>
+
+    </div>
+
+
+    @if (errorMessage()) {
+
+      <div class="error-alert">
+        {{ errorMessage() }}
+      </div>
+
+    }
+
+
+    @if (loading()) {
+
+      <div class="loading-state">
+        Loading sales orders...
+      </div>
+
+    } @else {
+
+
+      <section class="stats-grid">
+
+        <article class="stat-card">
+
+          <span>
+            Confirmed orders
+          </span>
+
+          <strong>
+            {{ totalConfirmedOrders }}
+          </strong>
+
+          <small>
+            Paid customer orders
+          </small>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span>
+            Units sold
+          </span>
+
+          <strong>
+            {{ totalUnitsSold }}
+          </strong>
+
+          <small>
+            Across your products
+          </small>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span>
+            Estimated sales
+          </span>
+
+          <strong>
+            ₹{{
+              estimatedSalesValue
+                | number:'1.0-2'
+            }}
+          </strong>
+
+          <small>
+            Based on current product prices
+          </small>
+
+        </article>
+
+      </section>
+
+
+      @if (orders().length === 0) {
+
+        <section class="empty-state">
+
+          <div class="empty-icon">
+            📦
+          </div>
+
+          <span class="eyebrow">
+            No sales yet
+          </span>
+
+          <h2>
+            Your confirmed orders will appear here.
+          </h2>
+
+          <p>
+            When buyers purchase products from your shop and complete payment, the order will appear in this section.
+          </p>
+
+          <a
+            routerLink="/farmer/dashboard"
+            class="primary-button"
+          >
+            View dashboard
+          </a>
+
+        </section>
+
+      } @else {
+
+
+        <section class="orders-list">
+
+          @for (
+            order of orders();
+            track order.orderId
+          ) {
+
+            <article class="order-card">
+
+
+              <div class="order-header">
+
+                <div>
+
+                  <span class="order-label">
+                    Order
+                  </span>
+
+                  <h2>
+                    #{{ order.orderId }}
+                  </h2>
+
+                </div>
+
+
+                <span class="status-badge">
+                  ✓ {{ order.status }}
+                </span>
+
+              </div>
+
+
+              <div class="order-meta">
+
+                <div>
+                  <span>
+                    Payment
+                  </span>
+
+                  <strong class="success-text">
+                    {{ order.paymentStatus }}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>
+                    Method
+                  </span>
+
+                  <strong>
+                    {{ getPaymentMethod(order) }}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>
+                    Buyer ID
+                  </span>
+
+                  <strong>
+                    {{ order.dealerId }}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>
+                    Full order total
+                  </span>
+
+                  <strong>
+                    ₹{{
+                      order.orderTotal
+                        | number:'1.0-2'
+                    }}
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div class="items-section">
+
+                <div class="items-heading">
+
+                  <span>
+                    Your products in this order
+                  </span>
+
+                  <strong>
+                    {{ order.items.length }}
+                  </strong>
+
+                </div>
+
+
+                @for (
+                  item of order.items;
+                  track item.productId
+                ) {
+
+                  <div class="product-row">
+
+                    <div class="product-icon">
+
+                      @if (item.image) {
+
+                        <img
+                          [src]="item.image"
+                          [alt]="item.productName"
+                        />
+
+                      } @else {
+
+                        <span>
+                          🌾
+                        </span>
+
+                      }
+
+                    </div>
+
+
+                    <div class="product-details">
+
+                      <strong>
+                        {{ item.productName }}
+                      </strong>
+
+                      <span>
+                        {{ item.productId }}
+                      </span>
+
+                    </div>
+
+
+                    <div class="product-quantity">
+
+                      <span>
+                        Quantity
+                      </span>
+
+                      <strong>
+                        {{ item.quantity }}
+                      </strong>
+
+                    </div>
+
+
+                    <div class="product-value">
+
+                      <span>
+                        Current price
+                      </span>
+
+                      <strong>
+                        ₹{{
+                          item.price
+                            | number:'1.0-2'
+                        }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              @if (order.transactionId) {
+
+                <div class="transaction-row">
+
+                  <div>
+
+                    <span>
+                      Razorpay transaction
+                    </span>
+
+                    <strong>
+                      {{ order.transactionId }}
+                    </strong>
+
+                  </div>
+
+
+                  <span class="verified-badge">
+                    ✓ Payment verified
+                  </span>
+
+                </div>
+
+              }
+
+            </article>
+
+          }
+
+        </section>
+
+      }
+
+    }
+
+  </div>
+
+</main>
