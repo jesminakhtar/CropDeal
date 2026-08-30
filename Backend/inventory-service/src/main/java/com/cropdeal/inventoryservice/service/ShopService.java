@@ -50,19 +50,29 @@ public class ShopService {
         return shopRepository.findAll();
     }
 
-    public List<Shop> getShopByFarmerUsername(String username) throws ShopNotFoundException, UserNotFoundException {
-    	List<Shop> shops = shopRepository.findByFarmerUsername(username);
-        if (!shops.isEmpty()) {
-            // Retrieve user details from the user management microservice
-            ResponseEntity<User> response = restTemplate.getForEntity("http://localhost:8080/users/{username}", User.class, username);
-            if (response.getStatusCode() != HttpStatus.OK) {
-            	throw new UserNotFoundException("Farmer not found for username: " + username);
-            }
-        } else {
-            throw new ShopNotFoundException("Shops not found for farmer username: " + username);
-        }
-        return shops;
-    }
+	public List<Shop> getShopByFarmerUsername(String username)
+			throws UserNotFoundException {
+		List<Shop> shops =
+				shopRepository.findByFarmerUsername(username);
+
+		if (shops.isEmpty()) {
+			return shops;
+		}
+
+		ResponseEntity<User> response =
+				restTemplate.getForEntity(
+						"http://localhost:8080/users/{username}",
+						User.class,
+						username
+				);
+
+		if (response.getStatusCode() != HttpStatus.OK) {
+			throw new UserNotFoundException(
+					"Farmer not found for username: " + username
+			);
+		}
+		return shops;
+	}
 
 	public List<Product> getProductsByShopId(String shopId) throws ShopNotFoundException {
 		Shop shop = getShopById(shopId);

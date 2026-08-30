@@ -32,4 +32,21 @@ export class InventoryService {
       `${this.apiUrl}/shops/rating/${shopId}`
     );
   }
+
+  createShop(
+    name: string,
+    farmerUsername: string,
+    image: File
+  ) {
+    const formData = new FormData();
+
+    formData.append('file', image);
+    formData.append('name', name);
+    formData.append('farmerUsername', farmerUsername);
+
+    return this.http.post<Shop>(
+      `${this.apiUrl}/shops/add`,
+      formData
+    );
+  }
 }

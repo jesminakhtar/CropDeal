@@ -21,16 +21,23 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
 		security
-			.csrf().disable()
-			.cors().and()
-			.authorizeHttpRequests()
-			.requestMatchers("/products/**").permitAll()
-//			.requestMatchers("/shops").permitAll()
-			.requestMatchers("/shops/**").permitAll()
-			.requestMatchers("/shops/farmerUsername/**").permitAll()
-			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-			.anyRequest().authenticated().and()
-			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+				.csrf().disable()
+				.authorizeHttpRequests()
+				.requestMatchers("/products/**").permitAll()
+				.requestMatchers("/shops/**").permitAll()
+				.requestMatchers("/shops/farmerUsername/**").permitAll()
+				.requestMatchers(
+						"/v3/api-docs/**",
+						"/swagger-ui/**",
+						"/swagger-ui.html"
+				).permitAll()
+				.anyRequest().authenticated()
+				.and()
+				.addFilterBefore(
+						jwtTokenFilter(),
+						UsernamePasswordAuthenticationFilter.class
+				);
+
 		return security.build();
 	}
 

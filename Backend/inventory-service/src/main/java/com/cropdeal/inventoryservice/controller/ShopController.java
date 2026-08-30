@@ -41,7 +41,8 @@ public class ShopController {
 	}
 
 	@GetMapping("/farmerUsername/{username}")
-	public ResponseEntity<List<Shop>> getShopByFarmerUsername(@PathVariable String username)
+	public ResponseEntity<List<Shop>> getShopByFarmerUsername(
+			@PathVariable String username)
 			throws ShopNotFoundException, UserNotFoundException {
 		logger.info("Fetching shop by farmer username: {}", username);
 		List<Shop> shops = shopService.getShopByFarmerUsername(username);

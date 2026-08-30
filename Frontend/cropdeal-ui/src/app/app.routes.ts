@@ -28,6 +28,14 @@ export const routes: Routes = [
         .then(m => m.DashboardComponent)
   },
   {
+    path: 'farmer/shop/new',
+    canActivate: [farmerGuard],
+    loadComponent: () =>
+      import('./features/farmer/pages/create-shop/create-shop')
+        .then(m => m.CreateShopComponent)
+  },
+
+  {
     path: '**',
     redirectTo: ''
   },
