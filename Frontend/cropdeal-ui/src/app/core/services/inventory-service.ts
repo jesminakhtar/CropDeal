@@ -74,4 +74,16 @@ export class InventoryService {
       formData
     );
   }
+
+  getAllProducts() {
+    return this.http.get<Product[]>(
+      `${this.apiUrl}/products`
+    );
+  }
+
+  getProductById(productId: string) {
+    return this.http.get<Product>(
+      `${this.apiUrl}/products/findById/${productId}`
+    );
+  }
 }

@@ -10,7 +10,7 @@ import {
   RouterLink
 } from '@angular/router';
 
-import { InventoryService } from '../../../../core/services/inventory';
+import { InventoryService } from '../../../../core/services/inventory-service';
 
 @Component({
   selector: 'app-add-product',
