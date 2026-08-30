@@ -48,6 +48,18 @@ export const routes: Routes = [
         .then(m => m.MarketplaceComponent)
   },
   {
+  path: 'products/:id',
+    loadComponent: () =>
+      import('./features/marketplace/pages/product-details/product-details')
+        .then(m => m.ProductDetailsComponent)
+  },
+  {
+    path: 'cart',
+    loadComponent: () =>
+      import('./features/cart/pages/cart/cart')
+        .then(m => m.CartComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   },

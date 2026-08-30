@@ -41,6 +41,15 @@
           </a>
         }
 
+        @if (user.role === 'DEALER') {
+          <a
+            routerLink="/cart"
+            class="dashboard-link"
+          >
+            Cart
+          </a>
+        }
+
         <div class="user-info">
 
           <div class="user-avatar">

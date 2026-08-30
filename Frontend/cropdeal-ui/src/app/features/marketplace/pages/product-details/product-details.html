@@ -1,0 +1,177 @@
+<main class="details-page">
+
+  <div class="container">
+
+    @if (loading()) {
+
+      <div class="state">
+        Loading product...
+      </div>
+
+    } @else if (errorMessage() && !product()) {
+
+      <div class="state state--error">
+        {{ errorMessage() }}
+      </div>
+
+    } @else if (product(); as item) {
+
+      <a
+        routerLink="/marketplace"
+        class="back-link"
+      >
+        ← Back to marketplace
+      </a>
+
+      <section class="details-layout">
+
+        <div class="product-visual">
+
+          @if (item.imageData) {
+
+            <img
+              [src]="
+                'data:image/jpeg;base64,' +
+                item.imageData
+              "
+              [alt]="item.name"
+            />
+
+          } @else {
+
+            <span>🌱</span>
+
+          }
+
+        </div>
+
+
+        <div class="product-info">
+
+          <span class="category">
+            {{ item.category }}
+          </span>
+
+          <h1>
+            {{ item.name }}
+          </h1>
+
+          <p class="description">
+            {{ item.description }}
+          </p>
+
+
+          <div class="product-meta">
+
+            <div>
+              <span>Availability</span>
+
+              <strong>
+                {{ item.quantity | number }}
+                kg
+              </strong>
+            </div>
+
+            <div>
+              <span>Shop</span>
+
+              <strong>
+                {{ item.shopId }}
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div class="purchase-card">
+
+            <div class="price">
+
+              <span>Price per kg</span>
+
+              <strong>
+                ₹{{ item.price | number:'1.0-2' }}
+              </strong>
+
+            </div>
+
+
+            <div class="quantity-section">
+
+              <span>Quantity</span>
+
+              <div class="quantity-control">
+
+                <button
+                  type="button"
+                  (click)="decreaseQuantity()"
+                >
+                  −
+                </button>
+
+                <strong>
+                  {{ quantity() }}
+                </strong>
+
+                <button
+                  type="button"
+                  (click)="increaseQuantity()"
+                >
+                  +
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="total">
+
+              <span>Total</span>
+
+              <strong>
+                ₹{{
+                  item.price *
+                  quantity()
+                  | number:'1.0-2'
+                }}
+              </strong>
+
+            </div>
+
+
+            @if (errorMessage()) {
+
+              <div class="error-alert">
+                {{ errorMessage() }}
+              </div>
+
+            }
+
+
+            <button
+              type="button"
+              class="add-button"
+              [disabled]="addingToCart()"
+              (click)="addToCart()"
+            >
+
+              @if (addingToCart()) {
+                Adding...
+              } @else {
+                Add to cart →
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+  </div>
+
+</main>

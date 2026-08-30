@@ -10,12 +10,14 @@ import { DecimalPipe } from '@angular/common';
 
 import { InventoryService } from '../../../../core/services/inventory-service';
 import { Product } from '../../../../core/models/inventory.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-marketplace',
   imports: [
     FormsModule,
-    DecimalPipe
+    DecimalPipe,
+    RouterLink
   ],
   templateUrl: './marketplace.html',
   styleUrl: './marketplace.scss'
