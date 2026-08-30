@@ -1,502 +1,547 @@
 <main class="checkout-page">
 
-  <div class="container">
+    <div class="container">
 
-    <a
-      routerLink="/cart"
-      class="back-link"
-    >
-      ← Back to cart
-    </a>
-
-
-    @if (placedOrder(); as order) {
-
-      <section class="order-success">
-
-        <div class="success-icon">
-          ✓
-        </div>
-
-        <span class="eyebrow">
-          Order created
-        </span>
-
-        <h1>
-          Your order is pending payment.
-        </h1>
-
-        <p>
-          CropDeal has created your order successfully.
-          Payment will be completed in the next step.
-        </p>
-
-
-        <div class="order-reference">
-
-          <div>
-
-            <span>
-              Order ID
-            </span>
-
-            <strong>
-              {{ order.orderId }}
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Status
-            </span>
-
-            <strong class="pending">
-              {{ order.status }}
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Total
-            </span>
-
-            <strong>
-              ₹{{ order.totalPrice | number:'1.0-2' }}
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <button
-          class="payment-button"
-          type="button"
-        >
-          Continue to payment
-          <span>→</span>
-        </button>
-
-        <a
-          routerLink="/marketplace"
-          class="continue-link"
-        >
-          Return to marketplace
+        <a routerLink="/cart" class="back-link">
+            ← Back to cart
         </a>
 
-      </section>
 
-    } @else {
+        @if (placedOrder(); as order) {
 
-      <div class="page-heading">
+        <section class="order-success">
+            @if (paymentSuccessful()) {
 
-        <span class="eyebrow">
-          Secure checkout
-        </span>
+            <div class="success-icon">
+                ✓
+            </div>
 
-        <h1>
-          Delivery & order review
-        </h1>
+            <span class="eyebrow">
+                Order confirmed
+            </span>
 
-        <p>
-          Choose where your produce should be delivered
-          before placing the order.
-        </p>
+            <h1>
+                Order placed successfully.
+            </h1>
 
-      </div>
+            <p>
+                Your payment has been verified and
+                your CropDeal order is confirmed.
+            </p>
 
 
-      @if (errorMessage()) {
+            <div class="order-reference">
 
+                <div>
+
+                    <span>
+                        Order ID
+                    </span>
+
+                    <strong>
+                        {{ order.orderId }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Order status
+                    </span>
+
+                    <strong class="placed">
+                        {{ order.status }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Payment status
+                    </span>
+
+                    <strong class="placed">
+                        {{ order.paymentStatus }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Payment method
+                    </span>
+
+                    <strong>
+                        {{ order.paymentMode || 'Razorpay' }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Amount paid
+                    </span>
+
+                    <strong>
+                        ₹{{
+                        order.totalPrice
+                        | number:'1.0-2'
+                        }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            @if (receipt(); as currentReceipt) {
+
+            <div class="payment-success-message">
+
+                <strong>
+                    ✓ Payment completed
+                </strong>
+
+                <p>
+                    Transaction:
+                    {{ currentReceipt.transactionId }}
+                </p>
+
+            </div>
+
+            }
+
+
+            <a routerLink="/marketplace" class="continue-link">
+                Continue shopping
+            </a>
+
+
+            } @else {
+            <div class="pending-icon">
+                ₹
+            </div>
+
+            <span class="eyebrow">
+                Order created
+            </span>
+
+            <h1>
+                Your order is pending payment.
+            </h1>
+
+            <p>
+                Complete your payment securely using
+                Razorpay Test Mode.
+            </p>
+
+            <div class="order-reference">
+                <div>
+                    <span>
+                        Order ID
+                    </span>
+
+                    <strong>
+                        {{ order.orderId }}
+                    </strong>
+                </div>
+                <div>
+
+                    <span>Status</span>
+
+                    <strong class="pending">{{ order.status }}</strong>
+                </div>
+
+                <div>
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        ₹{{
+                        order.totalPrice
+                        | number:'1.0-2'
+                        }}
+                    </strong>
+
+                </div>
+            </div>
+
+            <button class="payment-button" type="button" [disabled]="paymentProcessing()" (click)="payNow()">
+
+                @if (paymentProcessing()) {
+                Processing...
+                } @else {
+
+                Continue to payment
+                <span>→</span>
+
+                }
+            </button>
+
+            <p class="payment-note">
+                Razorpay Test Mode — no real money
+                will be charged.
+            </p>
+            }
+        </section>
+
+        } @else {
+        <div class="page-heading">
+            <span class="eyebrow">
+                Secure checkout
+            </span>
+
+            <h1>
+                Delivery & order review
+            </h1>
+
+            <p>
+                Choose where your produce should be delivered
+                before placing the order.
+            </p>
+        </div>
+
+        @if (errorMessage()) {
         <div class="error-alert">
-          {{ errorMessage() }}
+            {{ errorMessage() }}
         </div>
+        }
 
-      }
-
-
-      @if (loading()) {
-
+        @if (loading()) {
         <div class="loading-state">
-          Loading checkout...
+            Loading checkout...
         </div>
-
-      } @else {
+        } @else {
 
         <div class="checkout-layout">
 
 
-          <!-- ADDRESS -->
+            <!-- ADDRESS -->
 
-          <section class="address-panel">
+            <section class="address-panel">
 
-            <div class="panel-heading">
-
-              <div>
-
-                <span class="eyebrow">
-                  Delivery
-                </span>
-
-                <h2>
-                  Delivery address
-                </h2>
-
-              </div>
-
-
-              @if (addresses().length) {
-
-                <button
-                  type="button"
-                  class="secondary-button"
-                  (click)="toggleAddressForm()"
-                >
-                  + Add address
-                </button>
-
-              }
-
-            </div>
-
-
-            @if (addresses().length) {
-
-              <div class="address-list">
-
-                @for (
-                  address of addresses();
-                  track address.id
-                ) {
-
-                  <button
-                    type="button"
-                    class="address-card"
-                    [class.address-card--selected]="
-                      selectedAddressId() ===
-                      address.id
-                    "
-                    (click)="selectAddress(address.id)"
-                  >
-
-                    <span class="address-radio">
-                      @if (
-                        selectedAddressId() ===
-                        address.id
-                      ) {
-                        ✓
-                      }
-                    </span>
-
+                <div class="panel-heading">
 
                     <div>
 
-                      <strong>
-                        {{ address.name }}
-                      </strong>
+                        <span class="eyebrow">
+                            Delivery
+                        </span>
 
-                      <p>
-                        {{ address.houseNo }},
-                        {{ address.roadName }}
-                      </p>
-
-                      @if (address.landmark) {
-                        <p>
-                          {{ address.landmark }}
-                        </p>
-                      }
-
-                      <p>
-                        {{ address.city }},
-                        {{ address.state }}
-                        {{ address.pin }}
-                      </p>
-
-                      <small>
-                        {{ address.country }}
-                      </small>
+                        <h2>
+                            Delivery address
+                        </h2>
 
                     </div>
 
-                  </button>
+
+                    @if (addresses().length) {
+
+                    <button type="button" class="secondary-button" (click)="toggleAddressForm()">
+                        + Add address
+                    </button>
+
+                    }
+
+                </div>
+
+
+                @if (addresses().length) {
+
+                <div class="address-list">
+
+                    @for (
+                    address of addresses();
+                    track address.id
+                    ) {
+
+                    <button type="button" class="address-card" [class.address-card--selected]="
+                      selectedAddressId() ===
+                      address.id
+                    " (click)="selectAddress(address.id)">
+
+                        <span class="address-radio">
+                            @if (
+                            selectedAddressId() ===
+                            address.id
+                            ) {
+                            ✓
+                            }
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                {{ address.name }}
+                            </strong>
+
+                            <p>
+                                {{ address.houseNo }},
+                                {{ address.roadName }}
+                            </p>
+
+                            @if (address.landmark) {
+                            <p>
+                                {{ address.landmark }}
+                            </p>
+                            }
+
+                            <p>
+                                {{ address.city }},
+                                {{ address.state }}
+                                {{ address.pin }}
+                            </p>
+
+                            <small>
+                                {{ address.country }}
+                            </small>
+
+                        </div>
+
+                    </button>
+
+                    }
+
+                </div>
 
                 }
 
-              </div>
 
-            }
+                @if (showAddressForm()) {
 
+                <form class="address-form" [formGroup]="addressForm" (ngSubmit)="saveAddress()">
 
-            @if (showAddressForm()) {
+                    <h3>
+                        Add delivery address
+                    </h3>
 
-              <form
-                class="address-form"
-                [formGroup]="addressForm"
-                (ngSubmit)="saveAddress()"
-              >
 
-                <h3>
-                  Add delivery address
-                </h3>
+                    <div class="form-row">
 
+                        <div class="form-field">
 
-                <div class="form-row">
+                            <label>
+                                Label
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" formControlName="name" placeholder="Home" />
 
-                    <label>
-                      Label
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      formControlName="name"
-                      placeholder="Home"
-                    />
 
-                  </div>
+                        <div class="form-field">
 
+                            <label>
+                                House / Flat no.
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" formControlName="houseNo" />
 
-                    <label>
-                      House / Flat no.
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      formControlName="houseNo"
-                    />
+                    </div>
 
-                  </div>
 
-                </div>
+                    <div class="form-field">
 
+                        <label>
+                            Road / Street
+                        </label>
 
-                <div class="form-field">
+                        <input type="text" formControlName="roadName" />
 
-                  <label>
-                    Road / Street
-                  </label>
+                    </div>
 
-                  <input
-                    type="text"
-                    formControlName="roadName"
-                  />
 
-                </div>
+                    <div class="form-field">
 
+                        <label>
+                            Landmark
+                        </label>
 
-                <div class="form-field">
+                        <input type="text" formControlName="landmark" />
 
-                  <label>
-                    Landmark
-                  </label>
+                    </div>
 
-                  <input
-                    type="text"
-                    formControlName="landmark"
-                  />
 
-                </div>
+                    <div class="form-row">
 
+                        <div class="form-field">
 
-                <div class="form-row">
+                            <label>
+                                PIN code
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" maxlength="6" formControlName="pin" />
 
-                    <label>
-                      PIN code
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      maxlength="6"
-                      formControlName="pin"
-                    />
 
-                  </div>
+                        <div class="form-field">
 
+                            <label>
+                                City
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" formControlName="city" />
 
-                    <label>
-                      City
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      formControlName="city"
-                    />
+                    </div>
 
-                  </div>
 
-                </div>
+                    <div class="form-row">
 
+                        <div class="form-field">
 
-                <div class="form-row">
+                            <label>
+                                State
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" formControlName="state" />
 
-                    <label>
-                      State
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      formControlName="state"
-                    />
 
-                  </div>
+                        <div class="form-field">
 
+                            <label>
+                                Country
+                            </label>
 
-                  <div class="form-field">
+                            <input type="text" formControlName="country" />
 
-                    <label>
-                      Country
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      formControlName="country"
-                    />
+                    </div>
 
-                  </div>
 
-                </div>
+                    <button type="submit" class="save-address-button" [disabled]="submitting()">
+                        Save address
+                    </button>
 
+                </form>
 
-                <button
-                  type="submit"
-                  class="save-address-button"
-                  [disabled]="submitting()"
-                >
-                  Save address
-                </button>
+                }
 
-              </form>
+            </section>
 
-            }
 
-          </section>
+            <!-- ORDER SUMMARY -->
 
+            <aside class="summary-panel">
 
-          <!-- ORDER SUMMARY -->
-
-          <aside class="summary-panel">
-
-            <span class="eyebrow">
-              Order summary
-            </span>
-
-            <h2>
-              Review your order
-            </h2>
-
-
-            <div class="summary-row">
-
-              <span>
-                Products
-              </span>
-
-              <strong>
-                {{ productCount }}
-              </strong>
-
-            </div>
-
-
-            <div class="summary-row">
-
-              <span>
-                Subtotal
-              </span>
-
-              <strong>
-                ₹{{
-                  cart()?.totalPrice
-                  | number:'1.0-2'
-                }}
-              </strong>
-
-            </div>
-
-
-            <div class="summary-row muted">
-
-              <span>
-                Delivery
-              </span>
-
-              <span>
-                Calculated separately
-              </span>
-
-            </div>
-
-
-            <div class="summary-total">
-
-              <div>
-                <span>
-                  Total
+                <span class="eyebrow">
+                    Order summary
                 </span>
 
-                <small>
-                  Before delivery
-                </small>
-              </div>
-
-              <strong>
-                ₹{{
-                  cart()?.totalPrice
-                  | number:'1.0-2'
-                }}
-              </strong>
-
-            </div>
+                <h2>
+                    Review your order
+                </h2>
 
 
-            <button
-              type="button"
-              class="place-order-button"
-              [disabled]="
+                <div class="summary-row">
+
+                    <span>
+                        Products
+                    </span>
+
+                    <strong>
+                        {{ productCount }}
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <strong>
+                        ₹{{
+                        cart()?.totalPrice
+                        | number:'1.0-2'
+                        }}
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row muted">
+
+                    <span>
+                        Delivery
+                    </span>
+
+                    <span>
+                        Calculated separately
+                    </span>
+
+                </div>
+
+
+                <div class="summary-total">
+
+                    <div>
+                        <span>
+                            Total
+                        </span>
+
+                        <small>
+                            Before delivery
+                        </small>
+                    </div>
+
+                    <strong>
+                        ₹{{
+                        cart()?.totalPrice
+                        | number:'1.0-2'
+                        }}
+                    </strong>
+
+                </div>
+
+
+                <button type="button" class="place-order-button" [disabled]="
                 submitting() ||
                 !selectedAddressId()
-              "
-              (click)="placeOrder()"
-            >
+              " (click)="placeOrder()">
 
-              @if (submitting()) {
-                Placing order...
-              } @else {
-                Place order
-                <span>→</span>
-              }
+                    @if (submitting()) {
+                    Placing order...
+                    } @else {
+                    Place order
+                    <span>→</span>
+                    }
 
-            </button>
+                </button>
 
 
-            <p class="payment-note">
-              Payment will be completed after the
-              pending order is created.
-            </p>
+                <p class="payment-note">
+                    Payment will be completed after the
+                    pending order is created.
+                </p>
 
-          </aside>
+            </aside>
 
         </div>
 
-      }
+        }
 
-    }
+        }
 
-  </div>
+    </div>
 
 </main>

@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentProcessingResponse {
-	private String apikey;
-	private String currency;
+    private String apikey;
+    private String currency;
     private String orderId;
-    private double amount;
+    private long amount;
 }

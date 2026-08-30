@@ -32,6 +32,7 @@ public class WebSecurityConfig {
 						.requestMatchers("/receipts/**").permitAll()
 						.requestMatchers("/payments/**").permitAll()
 						.requestMatchers("/transactions/**").permitAll()
+						.requestMatchers("/error").permitAll()
 						.requestMatchers(
 								"/v3/api-docs/**",
 								"/swagger-ui/**",
