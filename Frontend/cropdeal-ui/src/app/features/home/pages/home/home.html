@@ -1,494 +1,267 @@
 <main>
 
   <section class="hero">
-
     <div class="container hero__grid">
 
-
-      <!-- LEFT -->
-
       <div class="hero__content">
-
         <div class="hero__badge">
           <span></span>
-
           Farm to market, made simpler
         </div>
 
-
         <h1>
-          Better prices.
-          <br>
-
-          <span>Fresher produce.</span>
-          <br>
-
+          Better prices.<br>
+          <span>Fresher produce.</span><br>
           Direct trade.
         </h1>
 
-
         <p class="hero__description">
-          CropDeal connects farmers directly with buyers,
-          creating a simpler and more transparent agricultural
-          marketplace.
+          CropDeal connects farmers directly with buyers, creating a simpler and more transparent agricultural marketplace.
         </p>
 
-
         <div class="hero__actions">
-
-          <a class="btn btn-primary">
+          <a routerLink="/marketplace" class="btn btn-primary">
             Browse marketplace
             <span>→</span>
           </a>
 
-          <a class="btn btn-secondary">
-            Sell your crops
+          <a [routerLink]="farmerCtaRoute" class="btn btn-secondary">
+            {{ farmerCtaLabel }}
           </a>
-
         </div>
 
-
         <div class="trust">
-
           <div class="trust__avatars">
-
             <span>RK</span>
             <span>AS</span>
             <span>SM</span>
             <span>+</span>
-
           </div>
-
 
           <div>
-            <strong>Trusted marketplace</strong>
-
-            <p>
-              Built for farmers and buyers
-            </p>
+            <strong>Built for direct trade</strong>
+            <p>Connecting farmers and buyers</p>
           </div>
-
         </div>
-
       </div>
 
-
-      <!-- RIGHT -->
-
       <div class="hero__visual">
-
         <div class="visual-circle"></div>
 
-
         <div class="market-card">
-
           <div class="market-card__header">
-
             <div>
-              <span>Today's marketplace</span>
-
-              <h3>
-                Fresh from the farm
-              </h3>
+              <span>Marketplace preview</span>
+              <h3>Fresh from the farm</h3>
             </div>
-
 
             <div class="live">
               <span></span>
-              Live
+              Marketplace
             </div>
-
           </div>
-
 
           <div class="produce">
+            <span class="produce__category">Fresh produce</span>
 
-            <span class="produce__category">
-              Fresh produce
-            </span>
-
-
-            <div class="produce__emoji">
-              🍅
-            </div>
-
+            <div class="produce__emoji">🍅</div>
 
             <div class="produce__info">
-
-              <h4>
-                Farm Fresh Tomatoes
-              </h4>
-
-              <p>
-                Green Valley Farms · West Bengal
-              </p>
-
+              <h4>Farm Fresh Tomatoes</h4>
+              <p>Directly from agricultural producers</p>
             </div>
-
           </div>
-
 
           <div class="market-card__details">
-
             <div>
-              <span>Price</span>
-
-              <strong>
-                ₹28 / kg
-              </strong>
+              <span>Buy directly</span>
+              <strong>From farmers</strong>
             </div>
 
-
             <div>
-              <span>Available</span>
-
-              <strong>
-                320 kg
-              </strong>
+              <span>Trade</span>
+              <strong>Transparently</strong>
             </div>
-
           </div>
 
-
-          <button class="listing-button">
-
-            <span>
-              View listing
-            </span>
-
-            <span>
-              →
-            </span>
-
-          </button>
-
+          <a routerLink="/marketplace" class="listing-button">
+            <span>Explore marketplace</span>
+            <span>→</span>
+          </a>
         </div>
-
 
         <div class="floating floating--verified">
-
-          <span class="floating__icon">
-            ✓
-          </span>
+          <span class="floating__icon">✓</span>
 
           <div>
-            <strong>
-              Verified farmers
-            </strong>
-
-            <small>
-              Trade with confidence
-            </small>
+            <strong>Farmer marketplace</strong>
+            <small>Discover listed produce</small>
           </div>
-
         </div>
-
 
         <div class="floating floating--price">
-
-          <span class="floating__icon floating__icon--gold">
-            ₹
-          </span>
+          <span class="floating__icon floating__icon--gold">₹</span>
 
           <div>
-            <strong>
-              Transparent pricing
-            </strong>
-
-            <small>
-              Direct farmer-to-buyer trade
-            </small>
+            <strong>Transparent pricing</strong>
+            <small>Direct farmer-to-buyer trade</small>
           </div>
-
         </div>
-
       </div>
 
     </div>
-
   </section>
 
   <section class="categories">
+    <div class="container">
 
-  <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="section-eyebrow">Explore marketplace</span>
+          <h2>Browse agricultural produce</h2>
+          <p>Discover available crops directly from farmers through the CropDeal marketplace.</p>
+        </div>
 
-    <div class="section-header">
-
-      <div>
-        <span class="section-eyebrow">
-          Explore marketplace
-        </span>
-
-        <h2>
-          Browse fresh produce
-        </h2>
-
-        <p>
-          Discover quality crops directly from farmers
-          across India.
-        </p>
+        <a routerLink="/marketplace" class="section-link">
+          View marketplace →
+        </a>
       </div>
 
+      <div class="category-grid">
 
-      <a class="section-link">
-        View all categories →
-      </a>
+        <a routerLink="/marketplace" class="category-card">
+          <div class="category-card__icon">🥬</div>
+          <h3>Vegetables</h3>
+          <p>Fresh everyday produce</p>
+          <span>→</span>
+        </a>
 
-    </div>
+        <a routerLink="/marketplace" class="category-card">
+          <div class="category-card__icon">🍎</div>
+          <h3>Fruits</h3>
+          <p>Seasonal agricultural produce</p>
+          <span>→</span>
+        </a>
 
+        <a routerLink="/marketplace" class="category-card">
+          <div class="category-card__icon">🌾</div>
+          <h3>Grains</h3>
+          <p>Rice, wheat and cereals</p>
+          <span>→</span>
+        </a>
 
-    <div class="category-grid">
-
-      <article class="category-card">
-
-        <div class="category-card__icon">
-          🥬
-        </div>
-
-        <h3>Vegetables</h3>
-
-        <p>
-          Farm-fresh everyday produce
-        </p>
-
-        <span>→</span>
-
-      </article>
-
-
-      <article class="category-card">
-
-        <div class="category-card__icon">
-          🍎
-        </div>
-
-        <h3>Fruits</h3>
-
-        <p>
-          Seasonal and fresh-picked
-        </p>
-
-        <span>→</span>
-
-      </article>
-
-
-      <article class="category-card">
-
-        <div class="category-card__icon">
-          🌾
-        </div>
-
-        <h3>Grains</h3>
-
-        <p>
-          Rice, wheat and cereals
-        </p>
-
-        <span>→</span>
-
-      </article>
-
-
-      <article class="category-card">
-
-        <div class="category-card__icon">
-          🫘
-        </div>
-
-        <h3>Pulses</h3>
-
-        <p>
-          Lentils and quality pulses
-        </p>
-
-        <span>→</span>
-
-      </article>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<section class="featured">
-
-  <div class="container">
-
-    <div class="section-header">
-
-      <div>
-
-        <span class="section-eyebrow">
-          Fresh listings
-        </span>
-
-        <h2>
-          Available from farmers
-        </h2>
-
-        <p>
-          Recently listed agricultural produce ready
-          for purchase.
-        </p>
+        <a routerLink="/marketplace" class="category-card">
+          <div class="category-card__icon">🫘</div>
+          <h3>Pulses</h3>
+          <p>Lentils and quality pulses</p>
+          <span>→</span>
+        </a>
 
       </div>
-
-
-      <a class="section-link">
-        Browse marketplace →
-      </a>
-
     </div>
+  </section>
 
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
 
-    <div class="crop-grid">
-
-      @for (crop of crops; track crop.id) {
-
-        <app-crop-card
-          [crop]="crop"
-        />
-
-      }
-
-    </div>
-
-  </div>
-
-</section>
-
-<section class="how-it-works" id="how-it-works">
-  <div class="container">
-
-    <div class="how-header">
-      <span class="section-eyebrow">Simple process</span>
-      <h2>From farm to buyer in three steps</h2>
-      <p>
-        CropDeal makes agricultural trade simpler, more transparent,
-        and easier for both farmers and buyers.
-      </p>
-    </div>
-
-    <div class="steps-grid">
-
-      <article class="step-card">
-        <div class="step-number">01</div>
-
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M4 19V9l8-4 8 4v10"></path>
-            <path d="M8 19v-6h8v6"></path>
-          </svg>
-        </div>
-
-        <h3>Farmers list produce</h3>
-
-        <p>
-          Farmers publish available crops with quantity,
-          pricing and location information.
-        </p>
-      </article>
-
-      <article class="step-card">
-        <div class="step-number">02</div>
-
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="6"></circle>
-            <path d="m16 16 4 4"></path>
-          </svg>
-        </div>
-
-        <h3>Buyers discover crops</h3>
-
-        <p>
-          Buyers explore fresh produce, compare listings
-          and choose the right farmer.
-        </p>
-      </article>
-
-      <article class="step-card">
-        <div class="step-number">03</div>
-
-        <div class="step-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M4 7h16v10H4z"></path>
-            <path d="M8 11h8"></path>
-            <path d="m9 15 2 2 4-4"></path>
-          </svg>
-        </div>
-
-        <h3>Trade directly</h3>
-
-        <p>
-          Orders and payments are managed through CropDeal
-          for a smoother transaction.
-        </p>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-
-<section class="farmer-cta" id="farmers">
-  <div class="container">
-
-    <div class="farmer-cta__box">
-
-      <div class="farmer-cta__content">
-
-        <span class="farmer-cta__eyebrow">
-          Built for farmers
-        </span>
-
-        <h2>
-          Your harvest deserves a better marketplace.
-        </h2>
-
-        <p>
-          Reach more buyers, manage your crop listings and
-          sell produce through a transparent digital marketplace.
-        </p>
-
-        <div class="farmer-cta__actions">
-          <a class="btn farmer-cta__primary">
-            Start selling
-          </a>
-
-          <a class="farmer-cta__secondary">
-            Learn more →
-          </a>
-        </div>
-
+      <div class="how-header">
+        <span class="section-eyebrow">Simple process</span>
+        <h2>From farm to buyer in three steps</h2>
+        <p>CropDeal makes agricultural trade simpler, more transparent, and easier for both farmers and buyers.</p>
       </div>
 
+      <div class="steps-grid">
 
-      <div class="farmer-cta__visual">
+        <article class="step-card">
+          <div class="step-number">01</div>
 
-        <div class="farmer-stat farmer-stat--top">
-          <span>Direct access</span>
-          <strong>More buyers</strong>
-        </div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 19V9l8-4 8 4v10"></path>
+              <path d="M8 19v-6h8v6"></path>
+            </svg>
+          </div>
 
-        <div class="farmer-illustration">
-          <div class="farmer-illustration__circle">
-            🌱
+          <h3>Farmers list produce</h3>
+          <p>Farmers create shops and publish available crops with quantity, pricing and product information.</p>
+        </article>
+
+        <article class="step-card">
+          <div class="step-number">02</div>
+
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="6"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+          </div>
+
+          <h3>Buyers discover crops</h3>
+          <p>Buyers browse marketplace listings, view product details and add the produce they need to their cart.</p>
+        </article>
+
+        <article class="step-card">
+          <div class="step-number">03</div>
+
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 7h16v10H4z"></path>
+              <path d="M8 11h8"></path>
+              <path d="m9 15 2 2 4-4"></path>
+            </svg>
+          </div>
+
+          <h3>Order and pay</h3>
+          <p>Buyers complete checkout and payment while farmers can track confirmed sales through their dashboard.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="farmer-cta" id="farmers">
+    <div class="container">
+
+      <div class="farmer-cta__box">
+
+        <div class="farmer-cta__content">
+          <span class="farmer-cta__eyebrow">Built for farmers</span>
+
+          <h2>Your harvest deserves a better marketplace.</h2>
+
+          <p>
+            Create your own shop, publish crop listings and reach buyers through a transparent digital agricultural marketplace.
+          </p>
+
+          <div class="farmer-cta__actions">
+            <a [routerLink]="farmerCtaRoute" class="btn farmer-cta__primary">
+              {{ farmerCtaLabel }}
+            </a>
+
+            <a href="#how-it-works" class="farmer-cta__secondary">
+              Learn more →
+            </a>
           </div>
         </div>
 
-        <div class="farmer-stat farmer-stat--bottom">
-          <span>Marketplace</span>
-          <strong>Fair pricing</strong>
+        <div class="farmer-cta__visual">
+          <div class="farmer-stat farmer-stat--top">
+            <span>Digital storefront</span>
+            <strong>Manage your shop</strong>
+          </div>
+
+          <div class="farmer-illustration">
+            <div class="farmer-illustration__circle">🌱</div>
+          </div>
+
+          <div class="farmer-stat farmer-stat--bottom">
+            <span>Marketplace</span>
+            <strong>Reach buyers directly</strong>
+          </div>
         </div>
 
       </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
 </main>

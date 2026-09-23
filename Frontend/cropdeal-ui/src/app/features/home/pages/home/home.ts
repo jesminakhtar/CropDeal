@@ -1,64 +1,43 @@
 import { Component } from '@angular/core';
-import { CropCardComponent } from '../../../crops/components/crop-card/crop-card';
-import { Crop } from '../../../crops/models/crop.model';
+import { RouterLink } from '@angular/router';
+
 import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'app-home',
-  imports: [CropCardComponent],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class HomeComponent {
 
-  constructor(
-    public authService: AuthService
-  ) {}
+  constructor(public authService: AuthService) {}
 
-  crops: Crop[] = [
-    {
-      id: '1',
-      name: 'Fresh Tomatoes',
-      category: 'Vegetables',
-      farmer: 'Green Valley Farms',
-      location: 'West Bengal',
-      price: 28,
-      unit: 'kg',
-      availableQuantity: 320,
-      visualType: 'tomato'
-    },
-    {
-      id: '2',
-      name: 'Premium Wheat',
-      category: 'Grains',
-      farmer: 'Sharma Agro',
-      location: 'Punjab',
-      price: 34,
-      unit: 'kg',
-      availableQuantity: 840,
-      visualType: 'wheat'
-    },
-    {
-      id: '3',
-      name: 'Organic Potatoes',
-      category: 'Vegetables',
-      farmer: 'Fresh Field Co.',
-      location: 'Uttar Pradesh',
-      price: 24,
-      unit: 'kg',
-      availableQuantity: 460,
-      visualType: 'potato'
-    },
-    {
-      id: '4',
-      name: 'Basmati Rice',
-      category: 'Grains',
-      farmer: 'Harvest Farms',
-      location: 'Haryana',
-      price: 72,
-      unit: 'kg',
-      availableQuantity: 600,
-      visualType: 'rice'
+  get farmerCtaLabel(): string {
+    const user = this.authService.currentUser();
+
+    if (user?.role === 'FARMER') {
+      return 'Go to farmer dashboard';
     }
-  ];
+
+    if (user?.role === 'DEALER') {
+      return 'Browse marketplace';
+    }
+
+    return 'Start selling';
+  }
+
+  get farmerCtaRoute(): string {
+    const user = this.authService.currentUser();
+
+    if (user?.role === 'FARMER') {
+      return '/farmer/dashboard';
+    }
+
+    if (user?.role === 'DEALER') {
+      return '/marketplace';
+    }
+
+    return '/register';
+  }
 }

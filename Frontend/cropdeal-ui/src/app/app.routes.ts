@@ -5,6 +5,9 @@ import { OrdersComponent } from './features/buyer/orders/orders';
 import { OrderDetailsComponent } from './features/buyer/order-details/order-details';
 import { FarmerOrdersComponent } from './features/farmer/orders/orders';
 import { FarmerOrderDetailsComponent } from './features/farmer/order-details/order-details';
+import { AboutComponent } from './features/info/about/about';
+import { ContactComponent } from './features/info/contact/contact';
+import { PrivacyComponent } from './features/info/privacy/privacy';
 
 export const routes: Routes = [
   {
@@ -90,6 +93,18 @@ export const routes: Routes = [
     path: 'farmer/orders/:orderId',
     component: FarmerOrderDetailsComponent,
     canActivate: [farmerGuard]
+  },
+  {
+    path: 'about',
+    component: AboutComponent
+  },
+  {
+    path: 'contact',
+    component: ContactComponent
+  },
+  {
+    path: 'privacy',
+    component: PrivacyComponent
   },
   {
     path: '**',
