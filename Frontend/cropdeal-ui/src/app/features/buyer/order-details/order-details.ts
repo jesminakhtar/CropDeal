@@ -122,10 +122,10 @@ export class OrderDetailsComponent implements OnInit {
 
           return {
             productId,
-            name: product.name ?? product.productName ?? product.cropName ?? 'Product',
+            name: this.getProductName(product),
             quantity,
             price: product.price ?? 0,
-            image: product.image ?? product.imageUrl ?? product.productImage
+            image: this.getProductImage(product)
           };
         });
 
@@ -156,5 +156,36 @@ export class OrderDetailsComponent implements OnInit {
     }
 
     return method.replace('_', ' ').toUpperCase();
+  }
+
+  private getProductName(product: any): string {
+    return product.productName ??
+      product.name ??
+      product.cropName ??
+      'Product';
+  }
+
+  private getProductImage(product: any): string | undefined {
+    const image =
+      product.imageUrl ??
+      product.image ??
+      product.productImage ??
+      product.imageData ??
+      product.imageBase64;
+
+    if (!image || typeof image !== 'string') {
+      return undefined;
+    }
+
+    if (
+      image.startsWith('http://') ||
+      image.startsWith('https://') ||
+      image.startsWith('data:') ||
+      image.startsWith('blob:')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 }

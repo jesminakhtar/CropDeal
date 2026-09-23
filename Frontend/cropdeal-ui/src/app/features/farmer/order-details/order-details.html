@@ -1,0 +1,133 @@
+<main class="farmer-order-details-page">
+  <div class="container">
+
+    <a routerLink="/farmer/orders" class="back-link">← Back to Sales Orders</a>
+
+    @if (errorMessage()) {
+      <div class="error-alert">{{ errorMessage() }}</div>
+    }
+
+    @if (loading()) {
+      <div class="loading-state">Loading sales order...</div>
+    } @else if (order(); as currentOrder) {
+
+      <div class="page-header">
+        <div>
+          <span class="eyebrow">Sales order</span>
+          <h1>Order #{{ currentOrder.orderId }}</h1>
+          <p>Review the purchased products, payment and delivery information.</p>
+        </div>
+
+        <span class="status-badge">✓ {{ currentOrder.status }}</span>
+      </div>
+
+      <div class="details-layout">
+
+        <div class="main-column">
+
+          <section class="details-card">
+            <span class="eyebrow">Products</span>
+            <h2>Your products in this order</h2>
+
+            <div class="product-list">
+              @for (item of items(); track item.productId) {
+                <div class="product-row">
+
+                  <div class="product-image">
+                    @if (item.image) {
+                      <img [src]="item.image" [alt]="item.productName" />
+                    } @else {
+                      <span>🌾</span>
+                    }
+                  </div>
+
+                  <div class="product-info">
+                    <strong>{{ item.productName }}</strong>
+                    <span>{{ item.productId }}</span>
+                  </div>
+
+                  <div>
+                    <span class="label">Quantity</span>
+                    <strong>{{ item.quantity }}</strong>
+                  </div>
+
+                  <div>
+                    <span class="label">Price</span>
+                    <strong>₹{{ item.price | number:'1.0-2' }}</strong>
+                  </div>
+
+                </div>
+              }
+            </div>
+
+            <div class="sale-total">
+              <span>Your sale value</span>
+              <strong>₹{{ saleValue | number:'1.0-2' }}</strong>
+            </div>
+          </section>
+
+          <section class="details-card">
+            <span class="eyebrow">Delivery</span>
+            <h2>Delivery address</h2>
+
+            @if (address(); as deliveryAddress) {
+              <div class="address-details">
+                <strong>{{ deliveryAddress.name }}</strong>
+                <p>{{ deliveryAddress.houseNo }}, {{ deliveryAddress.roadName }}</p>
+
+                @if (deliveryAddress.landmark) {
+                  <p>{{ deliveryAddress.landmark }}</p>
+                }
+
+                <p>{{ deliveryAddress.city }}, {{ deliveryAddress.state }} {{ deliveryAddress.pin }}</p>
+                <p>{{ deliveryAddress.country }}</p>
+              </div>
+            } @else {
+              <p class="muted">Delivery address could not be loaded.</p>
+            }
+          </section>
+
+        </div>
+
+        <aside class="sidebar">
+
+          <section class="details-card">
+            <span class="eyebrow">Payment</span>
+            <h2>Payment details</h2>
+
+            <div class="detail-row">
+              <span>Payment status</span>
+              <strong class="success-text">{{ currentOrder.paymentStatus }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Payment method</span>
+              <strong>{{ paymentMethod }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Buyer ID</span>
+              <strong>{{ currentOrder.dealerId }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Sale value</span>
+              <strong>₹{{ saleValue | number:'1.0-2' }}</strong>
+            </div>
+
+            @if (currentOrder.transactionId) {
+              <div class="transaction-box">
+                <span>Razorpay transaction</span>
+                <strong>{{ currentOrder.transactionId }}</strong>
+                <small>✓ Payment verified</small>
+              </div>
+            }
+          </section>
+
+        </aside>
+
+      </div>
+    }
+
+  </div>
+</main>
