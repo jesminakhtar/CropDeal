@@ -1,173 +1,96 @@
 <main class="dashboard-page">
-
   <div class="container">
 
-    <!-- HEADER -->
-
     <section class="dashboard-header">
-
       <div>
-
-        <span class="dashboard-eyebrow">
-          Farmer workspace
-        </span>
+        <span class="dashboard-eyebrow">Farmer workspace</span>
 
         <h1>
-          Good to see you,
-          {{ currentUser?.firstName }}.
+          Good to see you, {{ currentUser?.firstName }}.
         </h1>
 
         <p>
-          Manage your shop, products and marketplace activity
-          from one place.
+          Manage your shop, products and marketplace activity from one place.
         </p>
-
       </div>
 
       @if (shop) {
-        <a
-          [routerLink]="['/farmer/products/new', shop.id]"
-          class="primary-action"
-        >
+        <a [routerLink]="['/farmer/products/new', shop.id]" class="primary-action">
           + Add product
         </a>
       }
-
     </section>
 
-
     @if (loading) {
-
       <div class="dashboard-loading">
-
         <span class="loader"></span>
-
-        <p>
-          Loading your farm dashboard...
-        </p>
-
+        <p>Loading your farm dashboard...</p>
       </div>
 
     } @else if (errorMessage) {
-
       <div class="dashboard-error">
         {{ errorMessage }}
       </div>
 
     } @else if (!shop) {
 
-      <!-- NO SHOP -->
-
       <section class="empty-shop">
-
         <div class="empty-shop__visual">
-
           <span>🌱</span>
-
         </div>
 
-
         <div class="empty-shop__content">
+          <span class="dashboard-eyebrow">Start selling</span>
 
-          <span class="dashboard-eyebrow">
-            Start selling
-          </span>
-
-          <h2>
-            Create your first CropDeal shop.
-          </h2>
+          <h2>Create your first CropDeal shop.</h2>
 
           <p>
-            Your shop is where buyers discover your farm,
-            browse your products and purchase your produce.
+            Your shop is where buyers discover your farm, browse your products and purchase your produce.
           </p>
 
-          <a
-            routerLink="/farmer/shop/new"
-            class="primary-action"
-          >
+          <a routerLink="/farmer/shop/new" class="primary-action">
             Create my shop
             <span>→</span>
           </a>
-
         </div>
-
       </section>
 
     } @else {
 
-      <!-- STATS -->
-
       <section class="stats-grid">
 
         <article class="stat-card">
-
-          <div class="stat-icon">
-            ◫
-          </div>
+          <div class="stat-icon">◫</div>
 
           <div>
             <span>Products</span>
-
-            <strong>
-              {{ totalProducts }}
-            </strong>
-
-            <small>
-              Active listings
-            </small>
+            <strong>{{ totalProducts }}</strong>
+            <small>Products in your shop</small>
           </div>
-
         </article>
 
-
         <article class="stat-card">
-
-          <div class="stat-icon">
-            ▦
-          </div>
+          <div class="stat-icon">▦</div>
 
           <div>
             <span>Available stock</span>
-
-            <strong>
-              {{ totalStock | number }}
-            </strong>
-
-            <small>
-              Total units available
-            </small>
+            <strong>{{ totalStock | number }}</strong>
+            <small>Total units available</small>
           </div>
-
         </article>
 
-
         <article class="stat-card">
-
-          <div class="stat-icon">
-            ₹
-          </div>
+          <div class="stat-icon">₹</div>
 
           <div>
             <span>Inventory value</span>
-
-            <strong>
-              ₹{{ inventoryValue | number:'1.0-0' }}
-            </strong>
-
-            <small>
-              Current listed value
-            </small>
+            <strong>₹{{ inventoryValue | number:'1.0-0' }}</strong>
+            <small>Current listed value</small>
           </div>
-
         </article>
 
-
         <article class="stat-card">
-
-          <div class="stat-icon">
-            ★
-          </div>
+          <div class="stat-icon">★</div>
 
           <div>
             <span>Shop rating</span>
@@ -188,13 +111,9 @@
               }
             </small>
           </div>
-
         </article>
 
       </section>
-
-
-      <!-- SHOP + PRODUCTS -->
 
       <section class="dashboard-grid">
 
@@ -202,204 +121,160 @@
 
           <div class="panel-heading">
             <div>
-              <span class="panel-eyebrow">
-                My shop
-              </span>
-
-              <h2>
-                {{ shop.name }}
-              </h2>
+              <span class="panel-eyebrow">My shop</span>
+              <h2>{{ shop.name }}</h2>
             </div>
 
-            <button class="secondary-action">
-              Edit
-            </button>
-
+            <a [routerLink]="['/farmer/shop', shop.id, 'edit']" class="secondary-action">
+              Edit shop
+            </a>
           </div>
-
 
           <div class="shop-identity">
 
             <div class="shop-image">
-
               @if (shop.imageData) {
-
-                <img
-                  [src]="'data:image/jpeg;base64,' + shop.imageData"
-                  [alt]="shop.name"
-                />
-
+                <img [src]="'data:image/jpeg;base64,' + shop.imageData" [alt]="shop.name" />
               } @else {
-
                 <span>🌾</span>
-
               }
-
             </div>
 
-
             <div>
-
-              <strong>
-                {{ shop.name }}
-              </strong>
+              <strong>{{ shop.name }}</strong>
 
               <span>
-                Managed by {{ currentUser?.firstName }}
-                {{ currentUser?.lastName }}
+                Managed by {{ currentUser?.firstName }} {{ currentUser?.lastName }}
               </span>
 
               <small>
                 Shop ID · {{ shop.id }}
               </small>
-
             </div>
 
           </div>
 
-
           <div class="shop-status">
-
             <span class="status-dot"></span>
-
             Shop is active on CropDeal
-
           </div>
 
         </article>
 
-
         <article class="products-panel">
 
           <div class="panel-heading">
-
             <div>
-              <span class="panel-eyebrow">
-                Inventory
-              </span>
-
-              <h2>
-                Recent products
-              </h2>
+              <span class="panel-eyebrow">Inventory</span>
+              <h2>Your products</h2>
             </div>
 
-            @if (products.length) {
-              <button class="secondary-action">
-                View all
-              </button>
-            }
-
+            <a [routerLink]="['/farmer/products/new', shop.id]" class="secondary-action">
+              + Add product
+            </a>
           </div>
-
 
           @if (!products.length) {
 
             <div class="empty-products">
-
               <div>＋</div>
 
-              <strong>
-                No products listed yet
-              </strong>
+              <strong>No products listed yet</strong>
 
               <p>
-                Add your first crop and make it available
-                to buyers in the marketplace.
+                Add your first crop and make it available to buyers in the marketplace.
               </p>
 
-              <a
-                [routerLink]="['/farmer/products/new', shop.id]"
-                class="primary-action"
-              >
+              <a [routerLink]="['/farmer/products/new', shop.id]" class="primary-action">
                 Add first product
               </a>
-
             </div>
 
           } @else {
 
             <div class="product-list">
 
-              @for (
-                product of products.slice(0, 4);
-                track product.id
-              ) {
-
+              @for (product of products; track $index) {
                 <div class="product-row">
 
                   <div class="product-thumbnail">
-
                     @if (product.imageData) {
-
-                      <img
-                        [src]="
-                          'data:image/jpeg;base64,' +
-                          product.imageData
-                        "
-                        [alt]="product.name"
-                      />
-
+                      <img [src]="'data:image/jpeg;base64,' + product.imageData" [alt]="product.name" />
                     } @else {
-
                       <span>🌱</span>
-
                     }
-
                   </div>
-
 
                   <div class="product-info">
-
-                    <strong>
-                      {{ product.name }}
-                    </strong>
-
-                    <span>
-                      {{ product.category }}
-                    </span>
-
+                    <strong>{{ product.name }}</strong>
+                    <span>{{ product.category }}</span>
                   </div>
-
 
                   <div class="product-quantity">
-
-                    <span>
-                      Stock
-                    </span>
-
-                    <strong>
-                      {{ product.quantity | number }}
-                    </strong>
-
+                    <span>Stock</span>
+                    <strong>{{ product.quantity | number }}</strong>
                   </div>
 
-
                   <div class="product-price">
+                    <span>Price</span>
+                    <strong>₹{{ product.price | number:'1.0-2' }}</strong>
+                  </div>
 
-                    <span>
-                      Price
-                    </span>
+                  <div class="product-actions">
+                    <button type="button" class="edit-action" (click)="editProduct(product)">
+                      Edit
+                    </button>
 
-                    <strong>
-                      ₹{{ product.price | number:'1.0-2' }}
-                    </strong>
-
+                    <button type="button" class="delete-action" (click)="openDeleteModal(product)">
+                      Delete
+                    </button>
                   </div>
 
                 </div>
-
               }
 
             </div>
-
           }
 
         </article>
 
       </section>
-
     }
 
   </div>
+
+  @if (productToDelete; as product) {
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+
+      <div class="delete-modal" (click)="$event.stopPropagation()">
+
+        <div class="delete-modal__icon">!</div>
+
+        <span class="delete-modal__eyebrow">
+          Delete product
+        </span>
+
+        <h2>
+          Remove {{ product.name }}?
+        </h2>
+
+        <p>
+          This product will be permanently removed from your shop and will no longer appear in the marketplace.
+        </p>
+
+        <div class="delete-modal__actions">
+          <button type="button" class="modal-cancel" (click)="closeDeleteModal()" [disabled]="deletingProduct">
+            Keep product
+          </button>
+
+          <button type="button" class="modal-delete" (click)="confirmDeleteProduct()" [disabled]="deletingProduct">
+            {{ deletingProduct ? 'Deleting...' : 'Delete product' }}
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  }
 
 </main>

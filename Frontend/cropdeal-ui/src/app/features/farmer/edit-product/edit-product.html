@@ -1,0 +1,168 @@
+<main class="edit-product-page">
+  <div class="form-container">
+
+    <a routerLink="/farmer/dashboard" class="back-link">
+      ← Back to dashboard
+    </a>
+
+    <div class="page-header">
+      <span class="eyebrow">Inventory management</span>
+      <h1>Edit product</h1>
+      <p>Update your crop listing, pricing and available stock.</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-alert">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (loading) {
+      <div class="loading-state">
+        <span class="loader"></span>
+        <p>Loading product...</p>
+      </div>
+    } @else {
+
+      <form [formGroup]="productForm" (ngSubmit)="save()" class="product-form">
+
+        <div class="product-preview">
+
+          <div class="product-image">
+            @if (imagePreview) {
+              <img [src]="imagePreview" [alt]="product?.name ?? 'Product image'" />
+            } @else {
+              <span>🌱</span>
+            }
+          </div>
+
+          <div class="product-preview__info">
+            <span class="preview-label">Current listing</span>
+            <strong>{{ product?.name }}</strong>
+            <small>Product ID · {{ productId }}</small>
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="name">Product name</label>
+
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Enter product name"
+          />
+
+          @if (productForm.controls.name.touched && productForm.controls.name.invalid) {
+            <small class="field-error">
+              Enter a product name with at least 2 characters.
+            </small>
+          }
+        </div>
+
+        <div class="field-row">
+
+          <div class="field">
+            <label for="category">Category</label>
+
+            <select id="category" formControlName="category">
+              <option value="">Select category</option>
+              <option value="Vegetables">Vegetables</option>
+              <option value="Fruits">Fruits</option>
+              <option value="Grains">Grains</option>
+              <option value="Pulses">Pulses</option>
+              <option value="Spices">Spices</option>
+              <option value="Other">Other</option>
+            </select>
+
+            @if (productForm.controls.category.touched && productForm.controls.category.invalid) {
+              <small class="field-error">
+                Select a product category.
+              </small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="quantity">Available quantity</label>
+
+            <input
+              id="quantity"
+              type="number"
+              min="0"
+              formControlName="quantity"
+            />
+
+            @if (productForm.controls.quantity.touched && productForm.controls.quantity.invalid) {
+              <small class="field-error">
+                Quantity cannot be negative.
+              </small>
+            }
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="price">Price per unit</label>
+
+          <div class="price-input">
+            <span>₹</span>
+
+            <input
+              id="price"
+              type="number"
+              min="0.01"
+              step="0.01"
+              formControlName="price"
+            />
+          </div>
+
+          @if (productForm.controls.price.touched && productForm.controls.price.invalid) {
+            <small class="field-error">
+              Enter a valid product price.
+            </small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+
+          <textarea
+            id="description"
+            rows="5"
+            formControlName="description"
+            placeholder="Describe your produce"
+          ></textarea>
+
+          @if (productForm.controls.description.touched && productForm.controls.description.invalid) {
+            <small class="field-error">
+              Add a short product description.
+            </small>
+          }
+        </div>
+
+        <div class="image-note">
+          <span>ⓘ</span>
+
+          <p>
+            The current product image will be kept when you save these changes.
+          </p>
+        </div>
+
+        <div class="form-actions">
+
+          <a routerLink="/farmer/dashboard" class="cancel-button">
+            Cancel
+          </a>
+
+          <button type="submit" class="save-button" [disabled]="saving">
+            {{ saving ? 'Saving changes...' : 'Save changes' }}
+          </button>
+
+        </div>
+
+      </form>
+    }
+
+  </div>
+</main>

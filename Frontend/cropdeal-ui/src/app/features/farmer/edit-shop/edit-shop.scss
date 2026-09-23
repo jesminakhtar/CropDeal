@@ -1,0 +1,207 @@
+.edit-shop-page {
+  min-height: calc(100vh - 70px);
+  padding: 55px 0 90px;
+  background: #f7f9f7;
+}
+
+.form-container {
+  width: min(680px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-flex;
+  margin-bottom: 30px;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #17241c;
+  font-size: 36px;
+  letter-spacing: -0.04em;
+}
+
+.page-header p {
+  margin: 10px 0 0;
+  color: #727c75;
+  font-size: 13px;
+}
+
+.shop-form {
+  padding: 30px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: white;
+}
+
+.image-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #edf1ee;
+}
+
+.image-preview {
+  width: 95px;
+  height: 95px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 15px;
+  background: var(--primary-soft);
+  font-size: 40px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-section strong {
+  display: block;
+  font-size: 13px;
+}
+
+.image-section p {
+  margin: 5px 0 12px;
+  color: #808a83;
+  font-size: 10px;
+}
+
+.image-button {
+  display: inline-flex;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--primary);
+  background: white;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.field {
+  margin-top: 27px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #354239;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  min-height: 45px;
+  padding: 0 13px;
+  border: 1px solid #dce3de;
+  border-radius: 9px;
+  outline: none;
+  font-family: inherit;
+}
+
+.field input:focus {
+  border-color: var(--primary);
+}
+
+.field small {
+  display: block;
+  margin-top: 7px;
+  color: #b44740;
+  font-size: 9px;
+}
+
+.form-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-button,
+.save-button {
+  min-height: 42px;
+  padding: 0 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cancel-button {
+  border: 1px solid var(--border);
+  color: #58645c;
+  background: white;
+  text-decoration: none;
+}
+
+.save-button {
+  border: 0;
+  color: white;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: var(--primary-dark);
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-alert,
+.loading-state {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.error-alert {
+  color: #963b35;
+  background: #fff5f4;
+}
+
+.loading-state {
+  color: #657168;
+  background: white;
+}
+
+@media (max-width: 550px) {
+  .image-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .shop-form {
+    padding: 22px;
+  }
+}

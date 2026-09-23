@@ -86,4 +86,36 @@ export class InventoryService {
       `${this.apiUrl}/products/findById/${productId}`
     );
   }
+
+  getShopById(shopId: string) {
+    return this.http.get<Shop>(`${this.apiUrl}/shops/${shopId}`);
+  }
+
+  updateShop(shopId: string, name: string, farmerUsername: string, image?: File | null) {
+    const formData = new FormData();
+
+    formData.append('name', name);
+    formData.append('farmerUsername', farmerUsername);
+
+    if (image) {
+      formData.append('file', image);
+    }
+
+    return this.http.put<Shop>(`${this.apiUrl}/shops/${shopId}`, formData);
+  }
+
+  updateProduct(productId: string, product: Product) {
+    return this.http.put(
+      `${this.apiUrl}/products/${productId}`,
+      product,
+      { responseType: 'text' }
+    );
+  }
+
+  deleteProduct(productId: string) {
+    return this.http.delete(
+      `${this.apiUrl}/products/${productId}`,
+      { responseType: 'text' }
+    );
+  }
 }

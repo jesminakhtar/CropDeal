@@ -8,6 +8,8 @@ import { FarmerOrderDetailsComponent } from './features/farmer/order-details/ord
 import { AboutComponent } from './features/info/about/about';
 import { ContactComponent } from './features/info/contact/contact';
 import { PrivacyComponent } from './features/info/privacy/privacy';
+import { EditShopComponent } from './features/farmer/edit-shop/edit-shop';
+import { EditProductComponent } from './features/farmer/edit-product/edit-product';
 
 export const routes: Routes = [
   {
@@ -105,6 +107,16 @@ export const routes: Routes = [
   {
     path: 'privacy',
     component: PrivacyComponent
+  },
+  {
+    path: 'farmer/shop/:shopId/edit',
+    component: EditShopComponent,
+    canActivate: [farmerGuard]
+  },
+  {
+    path: 'farmer/products/:productId/edit',
+    component: EditProductComponent,
+    canActivate: [farmerGuard]
   },
   {
     path: '**',

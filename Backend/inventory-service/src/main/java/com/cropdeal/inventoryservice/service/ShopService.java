@@ -4,28 +4,21 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.cropdeal.inventoryservice.entity.Product;
 import com.cropdeal.inventoryservice.entity.Rating;
 import com.cropdeal.inventoryservice.entity.Shop;
 import com.cropdeal.inventoryservice.exception.ShopNotFoundException;
-import com.cropdeal.inventoryservice.exception.UserNotFoundException;
-import com.cropdeal.inventoryservice.model.User;
 import com.cropdeal.inventoryservice.repository.ShopRepository;
 
 @Service
 public class ShopService {
     private final ShopRepository shopRepository;
-    private final RestTemplate restTemplate;
 
     @Autowired
-    public ShopService(ShopRepository shopRepository, RestTemplate restTemplate) {
+    public ShopService(ShopRepository shopRepository) {
         this.shopRepository = shopRepository;
-        this.restTemplate = restTemplate;
     }
 
     public Shop getShopById(String id) throws ShopNotFoundException {
@@ -35,7 +28,7 @@ public class ShopService {
 	public Shop addShop(Shop shop) {
 		if (shop.getId() == null || shop.getId().isBlank()) {
 			shop.setId(
-					shop.getFarmerUsername().substring(0, 1)
+					shop.getFarmerUsername().charAt(0)
 							+ generateUniqueId()
 			);
 		}
@@ -50,28 +43,8 @@ public class ShopService {
         return shopRepository.findAll();
     }
 
-	public List<Shop> getShopByFarmerUsername(String username)
-			throws UserNotFoundException {
-		List<Shop> shops =
-				shopRepository.findByFarmerUsername(username);
-
-		if (shops.isEmpty()) {
-			return shops;
-		}
-
-		ResponseEntity<User> response =
-				restTemplate.getForEntity(
-						"http://localhost:8080/users/{username}",
-						User.class,
-						username
-				);
-
-		if (response.getStatusCode() != HttpStatus.OK) {
-			throw new UserNotFoundException(
-					"Farmer not found for username: " + username
-			);
-		}
-		return shops;
+	public List<Shop> getShopByFarmerUsername(String username) {
+		return shopRepository.findByFarmerUsername(username);
 	}
 
 	public List<Product> getProductsByShopId(String shopId) throws ShopNotFoundException {
@@ -81,9 +54,14 @@ public class ShopService {
 
 	public Shop updateShop(String shopId, Shop newShop) throws ShopNotFoundException {
 		Shop shop = getShopById(shopId);
-		shop.setFarmerUsername(newShop.getFarmerUsername());
+
 		shop.setName(newShop.getName());
-		shop.setImageData(newShop.getImageData());
+		shop.setFarmerUsername(newShop.getFarmerUsername());
+
+		if (newShop.getImageData() != null && newShop.getImageData().length > 0) {
+			shop.setImageData(newShop.getImageData());
+		}
+
 		return shopRepository.save(shop);
 	}
 

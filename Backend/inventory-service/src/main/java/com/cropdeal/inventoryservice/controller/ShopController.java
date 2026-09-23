@@ -87,28 +87,34 @@ public class ShopController {
 	}
 
 	@PutMapping("/{shopId}")
-	public ResponseEntity<Shop> updateShop(@PathVariable String shopId, @RequestParam("file") MultipartFile file,
-			@RequestParam("name") String name, @RequestParam("farmerUsername") String farmerUsername)
-			throws ShopNotFoundException {
+	public ResponseEntity<Shop> updateShop(
+			@PathVariable String shopId,
+			@RequestParam("name") String name,
+			@RequestParam("farmerUsername") String farmerUsername,
+			@RequestParam(value = "file", required = false) MultipartFile file
+	) throws ShopNotFoundException {
 
 		try {
-			// Read the image file and convert it to byte[]
-			byte[] imageData = file.getBytes();
-
-			logger.info("Trying to update shop with id {}", shopId);
 			Shop shop = new Shop();
 			shop.setName(name);
-			shop.setId(farmerUsername);
-			shop.setImageData(imageData);
-			
+			shop.setFarmerUsername(farmerUsername);
+
+			if (file != null && !file.isEmpty()) {
+				shop.setImageData(file.getBytes());
+			}
+
+			logger.info("Updating shop with id {}", shopId);
+
 			Shop updatedShop = shopService.updateShop(shopId, shop);
+
 			logger.info("Shop updated successfully");
-			return ResponseEntity.status(HttpStatus.CREATED).body(updatedShop);
+
+			return ResponseEntity.ok(updatedShop);
+
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Unable to process shop image", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
 	}
 
 	@DeleteMapping("/{shopId}")
