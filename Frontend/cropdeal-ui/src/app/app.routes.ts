@@ -10,6 +10,7 @@ import { ContactComponent } from './features/info/contact/contact';
 import { PrivacyComponent } from './features/info/privacy/privacy';
 import { EditShopComponent } from './features/farmer/edit-shop/edit-shop';
 import { EditProductComponent } from './features/farmer/edit-product/edit-product';
+import { WishlistComponent } from './features/wishlist/wishlist';
 
 export const routes: Routes = [
   {
@@ -117,6 +118,10 @@ export const routes: Routes = [
     path: 'farmer/products/:productId/edit',
     component: EditProductComponent,
     canActivate: [farmerGuard]
+  },
+  {
+    path: 'wishlist',
+    component: WishlistComponent
   },
   {
     path: '**',

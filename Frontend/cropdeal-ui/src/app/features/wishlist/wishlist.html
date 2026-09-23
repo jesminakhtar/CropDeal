@@ -1,0 +1,107 @@
+<main class="wishlist-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Saved produce</span>
+        <h1>Wishlist</h1>
+        <p>Keep track of products you may want to purchase later.</p>
+      </div>
+
+      @if (products().length) {
+        <button type="button" class="clear-button" (click)="clearWishlist()">
+          Clear wishlist
+        </button>
+      }
+    </div>
+
+    @if (!products().length) {
+
+      <section class="empty-state">
+        <div class="empty-icon">♡</div>
+
+        <span class="eyebrow">Nothing saved yet</span>
+
+        <h2>Your wishlist is empty.</h2>
+
+        <p>
+          Save products from the marketplace and they will appear here.
+        </p>
+
+        <a routerLink="/marketplace" class="primary-button">
+          Browse marketplace
+          <span>→</span>
+        </a>
+      </section>
+
+    } @else {
+
+      <div class="wishlist-grid">
+
+        @for (product of products(); track product.id) {
+
+          <article class="wishlist-card">
+
+            <a [routerLink]="['/products', product.id]" class="product-image">
+              @if (product.imageData) {
+                <img [src]="'data:image/jpeg;base64,' + product.imageData" [alt]="product.name" />
+              } @else {
+                <span>🌱</span>
+              }
+
+              <span class="category-badge">
+                {{ product.category }}
+              </span>
+            </a>
+
+            <div class="product-body">
+
+              <div class="product-heading">
+                <div>
+                  <h2>{{ product.name }}</h2>
+                  <span>Shop · {{ product.shopId }}</span>
+                </div>
+
+                <button
+                  type="button"
+                  class="remove-button"
+                  (click)="removeProduct(product)"
+                  aria-label="Remove from wishlist"
+                  title="Remove from wishlist"
+                >
+                  ♥
+                </button>
+              </div>
+
+              <p class="description">
+                {{ product.description }}
+              </p>
+
+              <div class="stock">
+                <span class="status-dot"></span>
+                {{ product.quantity | number }} kg available
+              </div>
+
+              <div class="card-footer">
+                <div class="price">
+                  <strong>₹{{ product.price | number:'1.0-2' }}</strong>
+                  <span>/ kg</span>
+                </div>
+
+                <a [routerLink]="['/products', product.id]" class="details-link">
+                  View details →
+                </a>
+              </div>
+
+            </div>
+
+          </article>
+
+        }
+
+      </div>
+
+    }
+
+  </div>
+</main>

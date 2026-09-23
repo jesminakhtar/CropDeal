@@ -1,16 +1,10 @@
 <main class="marketplace-page">
 
-  <!-- HERO -->
-
   <section class="marketplace-hero">
-
     <div class="container">
-
       <div class="hero-content">
 
-        <span class="eyebrow">
-          CropDeal Marketplace
-        </span>
+        <span class="eyebrow">CropDeal Marketplace</span>
 
         <h1>
           Fresh produce,
@@ -18,40 +12,22 @@
         </h1>
 
         <p>
-          Browse agricultural products listed by farmers
-          and discover fresh produce available right now.
+          Browse agricultural products listed by farmers and discover fresh produce available right now.
         </p>
 
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- MARKETPLACE -->
-
   <section class="marketplace-content">
-
     <div class="container">
-
-
-      <!-- FILTER BAR -->
 
       <div class="marketplace-toolbar">
 
         <div class="search-box">
-
           <svg viewBox="0 0 24 24">
-            <circle
-              cx="11"
-              cy="11"
-              r="6"
-            ></circle>
-
-            <path
-              d="m16 16 4 4"
-            ></path>
+            <circle cx="11" cy="11" r="6"></circle>
+            <path d="m16 16 4 4"></path>
           </svg>
 
           <input
@@ -60,171 +36,96 @@
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
           />
-
         </div>
 
-
         <div class="category-filter">
-
-          <label for="category">
-            Category
-          </label>
+          <label for="category">Category</label>
 
           <select
             id="category"
             [ngModel]="selectedCategory()"
             (ngModelChange)="selectedCategory.set($event)"
           >
-
-            @for (
-              category of categories();
-              track category
-            ) {
-
+            @for (category of categories(); track category) {
               <option [value]="category">
                 {{ category }}
               </option>
-
             }
-
           </select>
-
         </div>
 
       </div>
 
-
-      <!-- RESULTS HEADER -->
-
       <div class="results-heading">
-
         <div>
-
-          <h2>
-            Available produce
-          </h2>
+          <h2>Available produce</h2>
 
           <p>
             @if (!loading()) {
-              {{ filteredProducts().length }}
-              listings available
+              {{ filteredProducts().length }} listings available
             }
           </p>
-
         </div>
 
-
-        @if (
-          searchTerm() ||
-          selectedCategory() !== 'All'
-        ) {
-
-          <button
-            type="button"
-            class="clear-filter"
-            (click)="clearFilters()"
-          >
+        @if (searchTerm() || selectedCategory() !== 'All') {
+          <button type="button" class="clear-filter" (click)="clearFilters()">
             Clear filters
           </button>
-
         }
-
       </div>
-
-
-      <!-- LOADING -->
 
       @if (loading()) {
 
         <div class="loading-state">
-
           <span class="loader"></span>
-
-          <p>
-            Loading fresh produce...
-          </p>
-
+          <p>Loading fresh produce...</p>
         </div>
 
       } @else if (errorMessage()) {
 
         <div class="error-state">
+          <strong>Marketplace unavailable</strong>
+          <p>{{ errorMessage() }}</p>
 
-          <strong>
-            Marketplace unavailable
-          </strong>
-
-          <p>
-            {{ errorMessage() }}
-          </p>
-
-          <button
-            type="button"
-            (click)="loadProducts()"
-          >
+          <button type="button" (click)="loadProducts()">
             Try again
           </button>
-
         </div>
 
       } @else if (!filteredProducts().length) {
 
         <div class="empty-state">
+          <div class="empty-icon">🌱</div>
 
-          <div class="empty-icon">
-            🌱
-          </div>
-
-          <h3>
-            No products found
-          </h3>
+          <h3>No products found</h3>
 
           <p>
             Try changing your search or category filter.
           </p>
 
-          <button
-            type="button"
-            (click)="clearFilters()"
-          >
+          <button type="button" (click)="clearFilters()">
             Reset filters
           </button>
-
         </div>
 
       } @else {
 
-        <!-- REAL PRODUCTS -->
-
         <div class="product-grid">
 
-          @for (
-            product of filteredProducts();
-            track product.id
-          ) {
+          @for (product of filteredProducts(); track product.id) {
 
             <article class="product-card">
 
               <div class="product-image">
 
                 @if (product.imageData) {
-
                   <img
-                    [src]="
-                      'data:image/jpeg;base64,' +
-                      product.imageData
-                    "
+                    [src]="'data:image/jpeg;base64,' + product.imageData"
                     [alt]="product.name"
                   />
-
                 } @else {
-
-                  <span>
-                    🌱
-                  </span>
-
+                  <span>🌱</span>
                 }
-
 
                 <span class="category-badge">
                   {{ product.category }}
@@ -232,91 +133,65 @@
 
               </div>
 
-
               <div class="product-body">
 
                 <div class="product-heading">
 
                   <div>
-
-                    <h3>
-                      {{ product.name }}
-                    </h3>
-
-                    <span>
-                      Shop · {{ product.shopId }}
-                    </span>
-
+                    <h3>{{ product.name }}</h3>
+                    <span>Shop · {{ product.shopId }}</span>
                   </div>
 
                   <button
                     type="button"
                     class="save-button"
-                    aria-label="Save product"
+                    [class.active]="isWishlisted(product)"
+                    (click)="toggleWishlist(product, $event)"
+                    [attr.aria-label]="isWishlisted(product) ? 'Remove from wishlist' : 'Add to wishlist'"
+                    [title]="isWishlisted(product) ? 'Remove from wishlist' : 'Add to wishlist'"
                   >
-                    ♡
+                    {{ isWishlisted(product) ? '♥' : '♡' }}
                   </button>
 
                 </div>
-
 
                 <p class="product-description">
                   {{ product.description }}
                 </p>
 
-
                 <div class="stock-row">
-
                   <span class="status-dot"></span>
 
                   <span>
-                    {{ product.quantity | number }}
-                    kg available
+                    {{ product.quantity | number }} kg available
                   </span>
-
                 </div>
 
-                <a
-                [routerLink]="['/products', product.id]"
-                class="view-product"
-                >
-                 View details →
+                <a [routerLink]="['/products', product.id]" class="view-product">
+                  View details →
                 </a>
-
 
                 <div class="product-footer">
 
                   <div class="price">
-
                     <strong>
                       ₹{{ product.price | number:'1.0-2' }}
                     </strong>
 
-                    <span>
-                      / kg
-                    </span>
-
+                    <span>/ kg</span>
                   </div>
-
 
                   <span class="availability">
                     Available now
                   </span>
-
                 </div>
-
               </div>
-
             </article>
-
           }
-
         </div>
-
       }
 
     </div>
-
   </section>
 
 </main>

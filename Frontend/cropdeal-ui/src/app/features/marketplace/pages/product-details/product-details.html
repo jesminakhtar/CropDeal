@@ -1,167 +1,133 @@
 <main class="details-page">
-
   <div class="container">
 
     @if (loading()) {
-
       <div class="state">
         Loading product...
       </div>
 
     } @else if (errorMessage() && !product()) {
-
       <div class="state state--error">
         {{ errorMessage() }}
       </div>
 
     } @else if (product(); as item) {
 
-      <a
-        routerLink="/marketplace"
-        class="back-link"
-      >
+      <a routerLink="/marketplace" class="back-link">
         ← Back to marketplace
       </a>
 
       <section class="details-layout">
 
         <div class="product-visual">
-
           @if (item.imageData) {
-
-            <img
-              [src]="
-                'data:image/jpeg;base64,' +
-                item.imageData
-              "
-              [alt]="item.name"
-            />
-
+            <img [src]="'data:image/jpeg;base64,' + item.imageData" [alt]="item.name" />
           } @else {
-
             <span>🌱</span>
-
           }
-
         </div>
-
 
         <div class="product-info">
 
-          <span class="category">
-            {{ item.category }}
-          </span>
+          <div class="product-heading">
+            <div>
+              <span class="category">{{ item.category }}</span>
+              <h1>{{ item.name }}</h1>
+            </div>
 
-          <h1>
-            {{ item.name }}
-          </h1>
+            <button
+              type="button"
+              class="wishlist-icon-button"
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()"
+              [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
+              [title]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
+            >
+              {{ isWishlisted ? '♥' : '♡' }}
+            </button>
+          </div>
 
           <p class="description">
             {{ item.description }}
           </p>
 
-
           <div class="product-meta">
-
             <div>
               <span>Availability</span>
-
-              <strong>
-                {{ item.quantity | number }}
-                kg
-              </strong>
+              <strong>{{ item.quantity | number }} kg</strong>
             </div>
 
             <div>
               <span>Shop</span>
-
-              <strong>
-                {{ item.shopId }}
-              </strong>
+              <strong>{{ item.shopId }}</strong>
             </div>
-
           </div>
-
 
           <div class="purchase-card">
 
             <div class="price">
-
               <span>Price per kg</span>
-
-              <strong>
-                ₹{{ item.price | number:'1.0-2' }}
-              </strong>
-
+              <strong>₹{{ item.price | number:'1.0-2' }}</strong>
             </div>
 
-
             <div class="quantity-section">
-
               <span>Quantity</span>
 
               <div class="quantity-control">
-
                 <button
                   type="button"
                   (click)="decreaseQuantity()"
+                  [disabled]="quantity() <= 1"
                 >
                   −
                 </button>
 
-                <strong>
-                  {{ quantity() }}
-                </strong>
+                <strong>{{ quantity() }}</strong>
 
                 <button
                   type="button"
                   (click)="increaseQuantity()"
+                  [disabled]="quantity() >= item.quantity"
                 >
                   +
                 </button>
-
               </div>
-
             </div>
-
 
             <div class="total">
-
               <span>Total</span>
-
-              <strong>
-                ₹{{
-                  item.price *
-                  quantity()
-                  | number:'1.0-2'
-                }}
-              </strong>
-
+              <strong>₹{{ item.price * quantity() | number:'1.0-2' }}</strong>
             </div>
 
-
             @if (errorMessage()) {
-
               <div class="error-alert">
                 {{ errorMessage() }}
               </div>
-
             }
-
 
             <button
               type="button"
               class="add-button"
-              [disabled]="addingToCart()"
+              [disabled]="addingToCart() || item.quantity <= 0"
               (click)="addToCart()"
             >
-
-              @if (addingToCart()) {
+              @if (item.quantity <= 0) {
+                Out of stock
+              } @else if (addingToCart()) {
                 Adding...
               } @else {
                 Add to cart →
               }
+            </button>
 
+            <button
+              type="button"
+              class="wishlist-button"
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()"
+            >
+              <span>{{ isWishlisted ? '♥' : '♡' }}</span>
+              {{ isWishlisted ? 'Saved to wishlist' : 'Save to wishlist' }}
             </button>
 
           </div>
@@ -169,9 +135,7 @@
         </div>
 
       </section>
-
     }
 
   </div>
-
 </main>
