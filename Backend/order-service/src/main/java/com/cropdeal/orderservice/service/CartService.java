@@ -32,8 +32,7 @@ public class CartService {
     private RestTemplate restTemplate;
 
 
-    @Value("${inventory.service.url:http://localhost:8082}")
-    private String inventoryServiceUrl;
+    private static final String INVENTORY_SERVICE_URL = "http://inventory-service";
 
     public Cart getCartByDealerId(String dId) throws CartNotFoundException {
         log.info("Fetching cart for dealer: {}", dId);
@@ -195,7 +194,7 @@ public class CartService {
 	}
     
     public Product getProductByRestTemplate(String productId) {
-    	ResponseEntity<Product> response = restTemplate.getForEntity(inventoryServiceUrl + "/products/findById/" + productId,
+    	ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/findById/" + productId,
                 Product.class);
         return response.getBody();
     }
