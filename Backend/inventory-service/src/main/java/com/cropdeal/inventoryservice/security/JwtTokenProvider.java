@@ -38,7 +38,6 @@ public class JwtTokenProvider {
 	public String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-			log.info("Token : {}", bearerToken.substring(7));
 			return bearerToken.substring(7);
 		}
 		return null;
@@ -47,8 +46,6 @@ public class JwtTokenProvider {
 	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(KEY).build().parseClaimsJws(token);
-			
-			log.info("Validated token : {}", token);
 			return true;
 		} catch (Exception e) {
 			log.info(e.getMessage());

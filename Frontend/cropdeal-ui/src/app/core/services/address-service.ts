@@ -5,12 +5,13 @@ import {
   Address,
   CreateAddressRequest
 } from '../models/address.model';
+import { API_BASE_URL } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddressService {
-  private readonly apiUrl = 'http://localhost:8080/address';
+  private readonly apiUrl = `${API_BASE_URL}/address`;
 
   constructor(private http: HttpClient) {}
 

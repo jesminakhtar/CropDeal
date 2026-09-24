@@ -9,6 +9,7 @@ import {
 import {
   Receipt
 } from '../models/order.model';
+import { API_BASE_URL } from '../config/api.config';
 
 
 export interface PaymentInitResponse {
@@ -32,9 +33,7 @@ export interface PaymentVerificationRequest {
 })
 export class PaymentService {
 
-  private readonly apiUrl =
-    'http://localhost:8080/payments';
-
+  private readonly apiUrl = `${API_BASE_URL}/payments`;
 
   constructor(
     private http: HttpClient

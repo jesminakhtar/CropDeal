@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,8 +32,8 @@ public class CartService {
     private RestTemplate restTemplate;
 
 
-    private static final String INVENTORY_SERVICE_URL =
-            "http://inventory-service";
+    @Value("${inventory.service.url:http://localhost:8082}")
+    private String inventoryServiceUrl;
 
     public Cart getCartByDealerId(String dId) throws CartNotFoundException {
         log.info("Fetching cart for dealer: {}", dId);
@@ -194,7 +195,7 @@ public class CartService {
 	}
     
     public Product getProductByRestTemplate(String productId) {
-    	ResponseEntity<Product> response = restTemplate.getForEntity(INVENTORY_SERVICE_URL + "/products/findById/" + productId,
+    	ResponseEntity<Product> response = restTemplate.getForEntity(inventoryServiceUrl + "/products/findById/" + productId,
                 Product.class);
         return response.getBody();
     }

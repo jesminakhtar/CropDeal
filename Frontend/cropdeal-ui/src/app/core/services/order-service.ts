@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Order } from '../models/order.model';
+import { API_BASE_URL } from '../config/api.config';
 
 export interface FarmerOrderResponse {
   orderId: string;
@@ -18,7 +19,7 @@ export interface FarmerOrderResponse {
 })
 export class OrderService {
 
-  private readonly apiUrl = 'http://localhost:8080/orders';
+  private readonly apiUrl = `${API_BASE_URL}/orders`;
 
   constructor(private http: HttpClient) {}
 

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
 import { RegisterRequest } from '../models/auth.model';
+import { API_BASE_URL } from '../config/api.config';
 
 export interface LoginRequest {
   username: string;
@@ -24,35 +25,21 @@ export interface AuthUser {
 })
 export class AuthService {
 
-  private readonly apiUrl =
-    'http://localhost:8080/users';
+  private readonly apiUrl = `${API_BASE_URL}/users`;
 
-  private readonly USER_KEY =
-    'cropdeal_user';
+  private readonly USER_KEY ='cropdeal_user';
 
-  private readonly TOKEN_KEY =
-    'token';
+  private readonly TOKEN_KEY ='token';
 
-  private readonly currentUserSignal =
-    signal<AuthUser | null>(
-      this.loadStoredUser()
-    );
+  private readonly currentUserSignal = signal<AuthUser | null>(this.loadStoredUser());
 
-  readonly currentUser =
-    this.currentUserSignal.asReadonly();
+  readonly currentUser = this.currentUserSignal.asReadonly();
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  login(
-    credentials: LoginRequest
-  ) {
+  login(credentials: LoginRequest) {
     return this.http
-      .post<AuthUser>(
-        `${this.apiUrl}/login`,
-        credentials
-      )
+      .post<AuthUser>(`${this.apiUrl}/login`,credentials)
       .pipe(
         tap(user => {
           this.setUser(user);
@@ -60,9 +47,7 @@ export class AuthService {
       );
   }
 
-  register(
-    request: RegisterRequest
-  ) {
+  register(request: RegisterRequest) {
     return this.http.post(
       `${this.apiUrl}/register`,
       request

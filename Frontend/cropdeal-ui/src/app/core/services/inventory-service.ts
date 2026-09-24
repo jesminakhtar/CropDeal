@@ -5,13 +5,14 @@ import {
   Product,
   Shop
 } from '../models/inventory.model';
+import { API_BASE_URL } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
 
-  private readonly apiUrl = 'http://localhost:8080';
+  private readonly apiUrl = API_BASE_URL;
 
   constructor(private http: HttpClient) {}
 
