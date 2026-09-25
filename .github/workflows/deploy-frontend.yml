@@ -1,0 +1,63 @@
+name: Deploy CropDeal Frontend
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Frontend/cropdeal-ui/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Frontend/cropdeal-ui
+        run: npm ci
+
+      - name: Build Angular
+        working-directory: Frontend/cropdeal-ui
+        run: npx ng build --base-href /CropDeal/
+
+      - name: Create SPA fallback
+        run: cp Frontend/cropdeal-ui/dist/cropdeal-ui/browser/index.html Frontend/cropdeal-ui/dist/cropdeal-ui/browser/404.html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: Frontend/cropdeal-ui/dist/cropdeal-ui/browser
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
